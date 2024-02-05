@@ -9,6 +9,7 @@ import com.ssafy.star.common.exception.ErrorCode;
 import com.ssafy.star.constellation.dao.ConstellationRepository;
 import com.ssafy.star.constellation.domain.ConstellationEntity;
 import com.ssafy.star.user.domain.UserEntity;
+import com.ssafy.star.user.repository.FollowRepository;
 import com.ssafy.star.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ConstellationRepository constellationRepository;
     private final UserRepository userRepository;
+    private final FollowRepository followRepository;
 
     /**
      * 게시물 등록
@@ -118,11 +120,22 @@ public class ArticleService {
     }
 
     /**
-     * 내 게시물 전체 조회
+     * 유저의 게시물 전체 조회
      */
     @Transactional(readOnly = true)
-    public Page<Article> my(String email, Pageable pageable) {
-        UserEntity userEntity = getUserEntityOrException(email);
+    public Page<Article> userArticlePage(String userEmail, String myEmail, Pageable pageable) {
+        // 찾는 유저가 접속자라면 전체 조회한다
+        UserEntity myEntity = getUserEntityOrException(myEmail);
+        UserEntity userEntity = getUserEntityOrException(userEmail);
+        if(!myEntity.equals(userEntity)) {
+
+            // following 중이라면 전체 조회한다
+            if(!followRepository.findByFromUserAndToUser(myEntity, userEntity).isPresent()) {
+
+                // disclosureType에 따라 조회여부 판단
+                return articleRepository.findAllByOwnerEntityAndNotDeletedAndDisclosure(userEntity, pageable).map(Article::fromEntity);
+            }
+        }
         return articleRepository.findAllByOwnerEntityAndNotDeleted(userEntity, pageable).map(Article::fromEntity);
     }
 

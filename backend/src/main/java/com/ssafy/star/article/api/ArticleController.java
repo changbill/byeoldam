@@ -90,17 +90,18 @@ public class ArticleController {
         return Response.success(articleService.list(email, pageable).map(ArticleResponse::fromArticle));
     }
 
-    // TODO : 유저의 게시물 전체 조회로 바꿀 것
     @Operation(
-            summary = "내 게시물 전체 조회",
-            description = "내 게시물 전체 조회입니다.",
+            summary = "유저의 게시물 전체 조회",
+            description = "유저의 게시물 전체 조회입니다. 유저가 접속자일 경우 전체 조회, "+
+                          "접속자가 유저를 팔로우 중일 경우 전체 조회, "+
+                          "그 외 discloseType이 VISIBLE인 게시물만 반환",
             responses = {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @GetMapping("/articles/my")
-    public Response<Page<ArticleResponse>> my(Pageable pageable, Authentication authentication) {
-        return Response.success(articleService.my(authentication.getName(), pageable).map(ArticleResponse::fromArticle));
+    @GetMapping("/articles/user/{userEmail}")
+    public Response<Page<ArticleResponse>> userArticlePage(@PathVariable String userEmail, Authentication authentication, Pageable pageable) {
+        return Response.success(articleService.userArticlePage(userEmail, authentication.getName(), pageable).map(ArticleResponse::fromArticle));
     }
 
     @Operation(
@@ -165,4 +166,7 @@ public class ArticleController {
     public Response<ArticleResponse> undoDeletion(@RequestBody ArticleDeletionUndo articleDeletionUndo, Authentication authentication) {
         return Response.success(ArticleResponse.fromArticle(articleService.undoDeletion(articleDeletionUndo.articleId(),authentication.getName())));
     }
+
+    // TODO : 팔로우 피드
+    //
 }
