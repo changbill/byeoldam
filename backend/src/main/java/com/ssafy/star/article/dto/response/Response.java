@@ -3,11 +3,11 @@ package com.ssafy.star.article.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
-public class Response<T> {
-    private String resultCode;
-    private T result;
+
+public record Response<T> (
+    String resultCode,
+    T result
+){
 
     public static Response<Void> error(String errorCode) {
         return new Response<>(errorCode, null);

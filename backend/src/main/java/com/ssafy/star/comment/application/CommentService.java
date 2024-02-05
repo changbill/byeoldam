@@ -27,6 +27,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
+    // TODO : 예시) articleId 1에서 한 댓글에 parentId를 지정해놓고 articleId 2로 대댓글 작성 요청하면 작성이 됨. 예외 처리할것
     // 댓글 조회
     @Transactional(readOnly = true)
     public Page<CommentDto> search(Long articleId, Pageable pageable) {
@@ -79,7 +80,7 @@ public class CommentService {
         UserEntity userEntity = getUserEntityOrException(email);
 
         // 수정하려는 사람이 댓글을 작성한 사람이거나 게시글 작성자인지 확인
-        if (!(commentEntity.getUserEntity() == userEntity || commentEntity.getArticleEntity().getUser() == userEntity)) {
+        if (!(commentEntity.getUserEntity() == userEntity || commentEntity.getArticleEntity().getOwnerEntity() == userEntity)) {
             throw new ByeolDamException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission with %s", email, commentId));
         }
 

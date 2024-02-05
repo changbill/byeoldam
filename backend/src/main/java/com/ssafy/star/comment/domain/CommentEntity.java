@@ -1,5 +1,6 @@
 package com.ssafy.star.comment.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.star.article.domain.ArticleEntity;
 import com.ssafy.star.user.domain.UserEntity;
 import jakarta.persistence.*;
@@ -24,11 +25,11 @@ public class CommentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     private ArticleEntity articleEntity;
 
