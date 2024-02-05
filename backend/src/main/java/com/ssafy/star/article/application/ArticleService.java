@@ -28,7 +28,9 @@ public class ArticleService {
     private final ConstellationRepository constellationRepository;
     private final UserRepository userRepository;
 
-    // 게시물 등록
+    /**
+     * 게시물 등록
+      */
     @Transactional
     public void create(
             String title,
@@ -43,7 +45,9 @@ public class ArticleService {
         articleRepository.save(ArticleEntity.of(title, tag, description, disclosureType, userEntity, null));
     }
 
-    // 게시물 수정
+    /**
+     * 게시물 수정
+     */
     @Transactional
     public Article modify(
             Long articleId,
@@ -63,7 +67,9 @@ public class ArticleService {
         return Article.fromEntity(articleRepository.saveAndFlush(articleEntity));
     }
 
-    // 게시물 삭제
+    /**
+     * 게시물 삭제
+     */
     @Transactional
     public void delete(Long articleId, String email) {
         // 게시물 owner가 맞는지 확인
@@ -71,12 +77,18 @@ public class ArticleService {
         articleRepository.delete(articleEntity);
     }
 
+    /**
+     * 휴지통 조회
+     */
     @Transactional
     public Page<Article> trashcan(String email, Pageable pageable) {
         UserEntity userEntity = getUserEntityOrException(email);
         return articleRepository.findAllByOwnerEntityAndDeleted(userEntity, pageable).map(Article::fromEntity);
     }
 
+    /**
+     * 휴지통에 있는 게시물 복원
+     */
     @Transactional
     public Article undoDeletion(Long articleId, String email) {
         ArticleEntity articleEntity = getArticleEntityOrException(articleId);
@@ -95,7 +107,9 @@ public class ArticleService {
         return Article.fromEntity(articleEntity);
     }
 
-    // 게시물 전체 조회
+    /**
+     * 게시물 전체 조회
+     */
     @Transactional(readOnly = true)
     public Page<Article> list(String email, Pageable pageable) {
         UserEntity userEntity = getUserEntityOrException(email);
@@ -103,14 +117,18 @@ public class ArticleService {
         return articleRepository.findAllByNotDeletedAndDisclosure(userEntity, pageable).map(Article::fromEntity);
     }
 
-    // 내 게시물 전체 조회
+    /**
+     * 내 게시물 전체 조회
+     */
     @Transactional(readOnly = true)
     public Page<Article> my(String email, Pageable pageable) {
         UserEntity userEntity = getUserEntityOrException(email);
         return articleRepository.findAllByOwnerEntityAndNotDeleted(userEntity, pageable).map(Article::fromEntity);
     }
 
-    // 게시물 상세 조회
+    /**
+     * 게시물 상세 조회
+     */
     @Transactional(readOnly = true)
     public Article detail(Long articleId, String email) {
         UserEntity userEntity = getUserEntityOrException(email);
@@ -119,9 +137,8 @@ public class ArticleService {
         ArticleEntity articleEntity = articleRepository.findById(articleId)
                 .orElseThrow(() ->
                         new ByeolDamException(ErrorCode.ARTICLE_NOT_FOUND, String.format("%s not founded", "articleId:" + Long.toString(articleId))));
-        System.out.println("articleEntity: "+articleEntity.toString());
 
-        // articleId, Not deleted, 내 게시물이거나 VISIBLE
+        // articleId AND deletedAt == null AND (내 게시물이거나 VISIBLE)
         if(articleRepository.findByArticleIdAndNotDeleted(articleId, userEntity)) {
             articleEntity.setHits(articleEntity.getHits() + 1);
 
@@ -131,13 +148,15 @@ public class ArticleService {
             if(articleEntity.getDeletedAt() != null) {
                 throw new ByeolDamException(ErrorCode.ARTICLE_DELETED, String.format("%s deleted", "articleId:" + Long.toString(articleId)));
             }
-            // DisclosureType 예외처리
-//            if (articleEntity.getOwnerEntity() != userEntity && articleEntity.getDisclosure() != DisclosureType.VISIBLE)
-                throw new ByeolDamException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission with %s", "email:"+email, "articleId:" + Long.toString(articleId)));
+
+            // 볼 수 있는 권한이 없다(내 게시물이 아니거나 INVISIBLE)
+            throw new ByeolDamException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission with %s", "email:"+email, "articleId:" + Long.toString(articleId)));
         }
     }
 
-    // 별자리 배정, 변경
+    /**
+     * 별자리 배정 및 변경
+     */
     @Transactional
     public void select(Long articleId, Long constellationId, String email) {
         ArticleEntity articleEntity = getArticleOwnerOrException(articleId, email);
@@ -152,7 +171,9 @@ public class ArticleService {
         articleEntity.setConstellationEntity(constellationEntity);
     }
 
-    // 별자리 Id로 특정된 별자리의 전체 게시물 조회
+    /**
+     * 별자리의 전체 게시물 조회
+     */
     @Transactional
     public Page<Article> articlesInConstellation(Long constellationId, String email, Pageable pageable) {
         // email로 userEntity 구하고 별자리 공개여부와 해당 게시물 공유여부를 확인해 Error 반환

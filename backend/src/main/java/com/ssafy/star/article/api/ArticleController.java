@@ -35,6 +35,13 @@ public class ArticleController {
     private final ArticleService articleService;
     //TODO : 주소에서 articles 위치 변경
 
+    @Operation(
+            summary = "게시물 작성",
+            description = "게시물 작성입니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "생성 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+            }
+    )
     @PostMapping
     public Response<Void> create(@RequestBody ArticleCreateRequest request, Authentication authentication) {
         // TODO : image
@@ -58,6 +65,13 @@ public class ArticleController {
         return Response.success(ArticleResponse.fromArticle(article));
     }
 
+    @Operation(
+            summary = "게시물 삭제",
+            description = "게시물 삭제입니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "삭제 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+            }
+    )
     @DeleteMapping("/{articleId}")
     public Response<Void> delete(@PathVariable Long articleId, Authentication authentication) {
         articleService.delete(articleId, authentication.getName());
@@ -116,7 +130,13 @@ public class ArticleController {
         return Response.success();
     }
 
-    // 별자리 Id로 특정된 별자리의 전체 게시물 조회
+    @Operation(
+            summary = "별자리에 있는 게시물 전체 조회",
+            description = "별자리에 있는 게시물 전체 조회입니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+            }
+    )
     @GetMapping("/constellation/{constellationId}")
     public Response<Page<ArticleResponse>> articlesInConstellation(@PathVariable Long constellationId, Authentication authentication, Pageable pageable) {
         return Response.success(articleService.articlesInConstellation(constellationId, authentication.getName(), pageable).map(ArticleResponse::fromArticle));
