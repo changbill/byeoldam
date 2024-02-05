@@ -35,10 +35,10 @@ public class ConstellationService {
     private final UserRepository userRepository;
 
     // 별자리 전체 조회
-    public Page<Constellation> list(String email, Pageable pageable) {
+    public Page<Constellation> list(String myEmail, Pageable pageable) {
 
         // 사용자 Entity
-        UserEntity userEntity = getUserEntityByEmailOrException(email);
+        UserEntity userEntity = getUserEntityByEmailOrException(myEmail);
 
         Page<ConstellationUserEntity> constellationUserEntityPage = constellationUserRepository.findConstellationUserEntitiesByUserEntity(userEntity, pageable);
 
@@ -47,10 +47,10 @@ public class ConstellationService {
     }
 
     // 유저 별자리 전체 조회
-    public Page<Constellation> userConstellations(Long userId, String email, Pageable pageable) {
-        UserEntity ownerEntity = getUserEntityByIdOrException(userId);
+    public Page<Constellation> userConstellations(String userEmail, String myEmail, Pageable pageable) {
+        UserEntity ownerEntity = getUserEntityByEmailOrException(userEmail);
 
-        UserEntity myEntity = getUserEntityByEmailOrException(email);
+        UserEntity myEntity = getUserEntityByEmailOrException(myEmail);
 
         // 찾으려는 유저가 접속자라면 전체 조회
         if(myEntity.getId() == ownerEntity.getId()) {
@@ -75,11 +75,11 @@ public class ConstellationService {
     }
 
     // 별자리 상세 조회
-    public Constellation detail(Long constellationId, String email){
+    public Constellation detail(Long constellationId, String myEmail){
         // 해당 constellation 없을 경우 예외처리
         ConstellationEntity constellationEntity = getConstellationEntityOrException(constellationId);
 
-        UserEntity userEntity = getUserEntityByEmailOrException(email);
+        UserEntity userEntity = getUserEntityByEmailOrException(myEmail);
         List<ConstellationUserEntity> constellationUserEntities = constellationEntity.getConstellationUserEntities();
         for (int i = 0; i < constellationUserEntities.size(); i++) {
             // 사용자의 별자리라면 조회
@@ -91,7 +91,7 @@ public class ConstellationService {
 
         // 비공개 게시물 예외처리
         if (constellationEntity.getShared() != SharedType.SHARED) {
-            throw new ByeolDamException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission with %s", email, Long.toString(constellationId)));
+            throw new ByeolDamException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission with %s", myEmail, Long.toString(constellationId)));
         }
 
         constellationEntity.increaseHits();
@@ -100,9 +100,9 @@ public class ConstellationService {
 
 
     @Transactional
-    public Constellation create(String name, SharedType shared, String description, String email) {
+    public Constellation create(String name, SharedType shared, String description, String myEmail) {
         // 사용자의 user 엔터티 가져오기
-        UserEntity userEntity = getUserEntityByEmailOrException(email);
+        UserEntity userEntity = getUserEntityByEmailOrException(myEmail);
 
         // 별자리 엔터티 생성
         ConstellationEntity constellationEntity = ConstellationEntity.of(
@@ -132,10 +132,10 @@ public class ConstellationService {
             String name,
             SharedType shared,
             String description,
-            String email                // 사용자의 email
+            String myEmail                // 사용자의 email
     ) {
         // 사용자가 admin인지 확인
-        ConstellationEntity constellationEntity = getConstellationEntityIfAdminOrException(constellationId, email);
+        ConstellationEntity constellationEntity = getConstellationEntityIfAdminOrException(constellationId, myEmail);
 
         if(name != null) {
             constellationEntity.setName(name);
@@ -150,24 +150,24 @@ public class ConstellationService {
 
 
     @Transactional
-    public void delete(Long constellationId, String email) {
+    public void delete(Long constellationId, String myEmail) {
         // 사용자가 admin인지 확인
-        ConstellationEntity constellationEntity = getConstellationEntityIfAdminOrException(constellationId, email);
+        ConstellationEntity constellationEntity = getConstellationEntityIfAdminOrException(constellationId, myEmail);
 
         constellationRepository.delete(constellationEntity);
     }
 
     // 별자리에 공유할 유저 추가
-    public void addUser(Long constellationId, Long userId, String email) {
+    public void addUser(Long constellationId, String userEmail, String myEmail) {
         // user 존재하는지 확인
-        UserEntity userEntity = getUserEntityByIdOrException(userId);
+        UserEntity userEntity = getUserEntityByEmailOrException(userEmail);
 
         // 사용자가 admin인지 확인
-        ConstellationEntity constellationEntity = getConstellationEntityIfAdminOrException(constellationId, email);
+        ConstellationEntity constellationEntity = getConstellationEntityIfAdminOrException(constellationId, myEmail);
 
         // 별자리회원 연관관계가 이미 존재한다면
         if(constellationUserRepository.findByUserEntityAndConstellationEntity(userEntity, constellationEntity).isPresent()) {
-            throw new ByeolDamException(ErrorCode.INVALID_REQUEST, String.format("%s has already added", Long.toString(userId)));
+            throw new ByeolDamException(ErrorCode.INVALID_REQUEST, String.format("%s has already added", userEmail));
         }
 
         // 별자리에 공유할 유저 추가, 권한은 유저로
@@ -181,16 +181,16 @@ public class ConstellationService {
      * 별자리 공유하는 유저 강퇴
      */
     @Transactional
-    public void deleteUser(Long constellationId, Long userId, String email, Pageable pageable) {
-        UserEntity myEntity = getUserEntityByEmailOrException(email);
+    public void deleteUser(Long constellationId, String userEmail, String myEmail, Pageable pageable) {
+        UserEntity myEntity = getUserEntityByEmailOrException(myEmail);
         ConstellationEntity constellationEntity = getConstellationEntityOrException(constellationId);
         if(constellationEntity.getAdminEntity().getId() != myEntity.getId()) {
             // 접속자가 별자리 admin이 아니라면
-            throw new ByeolDamException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission", email));
+            throw new ByeolDamException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission", myEmail));
         }
 
         // Admin 본인 별자리회원 연관관계는 삭제 불가
-        UserEntity userEntity = getUserEntityByIdOrException(userId);
+        UserEntity userEntity = getUserEntityByEmailOrException(userEmail);
         if(myEntity.equals(userEntity)) {
             throw new ByeolDamException(ErrorCode.INVALID_REQUEST, String.format("you cannot delete yourself"));
         }
@@ -222,7 +222,7 @@ public class ConstellationService {
      * 별자리 공유하는 유저 조회
      * 공개된 별자리는 모두가 유저 조회할 수 있고, 비공개 별자리는 회원들만 유저 조회 가능
      */
-    public Page<User> findSharedUsers(Long constellationId, String email, Pageable pageable) {
+    public Page<User> findSharedUsers(Long constellationId, String myEmail, Pageable pageable) {
         ConstellationEntity constellationEntity = getConstellationEntityOrException(constellationId);
 
         // 별자리에 속한 user 구하기 : constellationEntity -> constellationUserEntity -> userEntity
@@ -233,7 +233,7 @@ public class ConstellationService {
             // 공개된 별자리
         } else {
             // 비공개된 별자리
-            UserEntity userEntity = getUserEntityByEmailOrException(email);
+            UserEntity userEntity = getUserEntityByEmailOrException(myEmail);
 
             // 접속자가 소유하고 있는 별자리 구하기 : userEntity -> ConstellationUserEntity -> constellationEntity
             Page<ConstellationUserEntity> constellationUserPageByUserEntity = constellationUserRepository.findConstellationUserEntitiesByUserEntity(userEntity, pageable);
@@ -246,7 +246,7 @@ public class ConstellationService {
                     break;
                 } else {
                     if(++idx == constellationEntities.getTotalElements()) {
-                        throw new ByeolDamException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission", email));
+                        throw new ByeolDamException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission", myEmail));
                     }
                 }
             }
@@ -256,24 +256,23 @@ public class ConstellationService {
     }
 
     // 관리자와 유저 UserRole 맞바꾸기
-    public void roleModify(Long constellationId, Long userId, String email) {
+    public void roleModify(Long constellationId, String userEmail, String myEmail) {
         // user 존재하는지 확인
-        getUserEntityByIdOrException(userId);
+        getUserEntityByEmailOrException(userEmail);
 
         // 사용자가 admin이라면 별자리 Entity 반환
-        ConstellationEntity constellationEntity = getConstellationEntityIfAdminOrException(constellationId, email);
+        ConstellationEntity constellationEntity = getConstellationEntityIfAdminOrException(constellationId, myEmail);
         System.out.println("constellation : " + constellationId);
 
         // 대상 user, ADMIN으로 권한 변경
-        changeRole(userId, constellationEntity, ADMIN);
+        changeRole(userEmail, constellationEntity, ADMIN);
 
         // ADMIN, USER로 권한 변경
-        Long adminId = getUserEntityByEmailOrException(email).getId();
         try {
             // 도중 오류 발생 시 user 권한 되돌리기
-            changeRole(adminId, constellationEntity, USER);
+            changeRole(myEmail, constellationEntity, USER);
         } catch(ByeolDamException e) {
-            changeRole(userId, constellationEntity,USER);
+            changeRole(userEmail, constellationEntity,USER);
         }
     }
 
@@ -285,7 +284,7 @@ public class ConstellationService {
     private ConstellationEntity getConstellationEntityOrException(Long constellationId) {
         return constellationRepository.findById(constellationId)
                 .orElseThrow(() ->
-                        new ByeolDamException(ErrorCode.CONSTELLATION_NOT_FOUND, String.format("%s not founded", Long.toString(constellationId))));
+                        new ByeolDamException(ErrorCode.CONSTELLATION_NOT_FOUND, "constellation has not founded"));
     }
 
     // 유저가 존재하는지 확인
@@ -295,48 +294,35 @@ public class ConstellationService {
                         new ByeolDamException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", email)));
     }
 
-    private UserEntity getUserEntityByIdOrException(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ByeolDamException(ErrorCode.USER_NOT_FOUND, String.format("user not founded")));
-    }
-
     // 사용자가 admin인지 확인
     private ConstellationEntity getConstellationEntityIfAdminOrException(Long constellationId, String email){
         UserEntity userEntity = getUserEntityByEmailOrException(email);                                                            // 현재 사용자 user entity
         ConstellationEntity constellationEntity = getConstellationEntityOrException(constellationId);
-        System.out.println("constellationId : " + constellationId);
         UserEntity adminEntity = constellationEntity.getAdminEntity();
-        System.out.println("adminId : " + adminEntity.getId());
 
         if(adminEntity != null) {
-            System.out.println(userEntity.getId());
             // admin이어야 삭제 가능
             if(adminEntity.getId() != userEntity.getId()) {
                 throw new ByeolDamException(ErrorCode.INVALID_PERMISSION,
-                        String.format("%s has no permission with %s", email, Long.toString(constellationId)));
+                        String.format("%s has no permission with %s", email, constellationEntity.getName()));
             }
 
 
             return constellationEntity;
         } else {
-            throw new ByeolDamException(ErrorCode.INVALID_REQUEST, String.format("%s has no admin", Long.toString(constellationId)));
+            throw new ByeolDamException(ErrorCode.INVALID_REQUEST, String.format("%s has no admin", constellationEntity.getName()));
         }
     }
 
-    private void changeRole(Long userId, ConstellationEntity constellationEntity, ConstellationUserRole role) {
-        System.out.println("userId : " + userId);
-        // 관리자 변경이 일어날 별자리
-
-        UserEntity userEntity = userRepository.findById(userId)
+    private void changeRole(String userEmail, ConstellationEntity constellationEntity, ConstellationUserRole role) {
+        UserEntity userEntity = userRepository.findByEmail(userEmail)
                 .orElseThrow(() ->
-                        new ByeolDamException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", Long.toString(userId))));
+                        new ByeolDamException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userEmail)));
 
         // role 데이터를 저장하고 있는 별자리회원 Entity
-        System.out.println("userId : " + userId);
         ConstellationUserEntity constellationUserEntity = constellationUserRepository.findByUserEntityAndConstellationEntity(userEntity, constellationEntity)
                 .orElseThrow(() ->
-                        new ByeolDamException(ErrorCode.CONSTELLATION_USER_NOT_FOUND, String.format("%s, %s has no constellationUserEntity", Long.toString(userId), Long.toString(constellationEntity.getId()))));
+                        new ByeolDamException(ErrorCode.CONSTELLATION_USER_NOT_FOUND, String.format("%s, %s has no constellationUserEntity", userEmail, constellationEntity.getName())));
         constellationUserEntity.setConstellationUserRole(role);
         constellationUserRepository.saveAndFlush(constellationUserEntity);
     }

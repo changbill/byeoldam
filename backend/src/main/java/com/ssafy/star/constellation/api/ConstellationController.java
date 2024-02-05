@@ -6,7 +6,7 @@ import com.ssafy.star.constellation.application.ConstellationService;
 import com.ssafy.star.constellation.dto.Constellation;
 import com.ssafy.star.constellation.dto.request.ConstellationCreateRequest;
 import com.ssafy.star.constellation.dto.request.ConstellationModifyRequest;
-import com.ssafy.star.constellation.dto.request.UserIdRequest;
+import com.ssafy.star.constellation.dto.request.UserEmailRequest;
 import com.ssafy.star.constellation.dto.response.ConstellationResponse;
 import com.ssafy.star.user.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/constellations")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ConstellationController {
 
@@ -35,7 +35,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "생성 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @PostMapping
+    @PostMapping("/constellations")
     public Response<Void> create(@RequestBody ConstellationCreateRequest request, Authentication authentication) {
         String email = authentication.getName();
         //TODO : 윤곽선
@@ -57,7 +57,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "수정 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @PutMapping("/{constellationId}")
+    @PutMapping("/constellations/{constellationId}")
     public Response<ConstellationResponse> modify(@PathVariable Long constellationId, @RequestBody ConstellationModifyRequest request, Authentication authentication) {
 
         Constellation constellation = constellationService.modify(
@@ -77,7 +77,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "삭제 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @DeleteMapping("/{constellationId}")
+    @DeleteMapping("/constellations/{constellationId}")
     public Response<Void> delete(@PathVariable Long constellationId, Authentication authentication) {
         constellationService.delete(constellationId, authentication.getName());
         return Response.success();
@@ -90,7 +90,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @GetMapping
+    @GetMapping("/constellations")
     public Response<Page<ConstellationResponse>> list(Pageable pageable, Authentication authentication) {
         return Response.success(constellationService.list(authentication.getName(), pageable).map(ConstellationResponse::fromConstellation));
     }
@@ -102,9 +102,9 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @GetMapping("/user/{userId}")
-    public Response<Page<ConstellationResponse>> userConstellations(@PathVariable Long userId, Authentication authentication, Pageable pageable) {
-        return Response.success(constellationService.userConstellations(userId,authentication.getName(),pageable).map(ConstellationResponse::fromConstellation));
+    @GetMapping("/constellations/user/{email}")
+    public Response<Page<ConstellationResponse>> userConstellations(@PathVariable String email, Authentication authentication, Pageable pageable) {
+        return Response.success(constellationService.userConstellations(email,authentication.getName(),pageable).map(ConstellationResponse::fromConstellation));
     }
 
     @Operation(
@@ -114,7 +114,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @GetMapping("/{constellationId}")
+    @GetMapping("/constellations/{constellationId}")
     public Response<ConstellationResponse> read(@PathVariable Long constellationId, Authentication authentication) {
         return Response.success(ConstellationResponse.fromConstellation(constellationService.detail(constellationId, authentication.getName())));
     }
@@ -126,10 +126,10 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "추가 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @PostMapping("/{constellationId}/add-user")
-    public Response<Void> addUser(@PathVariable Long constellationId, @RequestBody UserIdRequest userIdRequest, Authentication authentication) {
-        Long userId = userIdRequest.userId();
-        constellationService.addUser(constellationId, userId, authentication.getName());
+    @PostMapping("/add-user/constellations/{constellationId}")
+    public Response<Void> addUser(@PathVariable Long constellationId, @RequestBody UserEmailRequest userEmailRequest, Authentication authentication) {
+        String userEmail = userEmailRequest.userEmail();
+        constellationService.addUser(constellationId, userEmail, authentication.getName());
         return Response.success();
     }
 
@@ -140,10 +140,10 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "삭제 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @DeleteMapping("/{constellationId}/delete-user")
-    public Response<Void> deleteUser(@PathVariable Long constellationId, @RequestBody UserIdRequest userIdRequest, Authentication authentication, Pageable pageable) {
-        Long userId = userIdRequest.userId();
-        constellationService.deleteUser(constellationId, userId, authentication.getName(), pageable);
+    @DeleteMapping("/delete-user/constellations/{constellationId}")
+    public Response<Void> deleteUser(@PathVariable Long constellationId, @RequestBody UserEmailRequest userEmailRequest, Authentication authentication, Pageable pageable) {
+        String userEmail = userEmailRequest.userEmail();
+        constellationService.deleteUser(constellationId, userEmail, authentication.getName(), pageable);
         return Response.success();
     }
 
@@ -154,7 +154,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @GetMapping("/{constellationId}/users")
+    @GetMapping("/users/constellations/{constellationId}")
     public Response<Page<UserResponse>> userCheck(@PathVariable Long constellationId, Authentication authentication, Pageable pageable) {
         return Response.success(constellationService.findSharedUsers(constellationId, authentication.getName(), pageable).map(UserResponse::fromUser));
     }
@@ -166,10 +166,10 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "수정 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @PutMapping("/{constellationId}/role-modify")
-    public Response<Void> roleModify(@PathVariable Long constellationId, @RequestBody UserIdRequest userIdRequest, Authentication authentication) {
-        Long userId = userIdRequest.userId();
-        constellationService.roleModify(constellationId, userId, authentication.getName());
+    @PutMapping("/role-modify/constellations/{constellationId}")
+    public Response<Void> roleModify(@PathVariable Long constellationId, @RequestBody UserEmailRequest userEmailRequest, Authentication authentication) {
+        String userEmail = userEmailRequest.userEmail();
+        constellationService.roleModify(constellationId, userEmail, authentication.getName());
         return Response.success();
     }
 }

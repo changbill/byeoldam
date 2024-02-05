@@ -42,7 +42,7 @@ public class ArticleEntity {
     @Column(name = "tag", length = 255)
     private String tag;
 
-    // TODO : ConstellationId, Image
+    // TODO : Image
 
     @Column(name = "hits", nullable = false)
     private long hits;

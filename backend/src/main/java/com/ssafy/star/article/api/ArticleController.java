@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/articles")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ArticleController {
 
@@ -42,10 +42,9 @@ public class ArticleController {
                     @ApiResponse(responseCode = "200", description = "생성 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @PostMapping
+    @PostMapping("/articles")
     public Response<Void> create(@RequestBody ArticleCreateRequest request, Authentication authentication) {
         // TODO : image
-        log.info("request 정보 : {}", request);
         articleService.create(request.title(), request.tag(), request.description(),
                 request.disclosureType(), authentication.getName());
         return Response.success();
@@ -58,7 +57,7 @@ public class ArticleController {
                     @ApiResponse(responseCode = "200", description = "게시물 수정 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @PutMapping("/{articleId}")
+    @PutMapping("/articles/{articleId}")
     public Response<ArticleResponse> modify(@PathVariable Long articleId, @RequestBody ArticleModifyRequest request, Authentication authentication) {
         Article article = articleService.modify(articleId, request.title(), request.tag(), request.description(),
                 request.disclosureType(), authentication.getName());
@@ -72,7 +71,7 @@ public class ArticleController {
                     @ApiResponse(responseCode = "200", description = "삭제 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @DeleteMapping("/{articleId}")
+    @DeleteMapping("/articles/{articleId}")
     public Response<Void> delete(@PathVariable Long articleId, Authentication authentication) {
         articleService.delete(articleId, authentication.getName());
         return Response.success();
@@ -85,12 +84,13 @@ public class ArticleController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @GetMapping
+    @GetMapping("/articles")
     public Response<Page<ArticleResponse>> list(Pageable pageable, Authentication authentication) {
         String email = authentication.getName();
         return Response.success(articleService.list(email, pageable).map(ArticleResponse::fromArticle));
     }
 
+    // TODO : 유저의 게시물 전체 조회로 바꿀 것
     @Operation(
             summary = "내 게시물 전체 조회",
             description = "내 게시물 전체 조회입니다.",
@@ -98,7 +98,7 @@ public class ArticleController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @GetMapping("/my")
+    @GetMapping("/articles/my")
     public Response<Page<ArticleResponse>> my(Pageable pageable, Authentication authentication) {
         return Response.success(articleService.my(authentication.getName(), pageable).map(ArticleResponse::fromArticle));
     }
@@ -110,7 +110,7 @@ public class ArticleController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @GetMapping("/{articleId}")
+    @GetMapping("/articles/{articleId}")
     public Response<ArticleResponse> read(@PathVariable Long articleId, Authentication authentication, Pageable pageable) {
         String email = authentication.getName();
 
@@ -118,13 +118,13 @@ public class ArticleController {
     }
 
     @Operation(
-            summary = "별자리 배정",
-            description = "게시물에 별자리를 배정합니다.",
+            summary = "별자리 배정 및 변경",
+            description = "게시물에 별자리를 배정하거나 변경합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "배정 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @PostMapping("{articleId}/constellation-select")
+    @PostMapping("/constellation-select/articles/{articleId}")
     public Response<Void> select(@PathVariable Long articleId, @RequestBody ArticleConstellationSelect articleConstellationSelect, Authentication authentication) {
         articleService.select(articleId, articleConstellationSelect.constellationId(), authentication.getName());
         return Response.success();
@@ -137,7 +137,7 @@ public class ArticleController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @GetMapping("/constellation/{constellationId}")
+    @GetMapping("/articles/constellation/{constellationId}")
     public Response<Page<ArticleResponse>> articlesInConstellation(@PathVariable Long constellationId, Authentication authentication, Pageable pageable) {
         return Response.success(articleService.articlesInConstellation(constellationId, authentication.getName(), pageable).map(ArticleResponse::fromArticle));
     }
@@ -149,7 +149,7 @@ public class ArticleController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @GetMapping("/trashcan")
+    @GetMapping("/articles/trashcan")
     public Response<Page<ArticleResponse>> trashcan(Authentication authentication, Pageable pageable) {
         return Response.success(articleService.trashcan(authentication.getName(), pageable).map(ArticleResponse::fromArticle));
     }
@@ -161,9 +161,8 @@ public class ArticleController {
                     @ApiResponse(responseCode = "200", description = "복원 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
             }
     )
-    @PutMapping("/trashcan/undo")
+    @PutMapping("/articles/trashcan/undo")
     public Response<ArticleResponse> undoDeletion(@RequestBody ArticleDeletionUndo articleDeletionUndo, Authentication authentication) {
         return Response.success(ArticleResponse.fromArticle(articleService.undoDeletion(articleDeletionUndo.articleId(),authentication.getName())));
     }
-
 }
