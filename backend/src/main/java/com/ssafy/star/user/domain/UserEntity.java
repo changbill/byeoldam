@@ -1,6 +1,7 @@
 package com.ssafy.star.user.domain;
 
 import com.ssafy.star.common.types.DisclosureType;
+import com.ssafy.star.constellation.domain.ConstellationUserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,8 @@ import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -46,6 +49,10 @@ public class UserEntity {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private DisclosureType disclosureType = DisclosureType.VISIBLE;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "userEntity", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ConstellationUserEntity> constellationUserEntities = new ArrayList<>();
 
     @Setter
     private LocalDate birthday;

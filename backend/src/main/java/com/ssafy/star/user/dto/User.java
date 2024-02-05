@@ -18,7 +18,9 @@ public record User(
         LocalDateTime modifiedAt,
         LocalDateTime deletedAt
 ) {
-    public static User of(Long id, String email, String password, String name, String nickname, String memo, DisclosureType disclosureType, LocalDate birthday, LocalDateTime createdAt, LocalDateTime modifiedAt, LocalDateTime deletedAt) {
+    public static User of(Long id, String email, String password, String name, String nickname, String memo,
+                          DisclosureType disclosureType, LocalDate birthday, LocalDateTime createdAt,
+                          LocalDateTime modifiedAt, LocalDateTime deletedAt) {
         return new User(
                 id,
                 email,
