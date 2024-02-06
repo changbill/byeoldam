@@ -9,6 +9,9 @@ import com.ssafy.star.common.exception.ErrorCode;
 import com.ssafy.star.constellation.SharedType;
 import com.ssafy.star.constellation.dao.ConstellationRepository;
 import com.ssafy.star.constellation.domain.ConstellationEntity;
+import com.ssafy.star.common.infra.S3.S3uploader;
+import com.ssafy.star.image.ImageType;
+import com.ssafy.star.image.application.ImageService;
 import com.ssafy.star.user.domain.UserEntity;
 import com.ssafy.star.user.repository.FollowRepository;
 import com.ssafy.star.user.repository.UserRepository;
@@ -18,6 +21,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import java.util.List;
 
@@ -30,22 +36,40 @@ public class ArticleService {
     private final ConstellationRepository constellationRepository;
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final S3uploader s3uploader;
+    private final ImageService imageService;
+
+    // 트랜잭션 처리를 하고 롤백 처리를 하려면 controller가 아니라 서비스단에서 upload를 호출해야할듯하다
+    // try catch문을 통해서 사진 업로드 이후 save를 하고
+    // 문제가 발생했을 경우(게시글이 정상적으로 생성되지 않았을 경우)
+    // 롤백을 해준다 (문제가 발생했으면 앞서 저장된 이미지 삭제
 
     /**
      * 게시물 등록
       */
     @Transactional
-    public void create(
-            String title,
-            String tag,
-            String description,
-            DisclosureType disclosureType,
-            String email
-    ) {
-        UserEntity userEntity = getUserEntityOrException(email);
+    public void create(String title, String tag, String description, DisclosureType disclosureType,
+                       String email, MultipartFile imageFile, ImageType imageType) {
 
-        // constellationEntity가 null인 경우 별자리 미분류 게시물
-        articleRepository.save(ArticleEntity.of(title, tag, description, disclosureType, userEntity, null));
+        String url = "";
+        String thumbnailUrl = "";
+        UserEntity userEntity = getUserEntityOrException(email);
+        log.info("userEntity 정보 : {}", userEntity);
+
+        try{
+
+            url = s3uploader.upload(imageFile, "articles");
+            thumbnailUrl = s3uploader.uploadThumbnail(imageFile, "thumbnails");
+            System.out.println("imageFile 이름 : "+imageFile.getOriginalFilename());
+
+            articleRepository.save(ArticleEntity.of(title, tag, description, disclosureType, userEntity, null));
+            imageService.saveImage(imageFile.getOriginalFilename(), url, thumbnailUrl,imageType);
+            System.out.println("url: "+url);
+            System.out.println("thumbUrl: "+thumbnailUrl);
+        } catch (IOException e){
+            s3uploader.deleteImageFromS3(url);
+            s3uploader.deleteImageFromS3(thumbnailUrl);
+        }
     }
 
     /**

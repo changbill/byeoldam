@@ -1,0 +1,31 @@
+.constellation-modal-container {
+  margin: 2rem;
+  width: 60vw;
+  height: 60vh;
+}
+
+.constellation-row {
+  display: flex;
+  margin-bottom: 2rem;
+}
+
+.constellation-thumbnail-container {
+  background-color: $constellation-thumbnail-container;
+  width: 10rem;
+  height: 10rem;
+}
+
+.star-list-container {
+  background-color: $star-list-container;
+  width: 100%;
+}
+
+.constellation_main_buttons_box {
+  display: flex;
+  justify-content: end;
+  gap: 1rem;
+}
+
+.constellation-main-button {
+  height: 7rem;
+}

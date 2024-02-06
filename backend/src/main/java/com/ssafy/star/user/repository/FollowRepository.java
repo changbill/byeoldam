@@ -20,6 +20,8 @@ public interface FollowRepository extends JpaRepository<FollowEntity, Long> {
     // 나의 팔로잉 보기
     List<FollowEntity> findByFromUserAndStatus(UserEntity fromUser, ApprovalStatus status);
 
+    // 나의 관계에 해당하는 것 모두 보기
+    List<FollowEntity> findByFromUserOrToUser(UserEntity fromUser, UserEntity toUser);
     // 팔로우 관계 확인하기
     Optional<FollowEntity> findByFromUserAndToUserAndStatus(UserEntity fromUser, UserEntity toUser, ApprovalStatus status);
 

@@ -1,22 +1,27 @@
-// import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import ExtendedBarIcon from './base/ExtendedBarIcon';
 export default function ExtendedBar({ changeBar, barId }) {
-  const ToggleClick = () => {
+  const closeExtendedBar = () => {
     changeBar(0);
   };
   const openSearchBar = () => {
     changeBar(1);
   };
   const openNotificationBar = () => {
-    changeBar(2);
+    changeBar(3);
+  };
+  const openSettingsPage = () => {
+    changeBar(4);
   };
 
   return (
     <div className="extended-bar-big-container">
       <div className="extended-bar-container">
-        <div className="extended-bar-logo">
-          <img src="/src/assets/images/temporary-logo.png" alt="logo" />
-        </div>
+        <Link to={'/home'}>
+          <div className="extended-bar-logo">
+            <img src="/src/assets/images/temporary-logo.png" alt="logo" />
+          </div>
+        </Link>
 
         <div className="extended-bar-contents">
           {barId === 1 ? (
@@ -63,17 +68,23 @@ export default function ExtendedBar({ changeBar, barId }) {
                 />
                 <ExtendedBarIcon
                   src={
-                    barId === 2
+                    barId === 3
                       ? '/src/assets/images/nav-bar-menu-icons/notifications_activated.png'
                       : '/src/assets/images/nav-bar-menu-icons/notifications.png'
                   }
                   alt={'notifications'}
                   onClick={openNotificationBar}
                 />
-                <ExtendedBarIcon
-                  src={'/src/assets/images/nav-bar-menu-icons/settings.png'}
-                  alt={'notifications'}
-                />
+                <Link to={'/settings'} onClick={openSettingsPage}>
+                  <ExtendedBarIcon
+                    src={
+                      barId === 4
+                        ? '/src/assets/images/nav-bar-menu-icons/settings_activated.png'
+                        : '/src/assets/images/nav-bar-menu-icons/settings.png'
+                    }
+                    alt={'notifications'}
+                  />
+                </Link>
                 <ExtendedBarIcon
                   src={'/src/assets/images/nav-bar-menu-icons/logout.png'}
                   alt={'logout'}
@@ -91,7 +102,7 @@ export default function ExtendedBar({ changeBar, barId }) {
           </div>
         </div>
 
-        <div className="nav-bar-toggle-container" onClick={ToggleClick}>
+        <div className="nav-bar-toggle-container" onClick={closeExtendedBar}>
           <div className="nav-bar-menu-icon-box">
             <img
               src="/src/assets/images/nav-bar-toggle-button/close.png"

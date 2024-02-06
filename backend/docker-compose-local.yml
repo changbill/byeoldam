@@ -20,3 +20,12 @@ services:
         - --collation-server=utf8mb4_unicode_ci
       ports:
         - "3306:3306"
+
+    byeoldam-redis:
+      container_name: byeoldam-redis
+      build:
+        dockerfile: Dockerfile
+        context: ./redis
+      image: lmw7414/byeoldam-redis
+      ports:
+        - "6379:6379"

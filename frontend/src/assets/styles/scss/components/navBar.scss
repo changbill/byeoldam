@@ -91,6 +91,7 @@ $nav-bar-width: 360px;
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
+  cursor: pointer;
 }
 
 .nav-bar-menu-icon-frame {
@@ -139,4 +140,8 @@ $nav-bar-width: 360px;
 
 .nav-bar-divide-line {
   width: 100%;
+}
+
+.link-setting {
+  text-decoration: none;
 }

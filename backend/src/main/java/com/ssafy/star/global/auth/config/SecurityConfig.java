@@ -26,14 +26,21 @@ public class SecurityConfig {
     @Value("${jwt.secret-key}")
     private String key;
 
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return web -> web.ignoring().requestMatchers(HttpMethod.POST, "/api/*/users/join", "/api/v1/users/login");
-//    }
     private static final String[] AUTH_WHITELIST = {
-            "/api/**", "/graphiql", "/graphql",
+            "/graphiql", "/graphql",
             "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
             "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html"
+    };
+
+    private static final String[] OPEN_API_URLS = {
+            "/api/*/users/join",
+            "/api/*/users/login",
+            "/api/*/users/check-email",
+            "/api/*/users/check-nickname",
+            "/api/*/email/**",
+            "/api/*/users/{nickname}",
+            "/api/*/{nickname}/count-followers",
+            "/api/*/{nickname}/count-followings"
     };
 
 
@@ -56,8 +63,9 @@ public class SecurityConfig {
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
-                        authorize.requestMatchers("/api/*/users/join", "/api/*/users/login", "/api/*/users/check-email", "/api/*/users/check-nickname").permitAll()
-                                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll().requestMatchers(AUTH_WHITELIST).permitAll()
+                        authorize.requestMatchers(OPEN_API_URLS).permitAll()
+                                .requestMatchers(AUTH_WHITELIST).permitAll()
+                                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                                 .requestMatchers("/api/**").authenticated()
                 ).sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

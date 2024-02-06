@@ -30,18 +30,33 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2'
+    implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.17'
+    implementation 'com.drewnoakes:metadata-extractor:2.9.1'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // 이메일
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
+    //implementation 'javax.mail:mail:1.4.7'
+    // Spring Context Support
+    //implementation 'org.springframework:spring-context-support:5.3.9'
+
+    // JWT 토큰
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    //  AWS S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 tasks.named('test') {

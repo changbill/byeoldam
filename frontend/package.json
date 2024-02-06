@@ -12,15 +12,20 @@
   "dependencies": {
     "@react-three/drei": "^9.96.1",
     "@react-three/fiber": "^8.15.14",
+    "@react-three/postprocessing": "^2.15.12",
     "axios": "^1.6.6",
     "eslint-config-airbnb": "^19.0.4",
+    "konva": "^9.3.2",
     "lodash": "^4.17.21",
     "maath": "^0.10.7",
+    "postprocessing": "^6.34.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0",
+    "react-konva": "^18.2.10",
     "three": "^0.160.0",
-    "uuid-by-string": "^4.0.0",
-    "wouter": "^2.12.1"
+    "three-rounded-box": "^0.1.1",
+    "uuid-by-string": "^4.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

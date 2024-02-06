@@ -2,24 +2,28 @@ import { useState } from 'react';
 import ExtendedBar from './ExtendedBar';
 import ProfileInfo from './base/ProfileInfo';
 import NavBarMenu from './base/NavBarMenu';
+import { Link } from 'react-router-dom';
 
 export default function NavBar() {
   const [isNavBarVisible, setIsNavBarVisible] = useState(true);
   const [barId, setBarId] = useState(0);
 
-  const ToggleClick = () => {
+  const closeNavBar = () => {
     setIsNavBarVisible(!isNavBarVisible);
   };
   const openSearchBar = () => {
     setBarId(1);
   };
   const openNotificationBar = () => {
-    setBarId(2);
+    setBarId(3);
   };
   const changeBar = (newId) => {
     setBarId(newId);
   };
 
+  const openSettings = () => {
+    setBarId(4);
+  };
   console.log('barId : ', barId);
 
   return (
@@ -29,9 +33,11 @@ export default function NavBar() {
       ) : (
         <div className={`nav-bar-big-container ${isNavBarVisible ? '' : 'nav-bar-hidden'}`}>
           <div className="nav-bar-container">
-            <div className="nav-bar-logo">
-              <img src="/src/assets/images/temporary-logo.png" alt="logo" />
-            </div>
+            <Link to={'/home'}>
+              <div className="nav-bar-logo">
+                <img src="/src/assets/images/temporary-logo.png" alt="logo" />
+              </div>
+            </Link>
 
             <div className="nav-bar-contents">
               <div className="nav-bar-profile-box">
@@ -77,11 +83,14 @@ export default function NavBar() {
                   alt={'notifications'}
                   onClick={openNotificationBar}
                 />
-                <NavBarMenu
-                  text={'설정'}
-                  src={'/src/assets/images/nav-bar-menu-icons/settings.png'}
-                  alt={'settings'}
-                />
+                <Link to={'/settings'} className="link-setting">
+                  <NavBarMenu
+                    text={'설정'}
+                    src={'/src/assets/images/nav-bar-menu-icons/settings.png'}
+                    alt={'settings'}
+                    onClick={openSettings}
+                  />
+                </Link>
                 <NavBarMenu
                   text={'로그아웃'}
                   src={'/src/assets/images/nav-bar-menu-icons/logout.png'}
@@ -90,7 +99,7 @@ export default function NavBar() {
               </div>
             </div>
 
-            <div className="nav-bar-toggle-container" onClick={ToggleClick}>
+            <div className="nav-bar-toggle-container" onClick={closeNavBar}>
               <div className="nav-bar-menu-icon-box">
                 <img
                   src={
