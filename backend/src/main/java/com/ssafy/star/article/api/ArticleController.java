@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.*;
 public class ArticleController {
 
     private final ArticleService articleService;
-    //TODO : 주소에서 articles 위치 변경
 
     @Operation(
             summary = "게시물 작성",
@@ -77,6 +76,7 @@ public class ArticleController {
         return Response.success();
     }
 
+    // TODO : 팔로우 피드
     @Operation(
             summary = "게시물 전체 조회",
             description = "게시물 전체 조회입니다.",
@@ -167,6 +167,4 @@ public class ArticleController {
         return Response.success(ArticleResponse.fromArticle(articleService.undoDeletion(articleDeletionUndo.articleId(),authentication.getName())));
     }
 
-    // TODO : 팔로우 피드
-    //
 }

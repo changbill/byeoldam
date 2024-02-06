@@ -28,6 +28,8 @@ public class ConstellationController {
 
     private final ConstellationService constellationService;
 
+
+
     @Operation(
             summary = "별자리 생성",
             description = "별자리 생성입니다.",
@@ -119,6 +121,7 @@ public class ConstellationController {
         return Response.success(ConstellationResponse.fromConstellation(constellationService.detail(constellationId, authentication.getName())));
     }
 
+    // TODO : 별자리 공유 신청, 수락 로직으로 바꿀 것
     @Operation(
             summary = "공유 별자리에 유저 추가",
             description = "공유 별자리에 유저를 추가합니다.",

@@ -48,20 +48,19 @@ public class ConstellationService {
 
     // 유저 별자리 전체 조회
     public Page<Constellation> userConstellations(String userEmail, String myEmail, Pageable pageable) {
-        UserEntity ownerEntity = getUserEntityByEmailOrException(userEmail);
-
+        UserEntity userEntity = getUserEntityByEmailOrException(userEmail);
         UserEntity myEntity = getUserEntityByEmailOrException(myEmail);
 
         // 찾으려는 유저가 접속자라면 전체 조회
-        if(myEntity.getId() == ownerEntity.getId()) {
-            return constellationRepository.findAllByUserEntity(ownerEntity, pageable).map(Constellation::fromEntity);
+        if(myEntity.getId() == userEntity.getId()) {
+            return constellationRepository.findAllByUserEntity(userEntity, pageable).map(Constellation::fromEntity);
         }
 
         // TODO : 내가 속한 별자리라면 조회
-
         // userEntity -> constellationUserEntity
-        Page<ConstellationUserEntity> constellationUserEntityPage = constellationUserRepository.findConstellationUserEntitiesByUserEntity(ownerEntity, pageable);
-        Page<UserEntity> userEntityPage =constellationUserEntityPage.map(ConstellationUserEntity::getUserEntity);
+        Page<ConstellationUserEntity> constellationUserEntityPage = constellationUserRepository.findConstellationUserEntitiesByUserEntity(userEntity, pageable);
+        Page<ConstellationEntity> ConstellationEntityPage = constellationUserEntityPage.map(ConstellationUserEntity::getConstellationEntity);
+
 
         //아닐 경우 SHARED라면 조회
         // 별자리회원 Entity -> 별자리 Entity -> ConstellationDTO -> SharedType SHARED 필터링
@@ -192,7 +191,7 @@ public class ConstellationService {
         // Admin 본인 별자리회원 연관관계는 삭제 불가
         UserEntity userEntity = getUserEntityByEmailOrException(userEmail);
         if(myEntity.equals(userEntity)) {
-            throw new ByeolDamException(ErrorCode.INVALID_REQUEST, String.format("you cannot delete yourself"));
+            throw new ByeolDamException(ErrorCode.INVALID_REQUEST, "you cannot delete yourself");
         }
 
         // userEntity가 constellationEntity에 속하는지
@@ -204,7 +203,7 @@ public class ConstellationService {
                 break;
             } else {
                 if(++idx == userEntityPage.getTotalElements()) {
-                    throw new ByeolDamException(ErrorCode.INVALID_REQUEST, String.format("%s not belongs to %s", "userId:"+Long.toString(userId), "constellationId:"+Long.toString(constellationId)));
+                    throw new ByeolDamException(ErrorCode.INVALID_REQUEST, String.format("%s not belongs to %s", "userEmail:"+userEmail, "constellationName:"+constellationEntity.getName()));
                 }
             }
         }

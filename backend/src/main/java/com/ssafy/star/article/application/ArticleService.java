@@ -6,6 +6,7 @@ import com.ssafy.star.article.domain.ArticleEntity;
 import com.ssafy.star.article.dto.Article;
 import com.ssafy.star.common.exception.ByeolDamException;
 import com.ssafy.star.common.exception.ErrorCode;
+import com.ssafy.star.constellation.SharedType;
 import com.ssafy.star.constellation.dao.ConstellationRepository;
 import com.ssafy.star.constellation.domain.ConstellationEntity;
 import com.ssafy.star.user.domain.UserEntity;
@@ -191,10 +192,12 @@ public class ArticleService {
     public Page<Article> articlesInConstellation(Long constellationId, String email, Pageable pageable) {
         // email로 userEntity 구하고 별자리 공개여부와 해당 게시물 공유여부를 확인해 Error 반환
         UserEntity userEntity = getUserEntityOrException(email);
-
         ConstellationEntity constellationEntity = getConstellationEntityOrException(constellationId);
 
-        //TODO : 별자리가 NONSHARED
+        if(constellationEntity.getShared() == SharedType.NONSHARED) {
+            throw new ByeolDamException(ErrorCode.INVALID_REQUEST, "constellation is Non-Shared");
+        }
+
         return articleRepository.findAllByConstellationEntity(constellationEntity, userEntity, pageable).map(Article::fromEntity);
     }
 
