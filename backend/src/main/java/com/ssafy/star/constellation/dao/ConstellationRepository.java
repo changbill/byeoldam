@@ -17,15 +17,7 @@ public interface ConstellationRepository extends JpaRepository<ConstellationEnti
 
     Optional<ConstellationEntity> findById(Long id);
 
-    /**
-     * 별자리 전체 조회(공개거나 사용자가 배정되어 있는 별자리 전체)
-     * 요구 사항 : ConstellationUserEntity, pageable
-     * 조건절 : shared OR 별자리 Entity의 별자리회원 Entities에 속해있다면
-     */
-//    @Query("SELECT a FROM ConstellationEntity a WHERE a.shared = 'SHARED' OR :constellationUserEntity MEMBER OF a.constellationUserEntities")
-//    Page<ConstellationEntity> findConstellationEntityByUser(@Param("constellationUser") Page<ConstellationUserEntity> constellationUserEntityPage, Pageable pageable);
-
-    // 나의 별자리 전체 조회
+    // 유저 별자리 전체 조회
     @Query("SELECT cu.constellationEntity FROM ConstellationUserEntity cu WHERE cu.userEntity = :userEntity")
     Page<ConstellationEntity> findAllByUserEntity(@Param("userEntity") UserEntity userEntity, Pageable pageable);
 

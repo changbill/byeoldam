@@ -86,18 +86,6 @@ public class ConstellationController {
     }
 
     @Operation(
-            summary = "별자리 전체 조회",
-            description = "별자리 전체 조회입니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
-            }
-    )
-    @GetMapping("/constellations")
-    public Response<Page<ConstellationResponse>> list(Pageable pageable, Authentication authentication) {
-        return Response.success(constellationService.list(authentication.getName(), pageable).map(ConstellationResponse::fromConstellation));
-    }
-
-    @Operation(
             summary = "유저의 별자리 전체 조회",
             description = "유저의 별자리 전체 조회입니다.",
             responses = {
