@@ -16,7 +16,24 @@ spring:
 jwt:
   secret-key: ${JWT_SECRET_KEY_CODE}
   #30 days
-  token.expired-time-ms: 2592000000
+  token:
+    expired-time-ms: 2592000000
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: byeoldam309.official@gmail.com
+  password: ${EMAIL_APP_PASSWORD}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+          required: true
+        connection-timeout: 5000
+        timeout: 5000
+        write-timeout: 5000
+  auth-code-expired-ms: 600000 #10분
 
 ---
 spring:
@@ -38,7 +55,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
-
+  data:
+    redis:
+      url: redis://localhost:6379
+      repositories:
+        enabled: false
 
 ---
 
@@ -61,5 +82,10 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+  data:
+    redis:
+      url: redis://byeoldam-redis:6379
+      repositories:
+        enabled: false
 server:
   port: 8081

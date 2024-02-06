@@ -6,8 +6,12 @@ export default function Thumbnail({ url, position = [0, 0, 0] }) {
   const image = useRef();
 
   return (
-    <mesh>
-      <Image ref={image} position={position} url={url} scale={40} />
-    </mesh>
+    <group position={position}>
+      <mesh position={[0, 0, -0.5]} scale={[26, 26, 0.5]}>
+        <boxGeometry />
+        <meshBasicMaterial toneMapped={false} />
+      </mesh>
+      <Image ref={image} url={url} scale={25} opacity={1} />
+    </group>
   );
 }

@@ -25,9 +25,27 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class UserController {
-
     private final UserService userService;
     private final FollowService followService;
+
+    @Operation(
+            summary = "이메일 인증코드 요청",
+            description = "email의 정보를 받아 현재 DB에 저장되어 있지 않은 메일인지 체크 후 인증 코드를 해당 메일로 보냄"
+    )
+    @PostMapping("/email/verification-request")
+    public Response<Void> sendMessage(@RequestBody EmailRequest request){
+        userService.sendCodeByEmail(request.email());
+        return Response.success();
+    }
+
+    @Operation(
+            summary = "이메일 인증 코드 검증",
+            description = "응답이 true일 경우 검증 성공, 그 외에는 에러를 반환"
+    )
+    @GetMapping("/email/verification")
+    public Response<Boolean> verifyEmailCode(@RequestParam("email") String email, @RequestParam("code") String code) {
+        return Response.success(userService.verifyEmailCode(email, code));
+    }
 
     @Operation(
             summary = "회원가입",

@@ -21,17 +21,27 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     ports:
       - "3306:3306"
+  byeoldam-redis:
+    container_name: byeoldam-redis
+    build:
+      dockerfile: Dockerfile
+      context: ./backend/redis
+    image: lmw7414/byeoldam-redis
+    ports:
+      - "6379:6379"
   byeoldam-app:
     container_name: byeoldam-app
     build: ./backend
-    depends_on: # DB 실행 후 실행
+    depends_on: # DB, Redis 실행 후 실행
       - byeoldam-database
+      - byeoldam-redis
     image: lmw7414/byeoldam-app
     environment:
       - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - JWT_SECRET_KEY_CODE=${JWT_SECRET_KEY_CODE}
+      - EMAIL_APP_PASSWORD=${EMAIL_APP_PASSWORD}
     ports:
       - "8081:8081"
     restart: always

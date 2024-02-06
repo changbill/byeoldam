@@ -6,23 +6,19 @@ import { Line, useCursor } from '@react-three/drei';
 import { easing } from 'maath';
 import getUuidByString from 'uuid-by-string';
 
-export default function Constellation({ position = [5, 1.5, 5], name, selected }) {
+export default function Constellation({ position = [5, 1.5, 5], name, selected, url, thumbnail }) {
   const group = useRef();
-  const [target, setTarget] = useState(true);
   const [hovered, hover] = useState(false);
   const [pointList, setPointList] = useState([]);
   const uuid = getUuidByString('' + name);
   useCursor(hovered);
 
-  const isActive = selected === name;
+  const isActive = selected === uuid;
 
   useEffect(() => {
     group.current.lookAt(new THREE.Vector3(0, 0.03, 0));
-    window.addEventListener('keydown', ({ key }) => {
-      if (key == 'a') setTarget(!target);
-    });
 
-    fetch('./src/assets/data/dog.json')
+    fetch(url)
       .then((data) => data.json())
       .then((data) => {
         const [lx, rx] = data.shapes[0].points.reduce(
@@ -56,11 +52,11 @@ export default function Constellation({ position = [5, 1.5, 5], name, selected }
   });
 
   return (
-    <group ref={group} position={position} scale={0.1} name={uuid}>
+    <group ref={group} position={position} scale={0.1}>
       <mesh
         scale={[82, 82, 0.1]}
         position={[0, 0, -1]}
-        name={name}
+        name={uuid}
         onPointerOver={(e) => {
           e.stopPropagation();
           hover(true);
@@ -73,7 +69,15 @@ export default function Constellation({ position = [5, 1.5, 5], name, selected }
         <meshPhongMaterial opacity={0} transparent />
       </mesh>
       {pointList.map(([x, y, _], i) => (
-        <Star key={'' + name + i} position={[x, y, 0]} scale={1.5} name={name} id={i} />
+        <Star
+          key={'' + name + i}
+          position={[x, y, 0]}
+          scale={1.5}
+          name={name}
+          id={i}
+          isActive={isActive}
+          thumbnail={thumbnail}
+        />
       ))}
       {pointList.length > 0 && (
         <Line points={[...pointList, pointList[0]]} color={'white'} linewidth={2} />

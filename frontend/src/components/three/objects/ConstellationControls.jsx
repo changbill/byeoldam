@@ -28,24 +28,49 @@ export default function ConstellationControls({ controller, constellationList })
         isDone: false,
       });
     } else {
+      if (controllerRef.current.target.distanceTo(new THREE.Vector3(0, 0, 0)) < 0.00001) {
+        controllerRef.current.target = new THREE.Vector3(0, 0.001, 0);
+      }
+      const lastTarget = lastCameraState.target;
+      const origin = new THREE.Vector3(0, 0.01, 0);
+
+      const dist = lastCameraState.target.distanceTo(origin);
+      if (dist < 0.00000001) return;
+      const ratio = 0.104403 / dist;
+
+      lastTarget.subVectors(lastTarget, origin);
+      origin.subVectors(origin, lastTarget.multiplyScalar(ratio));
+
       setLastCameraState({
         prev: null,
         target: new THREE.Vector3(0, 0.03, 0),
-        position: lastCameraState.prev.position,
+        position: origin,
         isDone: false,
       });
     }
   }, [selected]);
 
   useFrame((state, dt) => {
+    // console.log(state.camera.position, controllerRef.current.object.position, lastCameraState);
     if (!lastCameraState.isDone) {
-      easing.damp3(controllerRef.current.target, lastCameraState.target, 0.2, dt);
-      easing.damp3(controllerRef.current.object.position, lastCameraState.position, 0.2, dt);
+      if (!lastCameraState.prev) {
+        easing.damp3(controllerRef.current.target, lastCameraState.target, 0.2, dt);
+        easing.damp3(controllerRef.current.object.position, lastCameraState.position, 0.2, dt);
+      } else {
+        const ease = (x) => (0.0041 * x * x - 0.0137 * x + 0.1857) / 5;
+        const smoothTime = ease(controllerRef.current.target.distanceTo(lastCameraState.target));
+        easing.damp3(controllerRef.current.target, lastCameraState.target, smoothTime, dt);
+        easing.damp3(
+          controllerRef.current.object.position,
+          lastCameraState.position,
+          smoothTime / 1.5,
+          dt,
+        );
+      }
       controllerRef.current.minDistance = 0;
-
       if (
-        controllerRef.current.target.distanceTo(lastCameraState.target) < 0.04 &&
-        controllerRef.current.object.position.distanceTo(lastCameraState.position) < 0.04
+        controllerRef.current.target.distanceTo(lastCameraState.target) < 0.1 &&
+        controllerRef.current.object.position.distanceTo(lastCameraState.position) < 0.1
       ) {
         setLastCameraState({ ...lastCameraState, isDone: true });
         if (!lastCameraState.prev) {
@@ -53,7 +78,6 @@ export default function ConstellationControls({ controller, constellationList })
           controllerRef.current.enableDamping = true;
         } else {
           const distance = new THREE.Vector3(0, 0, 0).distanceTo(lastCameraState.target);
-
           controllerRef.current.enableZoom = true;
           controllerRef.current.maxDistance = distance;
           controllerRef.current.minDistance = distance / 3;
@@ -66,16 +90,23 @@ export default function ConstellationControls({ controller, constellationList })
     <group
       ref={ref}
       onClick={(e) => {
-        if (!lastCameraState.isDone || !e.object || !e.object.name) return;
         e.stopPropagation();
+        if (!lastCameraState.isDone || !e.object || !e.object.name) return;
         controllerRef.current.enableRotate = false;
         controllerRef.current.enableDamping = false;
         controllerRef.current.enableZoom = false;
         setSelected(clicked.current === e.object ? 'none' : e.object.name);
       }}
     >
-      {constellationList.map(({ id, url, position }) => (
-        <Constellation key={id} url={url} name={id} position={position} selected={selected} />
+      {constellationList.map(({ id, url, position, thumbnail }) => (
+        <Constellation
+          key={id}
+          url={url}
+          name={id}
+          position={position}
+          selected={selected}
+          thumbnail={thumbnail}
+        />
       ))}
     </group>
   );
