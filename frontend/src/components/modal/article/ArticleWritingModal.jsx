@@ -27,7 +27,7 @@ export default function ArticleWritingModal() {
           ...modalState,
           isOpen: false,
         });
-        alert('별이 생성되었습니다.');
+        if (!alert('별이 생성되었습니다.')) window.location.reload();
       })
       .finally(() => {
         setIsLoading(false);

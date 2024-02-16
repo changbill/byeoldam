@@ -150,27 +150,27 @@ Related to: #48, #45
 
 자세한 부분에 대해서는 '[Gitmoji 사용하기](https://treasurebear.tistory.com/70)' 여기 설명이 잘되어 있는 글이 있어, 이 링크를 참조 부탁한다.
 
-| Emogi | Description |
-| --- | --- |
-| 🎨 | 코드의 형식 / 구조를 개선 할 때 |
-| 📰 | 새 파일을 만들 때 |
-| 📝 | 사소한 코드 또는 언어를 변경할 때 |
-| 🐎 | 성능을 향상시킬 때 |
-| 📚 | 문서를 쓸 때 |
-| 🐛 | 버그 reporting할 때, @FIXME 주석 태그 삽입 |
-| 🚑 | 버그를 고칠 때 |
-| 🔥 | 코드 또는 파일 제거할 때 , @CHANGED주석 태그와 함께 |
-| 🚜 | 파일 구조를 변경할 때 . 🎨과 함께 사용 |
-| 🔨 | 코드를 리팩토링 할 때 |
-| 💄 | UI / style 개선시 |
-| ♿️ | 접근성을 향상시킬 때 |
-| 🚧 | WIP (진행중인 작업)에 커밋, @REVIEW주석 태그와 함께 사용 |
-| 💎 | New Release |
-| 🔖 | 버전 태그 |
-| ✨ | 새로운 기능을 소개 할 때 |
-| ⚡️ | 도입 할 때 이전 버전과 호환되지 않는 특징, @CHANGED주석 태그 사용 |
-| 💡 | 새로운 아이디어, @IDEA주석 태그 |
-| 🚀 | 배포 / 개발 작업 과 관련된 모든 것 |
+| Emogi | Description                                                       |
+| ----- | ----------------------------------------------------------------- |
+| 🎨    | 코드의 형식 / 구조를 개선 할 때                                   |
+| 📰    | 새 파일을 만들 때                                                 |
+| 📝    | 사소한 코드 또는 언어를 변경할 때                                 |
+| 🐎    | 성능을 향상시킬 때                                                |
+| 📚    | 문서를 쓸 때                                                      |
+| 🐛    | 버그 reporting할 때, @FIXME 주석 태그 삽입                        |
+| 🚑    | 버그를 고칠 때                                                    |
+| 🔥    | 코드 또는 파일 제거할 때 , @CHANGED주석 태그와 함께               |
+| 🚜    | 파일 구조를 변경할 때 . 🎨과 함께 사용                            |
+| 🔨    | 코드를 리팩토링 할 때                                             |
+| 💄    | UI / style 개선시                                                 |
+| ♿️   | 접근성을 향상시킬 때                                              |
+| 🚧    | WIP (진행중인 작업)에 커밋, @REVIEW주석 태그와 함께 사용          |
+| 💎    | New Release                                                       |
+| 🔖    | 버전 태그                                                         |
+| ✨    | 새로운 기능을 소개 할 때                                          |
+| ⚡️   | 도입 할 때 이전 버전과 호환되지 않는 특징, @CHANGED주석 태그 사용 |
+| 💡    | 새로운 아이디어, @IDEA주석 태그                                   |
+| 🚀    | 배포 / 개발 작업 과 관련된 모든 것                                |
 
 ---
 
@@ -228,9 +228,7 @@ master와 develop 브랜치는 본래 이름 그대로 사용하는 경우가 �
 - 어떤 이름도 가능하다. 단, `master`, `develop`, `release-...`, `hotfix-...` 같은 이름은 사용할 수 없다.
 - `feature/기능요약` 형식을 추천한다. ex) feature/login
 - `feature/{issue-number}-{feature-name}` 이슈추적을 사용한다면 이와 같은 형식을 따른다.
-    
-    ex) feature/1-init-project, feature/2-build-gradle-script-write
-    
+  ex) feature/1-init-project, feature/2-build-gradle-script-write
 
 ### (**3) release branch**
 
@@ -242,12 +240,12 @@ master와 develop 브랜치는 본래 이름 그대로 사용하는 경우가 �
 - `hotfix-...` 형식을 추천한다. ex) hotfix-1.2.1
 
 ---
+
 </div>
 </details>
 <details>
 <summary><h1>Backend 컨벤션</h1></summary>
 <div markdown="1">
-
 
 # 1. Java 코드 컨벤션
 
@@ -257,7 +255,7 @@ master와 develop 브랜치는 본래 이름 그대로 사용하는 경우가 �
 
 ### (1) 파일 인코딩은 UTF-8
 
-*[encoding-utf8]*
+_[encoding-utf8]_
 
 모든 소스, 텍스트 문서 파일의 인코딩은 UTF-8로 통일한다.
 
@@ -269,14 +267,14 @@ master와 develop 브랜치는 본래 이름 그대로 사용하는 경우가 �
 
 ### (1) 식별자에는 영문/숫자/언더스코어만 허용
 
-*[identifier-char-scope]*
+_[identifier-char-scope]_
 
-변수명, 클래스명, 메서드명 등에는 영어와 숫자만을 사용한다. 
+변수명, 클래스명, 메서드명 등에는 영어와 숫자만을 사용한다.
 상수에는 단어 사이의 언더스코어(`_`)를 사용한다. 정규표현식 `[^A-Za-z0-9_]`에 부합해야 한다.
 
 ### (2) 한국어 발음대로의 표기 금지
 
-*[avoid-korean-pronounce]*
+_[avoid-korean-pronounce]_
 
 식별자의 이름을 한글 발음을 영어로 옮겨서 표기하지 않는다. 한국어 고유명사는 예외이다.
 
@@ -285,28 +283,27 @@ master와 develop 브랜치는 본래 이름 그대로 사용하는 경우가 �
 
 ### (3) 대문자로 표기할 약어 명시
 
-*[list-uppercase-abbr]*
+_[list-uppercase-abbr]_
 
 클래스명, 변수명에 쓰일 단어 중 모든 글자를 대문자로 표기할 약어의 목록을 프로젝트별로 명시적으로 정의한다.
 
 > 대문자로 표기할 약어의 목록을 정의하지 않는 경우 : HttpApiUrl
-> 
 
 ### (4) 패키지 이름은 소문자로 구성
 
-*[package-lowercase]*
+_[package-lowercase]_
 
-패키지 이름은 소문자를 사용하여 작성한다. 
+패키지 이름은 소문자를 사용하여 작성한다.
 단어별 구문을 위해 언더스코어(`_`)나 대문자를 섞지 않는다.
 
-*나쁜 예*
+_나쁜 예_
 
 ```jsx
 package com.navercorp.apiGateway
  package com.navercorp.api_gateway
 ```
 
-*좋은 예*
+_좋은 예_
 
 ```jsx
 package com.navercorp.apigateway
@@ -314,11 +311,11 @@ package com.navercorp.apigateway
 
 ### (5) 클래스/인터페이스 이름에 대문자 카멜표기법 적용
 
-*[class-interface-lower-camelcase]*
+_[class-interface-lower-camelcase]_
 
 클래스 이름은 단어의 첫 글자를 대문자로 시작하는 대문자 카멜표기법(Upper camel case)을 사용한다. 파스칼표기법(Pascal case)으로도 불린다.
 
-*나쁜 예*
+_나쁜 예_
 
 ```jsx
 public class reservation
@@ -326,7 +323,7 @@ public class reservation
 public class Accesstoken
 ```
 
-*좋은 예*
+_좋은 예_
 
 ```jsx
 public class Reservation
@@ -336,17 +333,17 @@ public class AccessToken
 
 ### (6) 클래스 이름에 명사 사용
 
-*[class-noun]*
+_[class-noun]_
 
 클래스 이름은 명사나 명사절로 짓는다.
 
 ### (7) 인터페이스 이름에 명사/형용사 사용
 
-*[interface-noun-adj]*
+_[interface-noun-adj]_
 
 인터페이스(interface)의 이름은 클래스 이름은 명사/명사절로 혹은 형용사/형용사절로 짓는다.
 
-*좋은 예*
+_좋은 예_
 
 ```jsx
 public interface RowMapper {
@@ -356,12 +353,12 @@ public interface RowMapper {
 
 ### (8) 테스트 클래스는 'Test’로 끝남
 
-*[test-class-suffix]*
+_[test-class-suffix]_
 
-JUnit 등으로 작성한 테스트 코드를 담은 클래스는 'Test’을 마지막에 붙인다. 
+JUnit 등으로 작성한 테스트 코드를 담은 클래스는 'Test’을 마지막에 붙인다.
 ‘Tests’로 나올텐데 ‘Test’로 마무리한다
 
-*좋은 예*
+_좋은 예_
 
 ```jsx
 public class WatcherTest {
@@ -369,18 +366,18 @@ public class WatcherTest {
 
 ### (9) 메서드 이름과 변수에 소문자 카멜표기법 적용
 
-*[method-lower-camelcase]*
+_[method-lower-camelcase]_
 
 메서드의 이름에는 첫 번째 단어를 소문자로 작성하고, 이어지는 단어의 첫 글자를 대문자로 작성하는 소문자 카멜표기법(Lower camel case)를 사용한다. 테스트 클래스의 메서드 이름에서는 언더스코어를 허용한다.
 
-*나쁜 예*
+_나쁜 예_
 
 ```jsx
 private boolean Authorized;
  private int AccessToken;
 ```
 
-*좋은 예*
+_좋은 예_
 
 ```jsx
 private boolean authorized;
@@ -389,11 +386,11 @@ private boolean authorized;
 
 ### (10) 메서드 이름은 동사/전치사로 시작
 
-*[method-verb-preposition]*
+_[method-verb-preposition]_
 
 메서드명은 기본적으로는 동사로 시작한다. 다른 타입으로 전환하는 메서드나 빌더 패턴을 구현한 클래스의 메서드에는 전치사를 쓸 수 있다.
 
-*좋은 예*
+_좋은 예_
 
 - 동사사용 : `renderHtml()`
 - 전환메서드의 전치사 : `toString()`
@@ -401,11 +398,11 @@ private boolean authorized;
 
 ### (11) 상수는 대문자와 언더스코어로 구성
 
-*[constant_uppercase]*
+_[constant_uppercase]_
 
 상태를 가지지 않는 자료형이면서 `static final`로 선언되어 있는 필드일 때를 상수로 간주한다. 상수 이름은 대문자로 작성하며, 복합어는 언더스코어(`_`)를 사용하여 단어를 구분한다.
 
-*좋은 예*
+_좋은 예_
 
 ```jsx
 public final int UNLIMITED = -1;
@@ -414,17 +411,17 @@ public final String POSTAL_CODE_EXPRESSION = “POST”;
 
 ### (12) 임시 변수 외에는 1 글자 이름 사용 금지
 
-*[avoid-1-char-var]*
+_[avoid-1-char-var]_
 
 메서드 블럭 범위 이상의 생명 주기를 가지는 변수에는 1글자로 된 이름을 쓰지 않는다. 반복문의 인덱스나 람다 표현식의 파라미터 등 짧은 범위의 임시 변수에는 관례적으로 1글자 변수명을 사용할 수 있다.
 
-*나쁜 예*
+_나쁜 예_
 
 ```jsx
 HtmlParser p = new HtmlParser();
 ```
 
-*좋은 예*
+_좋은 예_
 
 ```jsx
 HtmlParser parser = new HtmlParser();
@@ -436,11 +433,11 @@ HtmlParser parser = new HtmlParser();
 
 ### (1) 소스파일당 1개의 탑레벨 클래스를 담기
 
-*[1-top-level-class]*
+_[1-top-level-class]_
 
 탑레벨 클래스(Top level class)는 소스 파일에 1개만 존재해야 한다. ( 탑레벨 클래스 선언의 컴파일타임 에러 체크에 대해서는 [Java Language Specification 7.6](http://docs.oracle.com/javase/specs/jls/se7/html/jls-7.html#jls-7.6) 참조 )
 
-*나쁜 예*
+_나쁜 예_
 
 `public class LogParser {
 }
@@ -448,7 +445,7 @@ HtmlParser parser = new HtmlParser();
 class LogType {
 }`
 
-*좋은 예*
+_좋은 예_
 
 `public class LogParser {
     // 굳이 한 파일안에 선언해야 한다면 내부 클래스로 선언
@@ -458,7 +455,7 @@ class LogType {
 
 ### (2) 제한자 선언의 순서
 
-*[modifier-order]*
+_[modifier-order]_
 
 클래스/메서드/멤버변수의 제한자는 Java Language Specification에서 명시한 아래의 순서로 쓴다.
 
@@ -468,70 +465,70 @@ class LogType {
 
 ### (3) 어노테이션 선언 후 새줄 사용
 
-*[newline-after-annotation]*
+_[newline-after-annotation]_
 
 클래스, 인터페이스, 메서드, 생성자에 붙는 애너테이션은 선언 후 새줄을 사용한다. 이 위치에서도 파라미터가 없는 애너테이션 1개는 같은 줄에 선언할 수 있다.
 
-*좋은 예*
+_좋은 예_
 
 `@RequestMapping("/guests")
 public void findGuests() {}`
 
 ### (4) 한 줄에 한 문장
 
-*[1-state-per-line]*
+_[1-state-per-line]_
 
 문장이 끝나는 `;` 뒤에는 새줄을 삽입한다. 한 줄에 여러 문장을 쓰지 않는다.
 
-*나쁜 예*
+_나쁜 예_
 
 `int base = 0; int weight = 2;`
 
-*좋은 예*
+_좋은 예_
 
 `int base = 0;
 int weight = 2;`
 
 ### (5) 하나의 선언문에는 하나의 변수만
 
-*[1-var-per-declaration]*
+_[1-var-per-declaration]_
 
 변수 선언문은 한 문장에서 하나의 변수만을 다룬다.
 
-*나쁜 예*
+_나쁜 예_
 
 `int base, weight;`
 
-*좋은 예*
+_좋은 예_
 
 `int base;
 int weight;`
 
 ### (6) 배열에서 대괄호는 타입 뒤에 선언
 
-*[array-square-after-type]*
+_[array-square-after-type]_
 
 배열 선언에 오는 대괄호(`[]`)는 타입의 바로 뒤에 붙인다. 변수명 뒤에 붙이지 않는다.
 
-*나쁜 예*
+_나쁜 예_
 
 `String names[];`
 
-*좋은 예*
+_좋은 예_
 
 `String[] names;`
 
 ### (7) ‘long’형 값의 마지막에 ‘L’붙이기, ‘float’ 형 - ‘F’ 붙이기
 
-*[long-value-suffix]*
+_[long-value-suffix]_
 
-long형의 숫자에는 마지막에 대문자 'L’을, float형의 숫자에는 마지막에 대문자 ‘F’를 붙인다. 
+long형의 숫자에는 마지막에 대문자 'L’을, float형의 숫자에는 마지막에 대문자 ‘F’를 붙인다.
 
-*나쁜 예*
+_나쁜 예_
 
 `long base = 54423234211l;`
 
-*좋은 예*
+_좋은 예_
 
 `long base = 54423234211L;`
 
@@ -541,19 +538,19 @@ long형의 숫자에는 마지막에 대문자 'L’을, float형의 숫자에�
 
 ### (1) 하드탭 사용
 
-*[indentation-tab]*
+_[indentation-tab]_
 
 탭(tab) 문자를 사용하여 들여쓴다. 탭 대신 스페이스를 사용하지 않는다. 이를 잘 준수하기 위해서 스페이스와 탭을 구별해서 보여주도록 에디터를 설정한다.
 
 ### (2) 탭의 크기는 4개의 스페이스
 
-*[4-spaces-tab]*
+_[4-spaces-tab]_
 
 1개의 탭의 크기는 스페이스 4개와 같도록 에디터에서 설정한다.
 
 ### (3) 블럭 들여쓰기
 
-*[block-indentation]*
+_[block-indentation]_
 
 클래스, 메서드, 제어문 등의 코드 블럭이 생길 때마다 1단계를 더 들여쓴다.
 
@@ -563,11 +560,11 @@ long형의 숫자에는 마지막에 대문자 'L’을, float형의 숫자에�
 
 ### (1) K&R 스타일로 중괄호 선언
 
-*[braces-knr-style]*
+_[braces-knr-style]_
 
 클래스 선언, 메서드 선언, 조건/반복문 등의 코드 블럭을 감싸는 중괄호에 적용되는 규칙이다. 중괄호 선언은 K&R 스타일(Kernighan and Ritchie style)을 따른다. 줄의 마지막에서 시작 중괄호`{`를 쓰고 열고 새줄을 삽입한다. 블럭을 마친후에는 새줄 삽입 후 중괄호를 닫는다.
 
-***나쁜 예***
+**_나쁜 예_**
 
 ```java
 public class SearchConditionParser
@@ -590,7 +587,7 @@ public class SearchConditionParser
 }
 ```
 
-***좋은 예***
+**_좋은 예_**
 
 ```java
 public class SearchConditionParser {
@@ -611,7 +608,7 @@ public class SearchConditionParser {
 
 ### (2) 닫는 중괄호와 같은 줄에 `else`, `catch`, `finally`, `while` 선언
 
-*[sub-flow-after-brace]*
+_[sub-flow-after-brace]_
 
 아래의 키워드는 닫는 중괄호(`}`) 와 같은 줄에 쓴다.
 
@@ -619,7 +616,7 @@ public class SearchConditionParser {
 - catch, finaly
 - do-while 문에서의 while
 
-***나쁜 예***
+**_나쁜 예_**
 
 ```java
 if (line.startWith(WARNING_PREFIX)) {
@@ -633,7 +630,7 @@ else {
 }
 ```
 
-***좋은 예***
+**_좋은 예_**
 
 ```java
 if (line.startWith(WARNING_PREFIX)) {
@@ -645,7 +642,7 @@ if (line.startWith(WARNING_PREFIX)) {
 }
 ```
 
-***나쁜 예***
+**_나쁜 예_**
 
 ```jsx
 try {
@@ -659,7 +656,7 @@ finally {
 }
 ```
 
-***좋은 예***
+**_좋은 예_**
 
 ```jsx
 try {
@@ -671,32 +668,31 @@ try {
 }
 ```
 
-***나쁜 예***
+**_나쁜 예_**
 
 ```jsx
 do {
-    write(line);
-    line = readLine();
-}
-while (line != null);
+  write(line);
+  line = readLine();
+} while (line != null);
 ```
 
-***좋은 예***
+**_좋은 예_**
 
 ```jsx
 do {
-    write(line);
-    line = readLine();
+  write(line);
+  line = readLine();
 } while (line != null);
 ```
 
 ### (3) 빈 블럭에 새줄 없이 중괄호 닫기 허용
 
-*[permit-concise-empty-block]*
+_[permit-concise-empty-block]_
 
 내용이 없는 블럭을 선언할 때는 같은 줄에서 중괄호를 닫는 것을 허용한다.
 
-*좋은 예*
+_좋은 예_
 
 ```java
 public void close() {}
@@ -704,11 +700,11 @@ public void close() {}
 
 ### (4) 조건/반복문에 중괄호 필수 사용
 
-*[need-braces]*
+_[need-braces]_
 
 조건, 반복문이 한 줄로 끝더라도 중괄호를 활용한다. 이 문서에 언급된 중괄호의 전후의 공백, 제어문 앞 뒤의 새줄 규칙도 함께 고려한다.
 
-*나쁜 예*
+_나쁜 예_
 
 ```java
 if (exp == null) return false;
@@ -716,7 +712,7 @@ if (exp == null) return false;
 for (char ch : exp.toCharArray()) if (ch == 0) return false;
 ```
 
-*좋은 예*
+_좋은 예_
 
 ```java
 if (exp == null) {
@@ -738,11 +734,11 @@ for (char ch : exp.toCharArray()) {
 
 ### (1) 줄바꿈 후 추가 들여쓰기
 
-*[indentation-after-line-wrapping]*
+_[indentation-after-line-wrapping]_
 
 줄바꿈 이후 이어지는 줄에서는 최초 시작한 줄에서보다 적어도 1단계의 들여쓰기를 더 추가한다. IDE의 자동 포메팅 기능으로 이를 동일하게 맞추러면 [Appendix C의 각 IDE별 설정](https://naver.github.io/hackday-conventions-java/#editor-config)을 참고한다.
 
-*좋은 예*
+_좋은 예_
 
 ```java
 AbstractAggregateRootTest.AggregateRoot proxyAggregateRoot =
@@ -751,7 +747,7 @@ AbstractAggregateRootTest.AggregateRoot proxyAggregateRoot =
 
 ### (2) 줄바꿈 허용 위치
 
-*[line-wrapping-position]*
+_[line-wrapping-position]_
 
 가독성을 위해 줄을 바꾸는 위치는 다음 중의 하나로 한다.
 
@@ -762,12 +758,12 @@ AbstractAggregateRootTest.AggregateRoot proxyAggregateRoot =
 - 콤마(`,`) 후
 - `.` 전
 - 연산자 전
-    - `+`, `-`, `*`, `/`, `%`
-    - `==`, `!=`, `>=`, `>`,`⇐`, `<`, `&&`, `||`
-    - `&`, `|`, `^`, `>>>`, `>>`, `<<`, `?`
-    - `instanceof`
+  - `+`, `-`, `*`, `/`, `%`
+  - `==`, `!=`, `>=`, `>`,`⇐`, `<`, `&&`, `||`
+  - `&`, `|`, `^`, `>>>`, `>>`, `<<`, `?`
+  - `instanceof`
 
-***좋은 예***
+**_좋은 예_**
 
 ```java
 public boolen isAbnormalAccess (
@@ -784,9 +780,9 @@ public boolen isAbnormalAccess (
 
 ### (1) `package` 선언 후 빈 줄 삽입
 
-*[blankline-after-package]*
+_[blankline-after-package]_
 
-*좋은 예*
+_좋은 예_
 
 `package com.naver.lucy.util;
 
@@ -794,7 +790,7 @@ import java.util.Date;`
 
 ### (2) `import` 선언의 순서와 빈 줄 삽입
 
-*[import-grouping]*
+_[import-grouping]_
 
 import 구절은 아래와 같은 순서로 그룹을 묶어서 선언한다.
 
@@ -811,7 +807,7 @@ import 구절은 아래와 같은 순서로 그룹을 묶어서 선언한다.
 
 각 그룹 사이에는 빈줄을 삽입한다. 같은 그룹 내에서는 알파벳 순으로 정렬한다.
 
-*좋은 예*
+_좋은 예_
 
 `import java.util.Date;
 import java.util.List;
@@ -830,14 +826,14 @@ import com.naver.lucy.util.AnnotationUtils;`
 
 ### (3) 메소드 사이에 빈 줄 삽입
 
-*[blankline-between-methods]*
+_[blankline-between-methods]_
 
 메서드의 선언이 끝난 후 다음 메서드 선언이 시작되기 전에 빈줄을 삽입한다.
 
-***좋은 예***
+**_좋은 예_**
 
 ```jsx
-public void setId(int id) 
+public void setId(int id)
     this.id = id;
 }
 
@@ -850,23 +846,23 @@ public void setName(String name) {
 
 ### (1) 공백으로 줄을 끝내지 않음
 
-*[no-trailing-spaces]*
+_[no-trailing-spaces]_
 
 빈줄을 포함하여 모든 줄은 탭이나 공백으로 끝내지 않는다.
 
 ### (2) 대괄호 뒤에 공백 삽입
 
-*[space-after-bracket]*
+_[space-after-bracket]_
 
 닫는 대괄호(`]`) 뒤에 `;`으로 문장이 끝나지 않고 다른 선언이 올 경우 공백을 삽입한다.
 
-*나쁜 예*
+_나쁜 예_
 
 ```java
 int[]masks = new int[]{0, 1, 1};
 ```
 
-*좋은 예*
+_좋은 예_
 
 ```java
 int[] masks = new int[] {0, 1, 1};
@@ -874,11 +870,11 @@ int[] masks = new int[] {0, 1, 1};
 
 ### (3) 중괄호의 시작 전, 종료 후에 공백 삽입
 
-*[space-around-brace]*
+_[space-around-brace]_
 
 여는 중괄호(`{`) 앞에는 공백을 삽입한다. 닫는 중괄호(`}`) 뒤에 `else` ,`catch` 등의 키워드가 있을 경우 중괄호와 키워드 사이에 공백을 삽입한다.
 
-***좋은 예***
+**_좋은 예_**
 
 ```java
 public void printWarnMessage(String line) {
@@ -892,12 +888,12 @@ public void printWarnMessage(String line) {
 
 ### (4) 제어문 키워드와 여는 소괄호 사이에 공백 삽입
 
-*[space-between-keyword-parentheses]*
+_[space-between-keyword-parentheses]_
 
-`if`, `for`, `while`, `catch`, `synchronized`, `switch`와 같은 제어문 키워드의 뒤에 
+`if`, `for`, `while`, `catch`, `synchronized`, `switch`와 같은 제어문 키워드의 뒤에
 소괄호(`(`,`)`)를 선언하는 경우, 시작 소괄호 앞에 공백을 삽입한다.
 
-*좋은 예*
+_좋은 예_
 
 ```java
 if (maxLine > LIMITED) {
@@ -907,11 +903,11 @@ if (maxLine > LIMITED) {
 
 ### (5) 식별자와 여는 소괄호 사이에 공백 미삽입
 
-*[no-space-between-identifier-parentheses]*
+_[no-space-between-identifier-parentheses]_
 
 식별자와 여는 소괄호(`(`) 사이에는 공백을 삽입하지 않는다. 생성자와 메서드의 선언, 호출, 애너테이션 선언 뒤에 쓰이는 소괄호가 그에 해당한다.
 
-***나쁜 예***
+**_나쁜 예_**
 
 ```java
 public StringProcessor () {} // 생성자
@@ -923,7 +919,7 @@ public String removeEndingDot (String original) {
 }
 ```
 
-***좋은 예***
+**_좋은 예_**
 
 ```java
 public StringProcessor() {} // 생성자
@@ -937,17 +933,17 @@ public String removeEndingDot(String original) {
 
 ### (6) 타입 캐스팅에 쓰이는 소괄호 내부 공백 미삽입
 
-*[no-space-typecasting]*
+_[no-space-typecasting]_
 
 타입캐스팅을 위해 선언한 소괄호의 내부에는 공백을 삽입하지 않는다.
 
-*나쁜 예*
+_나쁜 예_
 
 ```java
 String message = ( String ) rawLine;
 ```
 
-*좋은 예*
+_좋은 예_
 
 ```java
 String message = (String) rawLine;
@@ -955,7 +951,7 @@ String message = (String) rawLine;
 
 ### (7) 제네릭스 산괄호의 공백 규칙
 
-*[generic-whitespace]*
+_[generic-whitespace]_
 
 제네릭스(Generics) 선언에 쓰이는 산괄호(`<`,`>`) 주위의 공백은 다음과 같이 처리한다.
 
@@ -963,11 +959,11 @@ String message = (String) rawLine;
 - `<` 뒤에 공백을 삽입하지 않는다.
 - `>` 앞에 공백을 삽입하지 않는다.
 - 아래의 경우를 제외하고는 `>`뒤에 공백을 삽입한다.
-    - 메서드 레퍼런스가 바로 이어질 때
-    - 여는 소괄호('(')가 바로 이어질 때
-    - 메서드 이름이 바로 이어질 때
+  - 메서드 레퍼런스가 바로 이어질 때
+  - 여는 소괄호('(')가 바로 이어질 때
+  - 메서드 이름이 바로 이어질 때
 
-*좋은 예*
+_좋은 예_
 
 ```java
 public static <A extends Annotation> A find(AnnotatedElement elem, Class<A> type) { // 제네릭스 메서드 선언
@@ -979,11 +975,11 @@ public static <A extends Annotation> A find(AnnotatedElement elem, Class<A> type
 
 ### (8) 콤마/구분자 세미콜론의 뒤에만 공백 삽입
 
-*[space-after-comma-semicolon]*
+_[space-after-comma-semicolon]_
 
 콤마(,)와 반복문(while, for)의 구분자로 쓰이는 세미콜론(`;`)에는 뒤에만 공백을 삽입한다.
 
-*나쁜 예*
+_나쁜 예_
 
 ```java
 for (int i = 0;i < length;i++) {
@@ -991,7 +987,7 @@ for (int i = 0;i < length;i++) {
 }
 ```
 
-*좋은 예*
+_좋은 예_
 
 ```java
 for (int i = 0; i < length; i++) {
@@ -1001,11 +997,11 @@ for (int i = 0; i < length; i++) {
 
 ### (9) 콜론의 앞 뒤에 공백 삽입
 
-*[space-around-colon]*
+_[space-around-colon]_
 
 반복문과 삼항연산자에서 콜론(`:`)의 앞 뒤에는 공백을 삽입한다. 라벨 선언 뒤에는 아무런 문자열이 없으므로 앞에만 공백을 삽입한다.
 
-*좋은 예*
+_좋은 예_
 
 ```java
 for (Customer customer : visitedCustomers) {
@@ -1027,11 +1023,11 @@ for (Customer customer : visitedCustomers) {
 
 ### (10) 이항/삼항 연산자의 앞 뒤에 공백 삽입
 
-*[space-around-binary-ternary-operator]*
+_[space-around-binary-ternary-operator]_
 
 이항/삼항 연산자의 앞 뒤에는 공백을 삽입한다.
 
-*좋은 예*
+_좋은 예_
 
 ```java
 if (pattern == Access.ABNORMAL) {
@@ -1047,24 +1043,24 @@ if (finalScore > MAX_LIMIT) {
 
 ### (11) 단항 연산자와 연산 대상 사이에 공백을 미삽입
 
-*[no-space-increament-decrement-operator]*
+_[no-space-increament-decrement-operator]_
 
 단항 연산자와 연산 대상의 사이에는 공백을 삽입하지 않는다.
 
 - 전위 연산자 : 연산자 뒤에 공백을 삽입하지 않는다.
-    - 전위 증감/감소 연산자 : `++`,`--`
-    - 부호로 쓰이는 `+`, `-`
-    - NOT 연산자 : `~`, `!`
+  - 전위 증감/감소 연산자 : `++`,`--`
+  - 부호로 쓰이는 `+`, `-`
+  - NOT 연산자 : `~`, `!`
 - 후위 연산자 : 연산자 앞에 공백을 삽입하지 않는다.
-    - 후위 증감/감소 연산자 : `++`,`-`
+  - 후위 증감/감소 연산자 : `++`,`-`
 
-*나쁜 예*
+_나쁜 예_
 
 ```java
 int point = score[++ index] * rank -- * - 1;
 ```
 
-*좋은 예*
+_좋은 예_
 
 ```java
 int point = score[++index] * rank-- * -1;
@@ -1072,7 +1068,7 @@ int point = score[++index] * rank-- * -1;
 
 ### (12) 주석문 기호 전후의 공백 삽입
 
-*[space-around-comment]*
+_[space-around-comment]_
 
 주석의 전후에는 아래와 같이 공백을 삽입한다.
 
@@ -1082,7 +1078,7 @@ int point = score[++index] * rank-- * -1;
 - 블록 주석을 한 줄로 작성시 종료 기호 `/` 앞
 - 탭으로 주석 줄맞추기
 
-***좋은 예***
+**_좋은 예_**
 
 ```java
 /*
@@ -1100,7 +1096,7 @@ System.out.print(true); // 주석 기호 앞 뒤로 공백
 
 ## Controller
 
-비지니스 로직은 Service에서         
+비지니스 로직은 Service에서
 
 ### Controller 메소드 명 작성 접미사
 
@@ -1258,7 +1254,7 @@ public enum ErrorCode {
 }
 ```
 
-Advice 
+Advice
 
 ```java
 @Slf4j
@@ -1279,9 +1275,9 @@ public class GlobalControllerAdvice {
                 .body(Response.error(ErrorCode.INTERNAL_SERVER_ERROR.name()));
     }
 ```
+
 </div>
 </details>
-
 
 <details>
 <summary><h1>Frontend 컨벤션</h1></summary>
@@ -1348,17 +1344,17 @@ const item = {};
 ```jsx
 // bad
 const superman = {
-  class: 'alien',
+  class: "alien",
 };
 
 // bad
 const superman = {
-  klass: 'alien',
+  klass: "alien",
 };
 
 // good
 const superman = {
-  type: 'alien',
+  type: "alien",
 };
 ```
 
@@ -1367,7 +1363,7 @@ const superman = {
 단축구문들은 객체 선언의 시작 부분에 모아놓는다
 
 ```jsx
-const lukeSkywalker = 'Luke Skywalker';
+const lukeSkywalker = "Luke Skywalker";
 
 // bad
 const obj = {
@@ -1377,13 +1373,13 @@ const obj = {
 // good
 const obj = {
   lukeSkywalker,
-	title : keyword, // 단축구문이 가능한 경우에만 적용하고 그 외에는 혼용한다
+  title: keyword, // 단축구문이 가능한 경우에만 적용하고 그 외에는 혼용한다
 };
 ```
 
 ```jsx
-const anakinSkywalker = 'Anakin Skywalker';
-const lukeSkywalker = 'Luke Skywalker';
+const anakinSkywalker = "Anakin Skywalker";
+const lukeSkywalker = "Luke Skywalker";
 
 // bad
 const obj = {
@@ -1424,16 +1420,16 @@ const items = [];
 const someStack = [];
 
 // bad
-someStack[someStack.length] = 'abracadabra';
+someStack[someStack.length] = "abracadabra";
 
 // good
-someStack.push('abracadabra');
+someStack.push("abracadabra");
 ```
 
 ### (3) array-like 객체를 배열로 변환 시 Array.from 사용
 
 ```jsx
-const arrLike = { 0: 'foo', 1: 'bar', 2: 'baz', length: 3 };
+const arrLike = { 0: "foo", 1: "bar", 2: "baz", length: 3 };
 
 // bad
 const arr = Array.prototype.slice.call(arrLike);
@@ -1447,21 +1443,10 @@ const arr = Array.from(arrLike);
 ```jsx
 // bad
 const arr = [
-  [0, 1], [2, 3], [4, 5],
+  [0, 1],
+  [2, 3],
+  [4, 5],
 ];
-
-const objectInArray = [{
-  id: 1,
-}, {
-  id: 2,
-}];
-
-const numberInArray = [
-  1, 2,
-];
-
-// good
-const arr = [[0, 1], [2, 3], [4, 5]];
 
 const objectInArray = [
   {
@@ -1472,10 +1457,25 @@ const objectInArray = [
   },
 ];
 
-const numberInArray = [
-  1,
-  2,
+const numberInArray = [1, 2];
+
+// good
+const arr = [
+  [0, 1],
+  [2, 3],
+  [4, 5],
 ];
+
+const objectInArray = [
+  {
+    id: 1,
+  },
+  {
+    id: 2,
+  },
+];
+
+const numberInArray = [1, 2];
 ```
 
 ## 4) **구조화대입(Destructuring)**
@@ -1542,25 +1542,28 @@ const name = "Capt. Janeway";
 const name = `Capt. Janeway`;
 
 // good
-const name = 'Capt. Janeway';
+const name = "Capt. Janeway";
 ```
 
 ### (2) 100자가 넘는 문자열을 문자열 연결을 이용해 여러 줄에 걸쳐 쓰지 않기
 
 ```jsx
 // bad
-const errorMessage = 'This is a super long error that was thrown because \
+const errorMessage =
+  "This is a super long error that was thrown because \
 of Batman. When you stop to think about how Batman had anything to do \
 with this, you would get nowhere \
-fast.';
+fast.";
 
 // bad
-const errorMessage = 'This is a super long error that was thrown because ' +
-  'of Batman. When you stop to think about how Batman had anything to do ' +
-  'with this, you would get nowhere fast.';
+const errorMessage =
+  "This is a super long error that was thrown because " +
+  "of Batman. When you stop to think about how Batman had anything to do " +
+  "with this, you would get nowhere fast.";
 
 // good
-const errorMessage = 'This is a super long error that was thrown because of Batman. When you stop to think about how Batman had anything to do with this, you would get nowhere fast.';
+const errorMessage =
+  "This is a super long error that was thrown because of Batman. When you stop to think about how Batman had anything to do with this, you would get nowhere fast.";
 ```
 
 ### (3) 문자열 생성 시 문자열 연결 대신 템플릿 문자열 사용
@@ -1568,17 +1571,17 @@ const errorMessage = 'This is a super long error that was thrown because of Batm
 ```jsx
 // bad
 function sayHi(name) {
-  return 'How are you, ' + name + '?';
+  return "How are you, " + name + "?";
 }
 
 // bad
 function sayHi(name) {
-  return ['How are you, ', name, '?'].join();
+  return ["How are you, ", name, "?"].join();
 }
 
 // bad
 function sayHi(name) {
-  return `How are you, ${ name }?`;
+  return `How are you, ${name}?`;
 }
 
 // good
@@ -1621,9 +1624,9 @@ function concatenateAll(*...args*) {
 
 ```jsx
 // bad
-const f = function(){};
-const g = function (){};
-const h = function() {};
+const f = function () {};
+const g = function () {};
+const h = function () {};
 
 // good
 const x = function () {};
@@ -1640,7 +1643,7 @@ function f1(obj) {
 
 // good
 function f2(obj) {
-  const key = Object.prototype.hasOwnProperty.call(obj, 'key') ? obj.key : 1;
+  const key = Object.prototype.hasOwnProperty.call(obj, "key") ? obj.key : 1;
 }
 ```
 
@@ -1652,12 +1655,14 @@ function f2(obj) {
 // bad
 function f1(a) {
   a = 1;
-	
+
   // ...
 }
 
 function f2(a) {
-  if (!a) { a = 1; }
+  if (!a) {
+    a = 1;
+  }
   // ...
 }
 
@@ -1684,10 +1689,10 @@ const x = [1, 2, 3, 4, 5];
 console.log(...x);
 
 // bad
-new (Function.prototype.bind.apply(Date, [null, 2016, 8, 5]));
+new (Function.prototype.bind.apply(Date, [null, 2016, 8, 5]))();
 
 // good
-const date = [2016, 8, 5]
+const date = [2016, 8, 5];
 
 new Date(...date);
 new Date(date[0], date[1], date[2]);
@@ -1697,31 +1702,20 @@ new Date(date[0], date[1], date[2]);
 
 ```jsx
 // bad
-function foo(bar,
-             baz,
-             quux) {
+function foo(bar, baz, quux) {
   // ...
 }
 
 // good
-function foo(
-  bar,
-  baz,
-  quux,) {
+function foo(bar, baz, quux) {
   // ...
 }
 
 // bad
-console.log(foo,
-  bar,
-  baz);
+console.log(foo, bar, baz);
 
 // good
-console.log(
-  foo,
-  bar,
-  baz,
-);
+console.log(foo, bar, baz);
 ```
 
 ## 7) **Arrow함수(Arrow Functions)**
@@ -1746,21 +1740,25 @@ console.log(
 
 ```jsx
 // bad
-[1, 2, 3].map(x => x * x);
+[1, 2, 3].map((x) => x * x);
 
 // good
 [1, 2, 3].map((x) => x * x);
 
 // bad
-[1, 2, 3].map(number => (
-  `A long string with the ${number}. It’s so long that we don’t want it to take up space on the .map line!`));
+[1, 2, 3].map(
+  (number) =>
+    `A long string with the ${number}. It’s so long that we don’t want it to take up space on the .map line!`
+);
 
 // good
-[1, 2, 3].map((number) => (
-  `A long string with the ${number}. It’s so long that we don’t want it to take up space on the .map line!`));
+[1, 2, 3].map(
+  (number) =>
+    `A long string with the ${number}. It’s so long that we don’t want it to take up space on the .map line!`
+);
 
 // bad
-[1, 2, 3].map(x => {
+[1, 2, 3].map((x) => {
   const y = x + 1;
   return x * y;
 });
@@ -1781,19 +1779,26 @@ console.log(
 ```jsx
 // bad
 class Foo {
-  
-bar() { return 1; }
-  bar() { return 2; }
+  bar() {
+    return 1;
+  }
+  bar() {
+    return 2;
+  }
 }
 
 // good
 class Foo {
-  bar() { return 1; }
+  bar() {
+    return 1;
+  }
 }
 
 // good
 class Foo {
-  bar() { return 2; }
+  bar() {
+    return 2;
+  }
 }
 ```
 
@@ -1805,7 +1810,7 @@ class Foo {
 // bad
 class Foo {
   bar() {
-    console.log('bar');
+    console.log("bar");
   }
 }
 
@@ -1826,7 +1831,7 @@ class Foo {
 // good - 정적 메소드는 this를 사용하지 않는다고 예상할 수 있습니다
 class Foo {
   static bar() {
-    console.log('bar');
+    console.log("bar");
   }
 }
 ```
@@ -1858,10 +1863,10 @@ export es4;
 
 ```jsx
 // bad
-import * as AirbnbStyleGuide from './AirbnbStyleGuide';
+import * as AirbnbStyleGuide from "./AirbnbStyleGuide";
 
 // good
-import AirbnbStyleGuide from './AirbnbStyleGuide';
+import AirbnbStyleGuide from "./AirbnbStyleGuide";
 ```
 
 ### (3) 가변 바인딩 export하지 않기(일반적으로는 상수 참조만 export되어야 함)
@@ -1892,16 +1897,10 @@ export default function foo() {}
 
 ```jsx
 // bad
-import {longNameA, longNameB, longNameC, longNameD, longNameE} from 'path';
+import { longNameA, longNameB, longNameC, longNameD, longNameE } from "path";
 
 // good
-import {
-  longNameA,
-  longNameB,
-  longNameC,
-  longNameD,
-  longNameE,
-} from 'path';
+import { longNameA, longNameB, longNameC, longNameD, longNameE } from "path";
 ```
 
 ### (6) 자바스크립트 파일 확장자를 명시하지 않기
@@ -1910,14 +1909,14 @@ import {
 
 ```jsx
 // bad
-import foo from './foo.js';
-import bar from './bar.jsx';
-import baz from './baz/index.jsx';
+import foo from "./foo.js";
+import bar from "./bar.jsx";
+import baz from "./baz/index.jsx";
 
 // good
-import foo from './foo';
-import bar from './bar';
-import baz from './baz';
+import foo from "./foo";
+import bar from "./bar";
+import baz from "./baz";
 ```
 
 ## 10) **이터레이터와 제너레이터(Iterators and Generators)**
@@ -1964,7 +1963,7 @@ numbers.forEach((num) => {
 });
 
 // best (keeping it functional)
-const increasedByOne = numbers.map(num => num + 1);
+const increasedByOne = numbers.map((num) => num + 1);
 ```
 
 ## 11) 프로퍼티(Properties)
@@ -1975,15 +1974,15 @@ const increasedByOne = numbers.map(num => num + 1);
 const luke = {
   jedi: true,
   age: 28,
-	'first-name' : 'luke'
+  "first-name": "luke",
 };
 
 // bad
-const isJedi = luke['jedi'];
+const isJedi = luke["jedi"];
 
 // good
 const isJedi = luke.jedi;
-const firstName = luke['first-name']
+const firstName = luke["first-name"];
 ```
 
 ### (2) 변수를 사용해 속성에 접근 시 대괄호 [] 사용
@@ -2000,7 +1999,7 @@ function getProp(prop) {
   return luke[prop];
 }
 
-const isJedi = getProp('jedi');
+const isJedi = getProp("jedi");
 ```
 
 ## 12) 변수(Variables)
@@ -2012,28 +2011,30 @@ const isJedi = getProp('jedi');
 ```jsx
 // bad
 const items = getItems(),
-    goSportsTeam = true,
-    dragonball = 'z';
+  goSportsTeam = true,
+  dragonball = "z";
 
 // bad
 // (위 코드와 비교해 실수를 짚어보세요)
 const items = getItems(),
-    goSportsTeam = true;
-    dragonball = 'z';
+  goSportsTeam = true;
+dragonball = "z";
 
 // good
 const items = getItems();
 const goSportsTeam = true;
-const dragonball = 'z';
+const dragonball = "z";
 ```
 
 ### (2) const를 그룹화한 후 let을 선언
 
 ```jsx
 // bad
-let i, len, dragonball,
-    items = getItems(),
-    goSportsTeam = true;
+let i,
+  len,
+  dragonball,
+  items = getItems(),
+  goSportsTeam = true;
 
 // bad
 let i;
@@ -2060,8 +2061,8 @@ let length;
   // 로 해석합니다.
   // let 키워드는 변수 a에만 적용됩니다.
   // 변수 b와 c는 전역 변수가 됩니다.
-  let a = b = c = 1;
-}());
+  let a = (b = c = 1);
+})();
 
 console.log(a); // throws ReferenceError
 console.log(b); // 1
@@ -2072,7 +2073,7 @@ console.log(c); // 1
   let a = 1;
   let b = a;
   let c = a;
-}());
+})();
 
 console.log(a); // throws ReferenceError
 console.log(b); // throws ReferenceError
@@ -2122,20 +2123,16 @@ const truthyCount = array.filter(Boolean).length;
 
 ```jsx
 // bad
-const foo = maybe1 > maybe2
-  ? "bar"
-  : value1 > value2 ? "baz" : null;
+const foo = maybe1 > maybe2 ? "bar" : value1 > value2 ? "baz" : null;
 
 // split into 2 separated ternary expressions
-const maybeNull = value1 > value2 ? 'baz' : null;
+const maybeNull = value1 > value2 ? "baz" : null;
 
 // better
-const foo = maybe1 > maybe2
-  ? 'bar'
-  : maybeNull;
+const foo = maybe1 > maybe2 ? "bar" : maybeNull;
 
 // best
-const foo = maybe1 > maybe2 ? 'bar' : maybeNull;
+const foo = maybe1 > maybe2 ? "bar" : maybeNull;
 ```
 
 ### (3) 불필요한 삼항 연산자 사용하지 않기
@@ -2154,27 +2151,27 @@ const baz = !c;
 
 ### (4) 연산자를 섞어 사용할 시 연산자들을 괄호로 둘러싸기
 
-- 유일한 예외는 산술 연산자 (+, -, **)이다. 이들의 우선순위는 상식적으로 이해할 수 있기 때문!
-- /와 *은 섞일 경우 순서가 모호할 수 있으므로 괄호로 감싸는 것을 추천함
+- 유일한 예외는 산술 연산자 (+, -, \*\*)이다. 이들의 우선순위는 상식적으로 이해할 수 있기 때문!
+- /와 \*은 섞일 경우 순서가 모호할 수 있으므로 괄호로 감싸는 것을 추천함
 
 ```jsx
 // bad
-const foo = a && b < 0 || c > 0 || d + 1 === 0;
+const foo = (a && b < 0) || c > 0 || d + 1 === 0;
 
 // bad
-const bar = a ** b - 5 % d;
+const bar = a ** b - (5 % d);
 
 // bad
 // (a || b) && c 으로 혼동할 수 있습니다.
-if (a || b && c) {
+if (a || (b && c)) {
   return d;
 }
 
 // good
-const foo = (a && b < 0) || c > 0 || (d + 1 === 0);
+const foo = (a && b < 0) || c > 0 || d + 1 === 0;
 
 // good
-const bar = (a ** b) - (5 % d);
+const bar = a ** b - (5 % d);
 
 // good
 if (a || (b && c)) {
@@ -2182,7 +2179,7 @@ if (a || (b && c)) {
 }
 
 // good
-const bar = a + b / c * d;
+const bar = a + (b / c) * d;
 ```
 
 ## 14) **코멘트(Comments)**
@@ -2193,7 +2190,7 @@ const bar = a + b / c * d;
 
 ```jsx
 // bad
-const active = true;  // is current tab
+const active = true; // is current tab
 
 // good
 // is current tab
@@ -2201,19 +2198,19 @@ const active = true;
 
 // bad
 function getType() {
-  console.log('fetching type...');
+  console.log("fetching type...");
   // set the default type to 'no type'
-  const type = this.type || 'no type';
+  const type = this.type || "no type";
 
   return type;
 }
 
 // good
 function getType() {
-  console.log('fetching type...');
+  console.log("fetching type...");
 
   // set the default type to 'no type'
-  const type = this.type || 'no type';
+  const type = this.type || "no type";
 
   return type;
 }
@@ -2221,7 +2218,7 @@ function getType() {
 // also good
 function getType() {
   // set the default type to 'no type'
-  const type = this.type || 'no type';
+  const type = this.type || "no type";
 
   return type;
 }
@@ -2244,7 +2241,6 @@ const active = true;
  *새로운 요소를 반환한다.
  */
 function make(tag) {
-
   // ...
 
   return element;
@@ -2256,7 +2252,6 @@ function make(tag) {
  * 새로운 요소를 반환한다.
  */
 function make(tag) {
-
   // ...
 
   return element;
@@ -2299,25 +2294,25 @@ class Calculator extends Abacus {
 
 ```jsx
 // bad
-function test(){
-  console.log('test');
+function test() {
+  console.log("test");
 }
 
 // good
 function test() {
-  console.log('test');
+  console.log("test");
 }
 
 // bad
-dog.set('attr',{
-  age: '1 year',
-  breed: 'Bernese Mountain Dog',
+dog.set("attr", {
+  age: "1 year",
+  breed: "Bernese Mountain Dog",
 });
 
 // good
-dog.set('attr', {
-  age: '1 year',
-  breed: 'Bernese Mountain Dog',
+dog.set("attr", {
+  age: "1 year",
+  breed: "Bernese Mountain Dog",
 });
 ```
 
@@ -2325,8 +2320,8 @@ dog.set('attr', {
 
 ```jsx
 // bad
-if(isJedi) {
-  fight ();
+if (isJedi) {
+  fight();
 }
 
 // good
@@ -2335,13 +2330,13 @@ if (isJedi) {
 }
 
 // bad
-function fight () {
-  console.log ('Swooosh!');
+function fight() {
+  console.log("Swooosh!");
 }
 
 // good
 function fight() {
-  console.log('Swooosh!');
+  console.log("Swooosh!");
 }
 ```
 
@@ -2349,7 +2344,7 @@ function fight() {
 
 ```jsx
 // bad
-const x=y+5;
+const x = y + 5;
 
 // good
 const x = y + 5;
@@ -2373,41 +2368,26 @@ return baz;
 
 // bad
 const obj = {
-  foo() {
-  },
-  bar() {
-  },
+  foo() {},
+  bar() {},
 };
 return obj;
 
 // good
 const obj = {
-  foo() {
-  },
+  foo() {},
 
-  bar() {
-  },
+  bar() {},
 };
 
 return obj;
 
 // bad
-const arr = [
-  function foo() {
-  },
-  function bar() {
-  },
-];
+const arr = [function foo() {}, function bar() {}];
 return arr;
 
 // good
-const arr = [
-  function foo() {
-  },
-
-  function bar() {
-  },
-];
+const arr = [function foo() {}, function bar() {}];
 
 return arr;
 ```
@@ -2417,23 +2397,18 @@ return arr;
 ```jsx
 // bad
 function bar() {
-
   console.log(foo);
-
 }
 
 // bad
 if (baz) {
-
   console.log(qux);
 } else {
   console.log(foo);
-
 }
 
 // bad
 class Foo {
-
   constructor(bar) {
     this.bar = bar;
   }
@@ -2458,8 +2433,8 @@ if (baz) {
 
 ```jsx
 // bad
-const foo = [ 1, 2, 3 ];
-console.log(foo[ 0 ]);
+const foo = [1, 2, 3];
+console.log(foo[0]);
 
 // good
 const foo = [1, 2, 3];
@@ -2472,18 +2447,18 @@ console.log(foo[0]);
 
 ```jsx
 // bad
-const foo = {clark: 'kent'};
+const foo = { clark: "kent" };
 
 // good
-const foo = { clark: 'kent' };
+const foo = { clark: "kent" };
 ```
 
 ### (9) 객체 리터럴 속성의 키와 값 사이에 공백 넣기
 
 ```jsx
 // bad
-var obj = { foo : 42 };
-var obj2 = { foo:42 };
+var obj = { foo: 42 };
+var obj2 = { foo: 42 };
 
 // good
 var obj = { foo: 42 };
@@ -2518,8 +2493,7 @@ var y = 2;
 if (test) {
   thing1();
   thing2();
-}
-else {
+} else {
   thing3();
 }
 
@@ -2602,49 +2576,45 @@ function dogs(x) {
 
 ```jsx
 // bad
-if ((foo === 123 || bar === 'abc') && doesItLookGoodWhenItBecomesThatLong() && isThisReallyHappening()) {
-  thing1();
-}
-
-// bad
-if (foo === 123 &&
-  bar === 'abc') {
-  thing1();
-}
-
-// bad
-if (foo === 123
-  && bar === 'abc') {
-  thing1();
-}
-
-// bad
 if (
-  foo === 123 &&
-  bar === 'abc'
+  (foo === 123 || bar === "abc") &&
+  doesItLookGoodWhenItBecomesThatLong() &&
+  isThisReallyHappening()
 ) {
+  thing1();
+}
+
+// bad
+if (foo === 123 && bar === "abc") {
+  thing1();
+}
+
+// bad
+if (foo === 123 && bar === "abc") {
+  thing1();
+}
+
+// bad
+if (foo === 123 && bar === "abc") {
+  thing1();
+}
+
+// good
+if (foo === 123 && bar === "abc") {
   thing1();
 }
 
 // good
 if (
-  foo === 123
-  && bar === 'abc'
+  (foo === 123 || bar === "abc") &&
+  doesItLookGoodWhenItBecomesThatLong() &&
+  isThisReallyHappening()
 ) {
   thing1();
 }
 
 // good
-if (
-  (foo === 123 || bar === 'abc')
-  && doesItLookGoodWhenItBecomesThatLong()
-  && isThisReallyHappening()
-) {
-  thing1();
-}
-
-// good
-if (foo === 123 && bar === 'abc') {
+if (foo === 123 && bar === "abc") {
   thing1();
 }
 ```
@@ -2655,33 +2625,25 @@ if (foo === 123 && bar === 'abc') {
 
 ```jsx
 // bad
-const story = [
-    once
-  , upon
-  , aTime
-];
+const story = [once, upon, aTime];
 
 // good
-const story = [
-  once,
-  upon,
-  aTime,
-];
+const story = [once, upon, aTime];
 
 // bad
 const hero = {
-    firstName: 'Ada'
-  , lastName: 'Lovelace'
-  , birthYear: 1815
-  , superPower: 'computers'
+  firstName: "Ada",
+  lastName: "Lovelace",
+  birthYear: 1815,
+  superPower: "computers",
 };
 
 // good
 const hero = {
-  firstName: 'Ada',
-  lastName: 'Lovelace',
+  firstName: "Ada",
+  lastName: "Lovelace",
   birthYear: 1815,
-  superPower: 'computers',
+  superPower: "computers",
 };
 ```
 
@@ -2719,7 +2681,7 @@ function createHero(
 ### (1) 형변환을 하는 경우 Number를 사용, 문자열을 파싱하는 경우에는 기수를 인자로 넘겨 parseInt를 사용
 
 ```jsx
-const inputValue = '4';
+const inputValue = "4";
 
 // bad
 const val = new Number(inputValue);
@@ -2764,7 +2726,7 @@ function user(options) {
 }
 
 const bad = new user({
-  name: 'nope',
+  name: "nope",
 });
 
 // good
@@ -2775,7 +2737,7 @@ class User {
 }
 
 const good = new User({
-  name: 'yup',
+  name: "yup",
 });
 ```
 
@@ -2818,42 +2780,43 @@ import insideDirectory from './insideDirectory'; // camelCase export/import/dire
 
 - 이는 변수가 영원히 변하지 않는다는 것을 확신할 수 없을 때 도움을 주기 위한 추가적인 도구이다. 대문자 변수는 변수와 변수의 속성이 변하지 않는다는 것을 프로그래머에게 알려준다.
 - 파일 내 상수 이름을 꼭 대문자로 지을 필요는 없지만 내보내기되는 상수 이름은 대문자로 지어야 한다
-    
-    ```jsx
-    // bad
-    const PRIVATE_VARIABLE = 'should not be unnecessarily uppercased within a file';
-    
-    // bad
-    export const THING_TO_BE_CHANGED = 'should obviously not be uppercased';
-    
-    // bad
-    export let REASSIGNABLE_VARIABLE = 'do not use let with uppercase variables';
-    
-    // ---
-    
-    // allowed but does not supply semantic value
-    export const apiKey = 'SOMEKEY';
-    
-    // better in most cases
-    export const API_KEY = 'SOMEKEY';
-    
-    // ---
-    
-    // bad - unnecessarily uppercases key while adding no semantic value
-    export const MAPPING = {
-      KEY: 'value'
-    };
-    
-    // good
-    export const MAPPING = {
-      key: 'value' // 속성인 key는 대문자가 아님에 유의
-    };
-    ```
-    
+
+  ```jsx
+  // bad
+  const PRIVATE_VARIABLE =
+    "should not be unnecessarily uppercased within a file";
+  
+  // bad
+  export const THING_TO_BE_CHANGED = "should obviously not be uppercased";
+  
+  // bad
+  export let REASSIGNABLE_VARIABLE = "do not use let with uppercase variables";
+  
+  // ---
+  
+  // allowed but does not supply semantic value
+  export const apiKey = "SOMEKEY";
+  
+  // better in most cases
+  export const API_KEY = "SOMEKEY";
+  
+  // ---
+  
+  // bad - unnecessarily uppercases key while adding no semantic value
+  export const MAPPING = {
+    KEY: "value",
+  };
+  
+  // good
+  export const MAPPING = {
+    key: "value", // 속성인 key는 대문자가 아님에 유의
+  };
+  ```
 
 ---
 
 # 2. React 컨벤션
+
 **Airbnb React Style Guide를 참고**
 
 출처)
@@ -2868,10 +2831,10 @@ https://github.com/apple77y/javascript/tree/master/react
 
 ```jsx
 // bad
-import reservationCard from './ReservationCard';
+import reservationCard from "./ReservationCard";
 
 // good
-import ReservationCard from './ReservationCard';
+import ReservationCard from "./ReservationCard";
 
 // bad
 const ReservationItem = <ReservationCard />;
@@ -2884,13 +2847,13 @@ const reservationItem = <ReservationCard />;
 
 ```jsx
 // bad
-import Footer from './Footer/Footer';
+import Footer from "./Footer/Footer";
 
 // bad
-import Footer from './Footer/index';
+import Footer from "./Footer/index";
 
 // good
-import Footer from './Footer';
+import Footer from "./Footer";
 ```
 
 ### (3) **DOM 컴포넌트의 속성 이름을 다른 목적으로 사용해서는 안됨**
@@ -3033,7 +2996,7 @@ import Footer from './Footer';
 ```jsx
 // bad
 <img src="hello.jpg" alt="Picture of me waving hello" />
-  
+
 // good
 <img src="hello.jpg" alt="Me waving hello" />
 ```
@@ -3042,20 +3005,14 @@ import Footer from './Footer';
 
 ```jsx
 // bad
-{todos.map((todo, index) =>
-  <Todo
-    {...todo}
-    key={index}
-  />
-)}
+{
+  todos.map((todo, index) => <Todo {...todo} key={index} />);
+}
 
 // good
-{todos.map(todo => (
-  <Todo
-    {...todo}
-    key={todo.id}
-  />
-))}
+{
+  todos.map((todo) => <Todo {...todo} key={todo.id} />);
+}
 ```
 
 ## 6) 참조(Refs)
@@ -3166,7 +3123,7 @@ class extends React.Component {
 class extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.onClickDiv = this.onClickDiv.bind(this);
   }
 
@@ -3218,3 +3175,222 @@ render() {
 
 </div>
 </details>
+
+# 🌌🔭별을 담다🌌
+
+---
+
+### ⚙️ Management Tool, CI/CD Tool
+
+![Static Badge](https://img.shields.io/badge/JIRA-%230052CC?style=for-the-badge&logo=jira&logoColor=white)
+![Static Badge](https://img.shields.io/badge/GITLAB-%23FC6D26?style=for-the-badge&logo=gitlab&logoColor=white)
+![Static Badge](https://img.shields.io/badge/FIGMA-%23F24E1E?style=for-the-badge&logo=figma&logoColor=white)
+![Static Badge](https://img.shields.io/badge/NOTION-%23000000?style=for-the-badge&logo=notion&logoColor=white)
+![Static Badge](https://img.shields.io/badge/VSCODE-%23007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white)
+![Static Badge](https://img.shields.io/badge/INTELLIJ-black?style=for-the-badge&logo=intellijidea&logoColor=white)
+![Static Badge](https://img.shields.io/badge/AMAZON%20S3-%23569A31?style=for-the-badge&logo=amazons3&logoColor=white)
+![Static Badge](https://img.shields.io/badge/AMAZON%20AWS-%23232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
+![Static Badge](https://img.shields.io/badge/DOCKER-%232496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Static Badge](https://img.shields.io/badge/NGINX-%23009639?style=for-the-badge&logo=nginx&logoColor=white)
+![Static Badge](https://img.shields.io/badge/HTML-%23E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![Static Badge](https://img.shields.io/badge/CSS-%231572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Static Badge](https://img.shields.io/badge/JAVASCRIPT-%23F7DF1E?style=for-the-badge&logo=javascript&logoColor=white)
+![Static Badge](https://img.shields.io/badge/REACT-%2361DAFB?style=for-the-badge&logo=react&logoColor=white)
+![Static Badge](https://img.shields.io/badge/VITE-%23646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Static Badge](https://img.shields.io/badge/AXIOS-%235A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![Static Badge](https://img.shields.io/badge/AMAZON%20EC2-%23FF9900?style=for-the-badge&logo=amazonec2&logoColor=white)
+![Static Badge](https://img.shields.io/badge/ENV-%23ECD53F?style=for-the-badge&logo=dotenv&logoColor=white)
+![Static Badge](https://img.shields.io/badge/JENKINS-%23D24939?style=for-the-badge&logo=jenkins&logoColor=white)
+![Static Badge](https://img.shields.io/badge/SPRING%20BOOT-%236DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![Static Badge](https://img.shields.io/badge/SPRING-%236DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Static Badge](https://img.shields.io/badge/SPRING%20SECURITY-%236DB33F?style=for-the-badge&logo=springsecurity&logoColor=white)
+![Static Badge](https://img.shields.io/badge/REDIS-%23DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![Static Badge](https://img.shields.io/badge/SWAGGER-%2385EA2D?style=for-the-badge&logo=swagger&logoColor=white)
+![Static Badge](https://img.shields.io/badge/MARIADB-%23003545?style=for-the-badge&logo=mariadb&logoColor=white)
+![Static Badge](https://img.shields.io/badge/MONGODB-%2347A248?style=for-the-badge&logo=mongodb&logoColor=white)
+
+### 🍃 BackEnd Tool
+
+### ⚛️ FrontEnd Tool
+
+### 🌌 Project Summary
+
+> 갤러리 형식의 사진 기반 SNS 서비스 👉[https://byeoldam.site](https://byeoldam.site)
+
+(PPT 맨 첫 페이지 혹은 우리 서비스 홈 화면 페이지 보여주기)
+
+![Untitled](Untitled.png)
+
+## 📖 Description
+
+---
+
+현대의 SNS는 단순히 일상을 기록하는 것을 넘어서, 자신의 삶을 다른 사람들에게 공유하는 공간으로 변모하였습니다. 이러한 변화에 타인과 자신을 비교하며 불행하게 될 뿐이라 생각이 들었고 본인의 삶을 진실되게 기록하고, 그것을 본인만의 공간에 담아두는 새로운 형태의 SNS의 필요성을 느끼게 되었습니다.
+
+이런 생각에서 출발한 '별을담다'는 사용자가 자신의 이야기를 별자리로 만들어나가는 과정에 집중하게 하여, 자신의 삶에 더욱 충실하게 살아가는 기회를 제공합니다. 사용자는 자신의 사진을 선택하고, 그에 대한 설명과 태그를 담아 하나의 '별'을 만들어냅니다. 그리고 이런 '별'들을 모아 자신만의 '별자리'를 창조하며, 그것을 자신만의 '우주'에 담아둘 수 있습니다.
+
+자신의 우주에서 전시된 별자리들을 통해 자신의 추억을 돌아보고, 그 이야기를 다른 사람들에게 공유함으로써 삶을 더욱 풍요롭게 만들 수 있습니다. '별을 담다'는 단순히 사진을 공유하는 것이 아닌, 자신의 이야기를 통해 자신만의 우주를 만들어가는 과정을 제공함으로써 사용자에게 새로운 경험을 선사하는 서비스입니다.
+
+## 🌟 Main Feature (해당 페이지 GIF + 상세 설명)
+
+---
+
+### 홈 화면
+
+![홈화면.gif](Untitled.png)
+
+- 홈 화면에서는 마우스를 이용하여 화면을 이동시킬 수 있습니다.
+- 3D 화면처럼 보이도록 하여 우주의 다양한 별자리를 볼 수 있으며 별자리를 클릭하면 해당 별자리를 크게 볼 수 있고 해당 별자리의 별들도 볼 수 있습니다.
+
+### 별자리 생성
+
+![윤곽선 추출.gif](./별자리 생성.gif)
+
+![별자리 생성.gif](별자리생성.gif)
+
+- 사진을 등록하는 버튼을 통해 별자리로 만들고 싶은 사진을 추가할 수 있습니다.
+- 화면에 사진을 업로드한 뒤 AI 윤곽선 추출 버튼을 통해 윤곽선을 추출할 수 있습니다.
+- 추출한 사진을 가지고 원하는 객체를 선택할 수 있습니다.
+- 만약 원하는대로 나오지 않았다면 점들을 드래그 앤 드롭을 통해 별자리를 편집할 수 있습니다.
+- 별자리 편집을 완료하였다면 별자리 이름을 적고 생성 버튼을 누르면 나의 우주에 별자리가 생성된 것을 확인할 수 있습니다.
+
+### 별 생성
+
+![별생성1.gif](<게시물 생성.gif>)
+![별생성2.gif](<게시물 생성 제목.gif>)
+![별생성3.gif](%ED%83%9C%EA%B7%B8%EB%8B%AC%EA%B8%B0.gif)
+![별생성4.gif](<게시물 생성.gif>)
+![별생성5.gif](%EB%A7%88%EC%9A%B0%EC%8A%A4%ED%98%B8%EB%B2%84.gif)
+
+- 사진을 선택하고 사진을 설명할 수 있는 글과 해시태그들을 적습니다.
+- 다음을 눌러 원하는 별자리를 선택하고 새 별을 생성합니다.
+- 별을 생성하면 다음과 같이 별자리에 글이 생김을 확인할 수 있으며 글 위에 마우스를 갖다대면 썸네일이 보이고 별을 누르면 해당 게시글을 볼 수 있습니다.
+
+### 피드
+
+![피드.gif](%ED%94%BC%EB%93%9C.gif)
+
+- 팔로워의 피드들이 나오는 곳이다
+- 좋아요 및 댓글을 달 수 있다
+- 댓글에는 답글을 달 수 있다.
+
+### 검색
+
+![Animation.gif](Animation.gif)
+
+- 유저 검색과 게시물 검색이 가능하다.
+
+## 🛠️ Stack
+
+---
+
+### FrontEnd
+
+- Language : JavaScript
+- Library : React, react-dom, three.js, konva
+
+### BackEnd
+
+- Language : Java
+- Framework : Spring boot
+
+### Database
+
+- REDIS
+- MariaDB
+- MongoDB
+- JPA
+- S3
+
+### AI
+
+- Language : python
+- Framework : Django
+- Model : Detectron2
+
+### Deploy
+
+- Docker
+- Jenkins
+- NginX
+- Gitlab
+- Gerrit
+
+## 📂 Project Structure
+
+---
+
+[BackEnd 파일 구조](https://www.notion.so/BackEnd-46c9f968db304a4aa9eef381f9231ea7?pvs=21)
+
+[AI 파일구조](https://www.notion.so/AI-429a48315b7240b6b5dea2cfa5472256?pvs=21)
+
+[FrontEnd 파일구조](https://www.notion.so/FrontEnd-40b266d94c0c4566925f0e5cc24d2f30?pvs=21)
+
+## 🔨 System Architecture
+
+---
+
+![Untitled](Untitled 201.png)
+
+## ⚒️ CI/CD
+
+---
+
+- GitLab, Gerrit과 Jenkins를 이용하여 지속적 통합 및 자동 배포
+- Gitlab을 통해 Git Flow를 생성하여 Branch를 구성하고 Feature를 생성하여 작업 진행
+- Feature에서 모든 코드 push 시 Gerrit을 통한 코드 리뷰 필수화
+- Develop에서 Master로 코드가 올라가면 Jenkins를 통해 자동 배포
+
+## 👨‍💻 Developer & Role & Contribution
+
+---
+
+## Developer
+
+### 김수혁 BE, AI
+
+- 게시글 이미지, 게시글 썸네일, 프로필 이미지 리사이징
+- 이미지 S3 업로드
+- Detectron2를 이용한 Image Segmentation
+- Mask와 OpenCV를 이용한 윤곽선 추출
+
+### 이민우 BE, INFRA
+
+- 소셜로그인(카카오, 네이버, 구글) 및 이메일 로그인
+- 액세스 토큰 및 리프레시 토큰을 활용한 유저 인증 관리
+- 이메일 검증 및 인증 로직 구현
+- 팔로워, 팔로잉 기능 구현(팔로우 요청, 수락, 취소)
+- REDIS를 사용한 유저인증 쿼리 최적화
+- NoSQL(MongoDB)를 사용한 윤곽선 정보 관리
+- 도커 컴포즈를 활용한 컨테이너 관리
+- Nginx를 활용한 HTTPS 적용
+
+### 이은규 FE, UIUX Design
+
+- 서비스 디자인 기획 및 UIUX 디자인
+- 와이어프레임 및 목업 제작
+- 프론트엔드 컴포넌트, 페이지 계층 구조 제작 및 코드 작성
+- 백엔드 api 통신을 이용한 네비게이션바, 확장바, 프로필 정보 표시, 프로필 정보 수정, 팔로잉 팔로워 모달, 별자리 리스트 모달 구현
+- 컴포넌트, 페이지별 CSS 스타일링
+- 프로젝트 소개 발표 자료 제작 및 발표
+
+### 이창헌 BE
+
+- 별자리, 게시물, 유저 등 핵심 백엔드 데이터베이스 관리
+- 검색, 해시태그, 휴지통 기능 구현
+- UCC 제작
+
+### 차현철 BE
+
+- 댓글 및 대댓글, 좋아요, Swagger 등 백엔드 코드 작성
+- Kafka와 SSE를 활용한 백엔드 알림 기능 구현
+- 댓글 및 대댓글 테스트코드 작성 및 테스트
+- 검색 피드, 상세 게시물, 설정 프론트 페이지 제작
+- 노션 문서 기록 관리
+
+### 황정민 FE, INFRA
+
+- 소셜로그인(카카오, 네이버, 구글) 및 사용자 토큰 관리 구현
+- Three.js를 이용해 사용자가 만든 별자리를 밤하늘의 별을 구경하듯이 볼 수 있는 화면 구현
+- Konva 라이브러리를 사용해 사용자가 이미지나 별자리를 편집할 수 있는 에디터 구현
+- 게릿 깃랩 연동 및 설정, 젠킨스 깃랩 웹훅 연결, nginx를 이용해 리액트 앱 배포 설정

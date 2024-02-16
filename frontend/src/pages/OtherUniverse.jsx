@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { Stars, OrbitControls } from '@react-three/drei';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import ConstellationControls from '../components/three/objects/ConstellationControls';
 import Camera from '../components/three/objects/Camera';
@@ -10,15 +10,29 @@ import Land from '../components/three/objects/Land';
 
 import { getUserUniverse } from '../apis/constellation';
 import getPositionList from '../utils/getPositionList';
+import { checkFollow, followNickname } from '../apis/follow';
 
 export default function OtherUniverse({ setNickname }) {
   const [constellationList, setConstellationList] = useState([]);
+  const [isFollow, setIsFollow] = useState('NOTHING');
   const controller = useRef();
   const params = useParams();
   const camera = useRef();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const nickname = params.nickname;
+    const myNickName = JSON.parse(sessionStorage.profile).nickname;
+
+    if (nickname === myNickName) {
+      window.location.replace('/home');
+      return;
+    }
+
+    checkFollow(nickname).then(({ result }) => {
+      setIsFollow(result);
+    });
+
     setNickname(nickname);
 
     getUserUniverse(nickname).then(({ result }) => {
@@ -36,10 +50,20 @@ export default function OtherUniverse({ setNickname }) {
         }),
       );
     });
-  }, []);
+  }, [params.nickname]);
 
   return (
     <div className="canvas-container">
+      <div
+        className="follow-btn"
+        onClick={() => {
+          followNickname(params.nickname).then(({ data }) => {
+            window.location.reload();
+          });
+        }}
+      >
+        {isFollow == 'NOTHING' ? '팔로우 하기' : '팔로우 취소'}
+      </div>
       <Canvas>
         <Camera ref={camera} />
         <OrbitControls

@@ -77,6 +77,7 @@ export default function ConstellationControls({ controller, constellationList })
           controllerRef.current.object.position.distanceTo(lastCameraState.position) > 2
         )
           return;
+
         setLastCameraState({ ...lastCameraState, isDone: true });
         if (!lastCameraState.prev) {
           controllerRef.current.enableRotate = true;

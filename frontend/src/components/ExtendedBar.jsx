@@ -34,7 +34,7 @@ export default function ExtendedBar({ changeBar, barId, changeExNav, exNav, goHo
     setTimeout(() => {
       changeBar(0);
       changeExNav(0);
-      navigate('/home');
+      // navigate('/home');
     }, 400);
   };
 

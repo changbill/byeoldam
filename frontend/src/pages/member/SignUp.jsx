@@ -27,7 +27,7 @@ export default function SignUp() {
   const [isDuplicatedEmail, setisDuplicatedEmail] = useState(false);
   const [isSamePassword, setIsSamePassword] = useState(true);
   const [isStatredEmailValidation, setIsStartedEmailValidation] = useState(false);
-  const [countDown, setCountDown] = useState(600);
+  const [countDown, setCountDown] = useState(300);
   const [validationCode, setValidationCode] = useState('');
   const [isEndValidation, setIsEndValidation] = useState(false);
 
@@ -38,7 +38,6 @@ export default function SignUp() {
       !email.trim() ||
       !password.trim() ||
       !checkPassword.trim() ||
-      !birthDate.trim() ||
       !nickname.trim() ||
       !name.trim()
     )
@@ -80,14 +79,14 @@ export default function SignUp() {
     if (isStatredEmailValidation) {
       const startTime = new Date();
       const countDownInterval = setInterval(() => {
-        if (countDown > 0) setCountDown(parseInt(600 - (new Date() - startTime) / 1000));
+        if (countDown > 0) setCountDown(parseInt(300 - (new Date() - startTime) / 1000));
       }, 1000);
 
       return () => {
         clearInterval(countDownInterval);
       };
     } else {
-      setCountDown(600);
+      setCountDown(300);
     }
   }, [isStatredEmailValidation]);
 
@@ -116,7 +115,7 @@ export default function SignUp() {
             onChange={(e) => {
               setName(e.target.value);
             }}
-            placeholder="닉네임을 입력해주세요"
+            placeholder="이름을 입력해주세요"
           />
           <label htmlFor="nickname" className="member-input-label">
             닉네임
