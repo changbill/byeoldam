@@ -22,11 +22,11 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
          * 유저 게시물 전체 조회(지워지지 않은)
           */
         // userEntity, deletedAt == Null, VISIBLE
-        @Query("SELECT a FROM ArticleEntity a WHERE a.ownerEntity = :ownerEntity AND a.deletedAt IS NULL AND a.disclosure = 'VISIBLE'")
+        @Query("SELECT a FROM ArticleEntity a JOIN FETCH a.ownerEntity WHERE a.ownerEntity = :ownerEntity AND a.deletedAt IS NULL AND a.disclosure = 'VISIBLE'")
         List<ArticleEntity> findAllByOwnerEntityAndNotDeletedAndDisclosure(@Param("ownerEntity") UserEntity ownerEntity);
 
         // userEntity, deletedAt == Null
-        @Query("SELECT a FROM ArticleEntity a WHERE a.ownerEntity = :ownerEntity AND a.deletedAt IS NULL")
+        @Query("SELECT a FROM ArticleEntity a JOIN FETCH a.ownerEntity WHERE a.ownerEntity = :ownerEntity AND a.deletedAt IS NULL")
         List<ArticleEntity> findAllByOwnerEntityAndNotDeleted(@Param("ownerEntity") UserEntity ownerEntity);
 
         /**
@@ -38,8 +38,8 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
         List<ArticleEntity> findAllByOwnerEntity(UserEntity userEntity);
 
         // 별자리 검색 시 클릭, 해당 별자리 게시물 전체 조회
-        @Query("SELECT a FROM ArticleEntity a WHERE a.constellationEntity = :constellationEntity AND a.deletedAt IS NULL AND (a.disclosure = 'VISIBLE' OR a.ownerEntity = :userEntity)")
-        List<ArticleEntity> findAllByConstellationEntitySearch(@Param("constellationEntity")ConstellationEntity constellationEntity, @Param("userEntity")UserEntity userEntity);
+        @Query("SELECT a FROM ArticleEntity a JOIN FETCH a.ownerEntity JOIN FETCH a.constellationEntity WHERE a.constellationEntity = :constellationEntity AND a.deletedAt IS NULL AND (a.disclosure = 'VISIBLE' OR a.ownerEntity = :userEntity)")
+        List<ArticleEntity> findAllByConstellationEntitySearch(@Param("constellationEntity") ConstellationEntity constellationEntity, @Param("userEntity") UserEntity userEntity);
 
         // 별자리 삭제 시 별자리의 모든 게시물 가져오기
 //        @Query("SELECT a FROM ArticleEntity a WHERE a.constellationEntity = :constellationEntity")
