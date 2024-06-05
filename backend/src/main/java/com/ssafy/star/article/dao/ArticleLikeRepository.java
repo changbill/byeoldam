@@ -29,8 +29,9 @@ public interface ArticleLikeRepository extends JpaRepository<ArticleLikeEntity, 
     @Query("DELETE FROM ArticleLikeEntity e WHERE e.userEntity = :userEntity AND e.deletedAt IS NULL")
     void deleteAllByUserEntity(UserEntity userEntity);
 
-    @Query("SELECT entity FROM ArticleLikeEntity entity WHERE entity.articleEntity = :articleEntity AND entity.deletedAt IS NULL")
-    List<ArticleLikeEntity> findAllByArticleEntity(ArticleEntity articleEntity);
-    @Query("SELECT e FROM ArticleLikeEntity e WHERE e.userEntity = :userEntity AND e.deletedAt IS NULL ORDER BY e.createdAt DESC")
-    Page<ArticleLikeEntity> findAllByUserEntityOrderByCreatedAtDesc(UserEntity userEntity, Pageable pageable);
+    @Query("SELECT entity FROM ArticleLikeEntity entity JOIN FETCH entity.articleEntity WHERE entity.articleEntity = :articleEntity AND entity.deletedAt IS NULL")
+    List<ArticleLikeEntity> findAllByArticleEntity(@Param("articleEntity") ArticleEntity articleEntity);
+
+    @Query("SELECT e FROM ArticleLikeEntity e JOIN FETCH e.userEntity WHERE e.userEntity = :userEntity AND e.deletedAt IS NULL ORDER BY e.createdAt DESC")
+    Page<ArticleLikeEntity> findAllByUserEntityOrderByCreatedAtDesc(@Param("userEntity") UserEntity userEntity, Pageable pageable);
 }
