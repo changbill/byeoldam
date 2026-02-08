@@ -129,7 +129,7 @@ public class UserController {
             description = "이미 가입된 닉네임인지 체크한다. True일 경우 가입한 적이 없고, False일 경우 동일한 닉네임이 존재한다."
     )
     @PostMapping("/users/check-nickname")
-    public Response<Boolean> checkDuplicateNickname(@RequestBody NicknameRequest request) {
+    public Response<Boolean> checkDuplicateNickname(@RequestBody UserRequest request) {
         return Response.success(userService.checkDuplicateNickname(request.nickname()));
     }
 

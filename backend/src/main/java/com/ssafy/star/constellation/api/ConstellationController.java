@@ -10,7 +10,7 @@ import com.ssafy.star.constellation.dto.response.ConstellationResponse;
 import com.ssafy.star.constellation.dto.response.ConstellationWithArticleResponse;
 import com.ssafy.star.contour.dto.Contour;
 import com.ssafy.star.user.application.FollowService;
-import com.ssafy.star.user.dto.request.NicknameRequest;
+import com.ssafy.star.user.dto.request.UserRequest;
 import com.ssafy.star.user.dto.response.LikeUserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -159,9 +159,9 @@ public class ConstellationController {
             }
     )
     @PostMapping("/add-user/constellations/{constellationId}")
-    public Response<Void> addUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId, @RequestBody NicknameRequest nicknameRequest) {
-        String userEmail = nicknameRequest.nickname();
-        constellationService.addUser(constellationId, userEmail, userDetails.getUsername());
+    public Response<Void> addUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId, @RequestBody UserRequest userRequest) {
+        String nickname = userRequest.nickname();
+        constellationService.addUser(constellationId, nickname, userDetails.getUsername());
         return Response.success();
     }
 
@@ -173,9 +173,9 @@ public class ConstellationController {
             }
     )
     @DeleteMapping("/delete-user/constellations/{constellationId}")
-    public Response<Void> deleteUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId, @RequestBody NicknameRequest nicknameRequest) {
-        String userEmail = nicknameRequest.nickname();
-        constellationService.deleteUser(constellationId, userEmail, userDetails.getUsername());
+    public Response<Void> deleteUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId, @RequestBody UserRequest userRequest) {
+        String nickname = userRequest.nickname();
+        constellationService.deleteUser(constellationId, nickname, userDetails.getUsername());
         return Response.success();
     }
 
@@ -199,7 +199,7 @@ public class ConstellationController {
             }
     )
     @PutMapping("/role-modify/constellations/{constellationId}")
-    public Response<Void> roleModify(@PathVariable Long constellationId, @RequestBody NicknameRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+    public Response<Void> roleModify(@PathVariable Long constellationId, @RequestBody UserRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         String nickname = request.nickname();
         constellationService.roleModify(constellationId, nickname, userDetails.getUsername());
         return Response.success();
