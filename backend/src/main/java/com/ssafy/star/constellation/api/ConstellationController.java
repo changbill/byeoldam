@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,7 +46,7 @@ public class ConstellationController {
     )
     @PostMapping("/constellations")
     public Response<Void> create(
-            Authentication authentication,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestPart("request") ConstellationCreateRequest request,
             @RequestPart("origin") MultipartFile origin,
             @RequestPart("thumb") MultipartFile thumb,
@@ -55,7 +57,7 @@ public class ConstellationController {
         log.debug("contoursList : {} contoursList : {}", contoursList, ultimate);
         // 사용자를 관리자로 만듦
         constellationService.create(
-                authentication.getName(),
+                userDetails.getUsername(),
                 request.name(),
                 origin,
                 thumb,
@@ -75,7 +77,7 @@ public class ConstellationController {
     )
     @PutMapping("/constellations/{constellationId}")
     public Response<Void> modify(
-            Authentication authentication,
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long constellationId,
             @RequestPart("request") ConstellationModifyRequest request,
             @RequestPart("origin") MultipartFile origin,
@@ -85,7 +87,7 @@ public class ConstellationController {
             @RequestPart("ultimate") List<List<Integer>> ultimate
     ) throws IOException {
         constellationService.modify(
-                authentication.getName(),
+                userDetails.getUsername(),
                 constellationId,
                 request.name(),
                 origin,
@@ -105,8 +107,8 @@ public class ConstellationController {
             }
     )
     @DeleteMapping("/constellations/{constellationId}")
-    public Response<Void> deleteConstellationWithContour(Authentication authentication, @PathVariable Long constellationId) {
-        constellationService.deleteConstellationWithContour(authentication.getName(), constellationId);
+    public Response<Void> deleteConstellationWithContour(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId) {
+        constellationService.deleteConstellationWithContour(userDetails.getUsername(), constellationId);
         return Response.success();
     }
 
@@ -118,8 +120,8 @@ public class ConstellationController {
             }
     )
     @GetMapping("/constellations")
-    public Response<List<ConstellationWithArticleResponse>> myConstellations(Authentication authentication) {
-        return Response.success(constellationService.myConstellations(authentication.getName()).stream().map(ConstellationWithArticleResponse::fromConstellationWithArticle).toList());
+    public Response<List<ConstellationWithArticleResponse>> myConstellations(@AuthenticationPrincipal UserDetails userDetails) {
+        return Response.success(constellationService.myConstellations(userDetails.getUsername()).stream().map(ConstellationWithArticleResponse::fromConstellationWithArticle).toList());
     }
 
     @Operation(
@@ -127,9 +129,9 @@ public class ConstellationController {
             description = "유저의 별자리 전체 조회입니다."
     )
     @GetMapping("/constellations/user/{nickname}")
-    public Response<List<ConstellationWithArticleResponse>> userConstellations(Authentication authentication, @PathVariable String nickname) {
+    public Response<List<ConstellationWithArticleResponse>> userConstellations(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String nickname) {
         return Response.success(
-                constellationService.userConstellations(nickname, authentication.getName())
+                constellationService.userConstellations(nickname, userDetails.getUsername())
                         .stream()
                         .map(ConstellationWithArticleResponse::fromConstellationWithArticle)
                         .toList()
@@ -144,8 +146,8 @@ public class ConstellationController {
             }
     )
     @PostMapping("/constellations/{constellationId}/request-contour")
-    public Response<Contour> requestModifyConstellation(Authentication authentication, @PathVariable Long constellationId) {
-        return Response.success(constellationService.requestModifyConstellation(authentication.getName(), constellationId));
+    public Response<Contour> requestModifyConstellation(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId) {
+        return Response.success(constellationService.requestModifyConstellation(userDetails.getUsername(), constellationId));
     }
 
     // TODO : 별자리 공유 신청, 수락 로직으로 바꿀 것
@@ -157,9 +159,9 @@ public class ConstellationController {
             }
     )
     @PostMapping("/add-user/constellations/{constellationId}")
-    public Response<Void> addUser(Authentication authentication, @PathVariable Long constellationId, @RequestBody NicknameRequest nicknameRequest) {
+    public Response<Void> addUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId, @RequestBody NicknameRequest nicknameRequest) {
         String userEmail = nicknameRequest.nickname();
-        constellationService.addUser(constellationId, userEmail, authentication.getName());
+        constellationService.addUser(constellationId, userEmail, userDetails.getUsername());
         return Response.success();
     }
 
@@ -171,9 +173,9 @@ public class ConstellationController {
             }
     )
     @DeleteMapping("/delete-user/constellations/{constellationId}")
-    public Response<Void> deleteUser(Authentication authentication, @PathVariable Long constellationId, @RequestBody NicknameRequest nicknameRequest) {
+    public Response<Void> deleteUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId, @RequestBody NicknameRequest nicknameRequest) {
         String userEmail = nicknameRequest.nickname();
-        constellationService.deleteUser(constellationId, userEmail, authentication.getName());
+        constellationService.deleteUser(constellationId, userEmail, userDetails.getUsername());
         return Response.success();
     }
 
@@ -185,7 +187,7 @@ public class ConstellationController {
             }
     )
     @GetMapping("/users/constellations/{constellationId}")
-    public Response<List<ConstellationForUserResponse>> userCheck(@PathVariable Long constellationId, Authentication authentication, Pageable pageable) {
+    public Response<List<ConstellationForUserResponse>> userCheck(@PathVariable Long constellationId, @AuthenticationPrincipal UserDetails userDetails, Pageable pageable) {
         return Response.success(constellationService.findConstellationUsers(constellationId));
     }
 
@@ -197,9 +199,9 @@ public class ConstellationController {
             }
     )
     @PutMapping("/role-modify/constellations/{constellationId}")
-    public Response<Void> roleModify(@PathVariable Long constellationId, @RequestBody NicknameRequest request, Authentication authentication) {
+    public Response<Void> roleModify(@PathVariable Long constellationId, @RequestBody NicknameRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         String nickname = request.nickname();
-        constellationService.roleModify(constellationId, nickname, authentication.getName());
+        constellationService.roleModify(constellationId, nickname, userDetails.getUsername());
         return Response.success();
     }
 
@@ -208,8 +210,8 @@ public class ConstellationController {
             description = "별자리 좋아요를 요청합니다."
     )
     @PostMapping("/constellations/{constellationId}/likes")
-    public Response<Void> like(Authentication authentication, @PathVariable Long constellationId) {
-        constellationService.like(constellationId, authentication.getName());
+    public Response<Void> like(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId) {
+        constellationService.like(constellationId, userDetails.getUsername());
         return Response.success();
     }
 
@@ -218,8 +220,8 @@ public class ConstellationController {
             description = "별자리 좋아요 상태를 확인합니다."
     )
     @GetMapping("/constellations/{constellationId}/likes")
-    public Response<Boolean> checkLike(Authentication authentication, @PathVariable Long constellationId) {
-        return Response.success(constellationService.checkLike(constellationId, authentication.getName()));
+    public Response<Boolean> checkLike(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId) {
+        return Response.success(constellationService.checkLike(constellationId, userDetails.getUsername()));
     }
 
     @Operation(
