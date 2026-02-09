@@ -1,10 +1,10 @@
 package com.ssafy.star.constellation.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.star.article.application.ArticleService;
 import com.ssafy.star.constellation.application.ConstellationService;
 import com.ssafy.star.user.application.FollowService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import com.ssafy.star.user.dto.request.UserRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,10 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
 
@@ -25,89 +22,90 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ConstellationController.class)
 @AutoConfigureMockMvc(addFilters = false) // 컨트롤러 매핑만 볼 거라 Security 필터는 끔
 class ConstellationControllerTest {
 
-    @Autowired MockMvc mockMvc;
+    @Autowired
+    MockMvc mockMvc;
 
-    @MockBean ConstellationService constellationService;
-    @MockBean ArticleService articleService;
-    @MockBean FollowService followService;
-
-    @BeforeEach
-    void setUp(WebApplicationContext context) {
-        this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(springSecurity()) // 👈 이 설정이 반드시 있어야 Authentication 파라미터가 주입됩니다!
-                .build();
-    }
+    @MockBean
+    ConstellationService constellationService;
+    @MockBean
+    ArticleService articleService;
+    @MockBean
+    FollowService followService;
 
     @NonNull
-    private static MockMultipartFile getRequestPart() {
+    private MockMultipartFile getRequestPart() {
         MockMultipartFile requestPart = new MockMultipartFile(
                 "request",
                 "request.json",
                 MediaType.APPLICATION_JSON_VALUE,
                 """
-                {"name":"ORION"}
-                """.getBytes(StandardCharsets.UTF_8)
+                        {"name":"ORION"}
+                        """.getBytes(StandardCharsets.UTF_8)
         );
         return requestPart;
     }
 
     @NonNull
-    private static MockMultipartFile getThumb() {
+    private MockMultipartFile getThumb() {
         MockMultipartFile thumb = new MockMultipartFile("thumb", "thumb.png", MediaType.IMAGE_PNG_VALUE, "x".getBytes());
         return thumb;
     }
 
     @NonNull
-    private static MockMultipartFile getCthumb() {
+    private MockMultipartFile getCthumb() {
         MockMultipartFile cthumb = new MockMultipartFile("cthumb", "cthumb.png", MediaType.IMAGE_PNG_VALUE, "x".getBytes());
         return cthumb;
     }
 
     @NonNull
-    private static MockMultipartFile getOrigin() {
+    private MockMultipartFile getOrigin() {
         MockMultipartFile origin = new MockMultipartFile("origin", "origin.png", MediaType.IMAGE_PNG_VALUE, "x".getBytes());
         return origin;
     }
 
     @NonNull
-    private static MockMultipartFile getContoursList() {
+    private MockMultipartFile getContoursList() {
         MockMultipartFile contoursList = new MockMultipartFile(
                 "contoursList",
                 "contoursList.json",
                 MediaType.APPLICATION_JSON_VALUE,
                 """
-                [[[1,2],[3,4]],[[5,6],[7,8]]]
-                """.getBytes(StandardCharsets.UTF_8)
+                        [[[1,2],[3,4]],[[5,6],[7,8]]]
+                        """.getBytes(StandardCharsets.UTF_8)
         );
         return contoursList;
     }
 
     @NonNull
-    private static MockMultipartFile getUltimate() {
+    private MockMultipartFile getUltimate() {
         MockMultipartFile ultimate = new MockMultipartFile(
                 "ultimate",
                 "ultimate.json",
                 MediaType.APPLICATION_JSON_VALUE,
                 """
-                [[10,20],[30,40]]
-                """.getBytes(StandardCharsets.UTF_8)
+                        [[10,20],[30,40]]
+                        """.getBytes(StandardCharsets.UTF_8)
         );
         return ultimate;
     }
 
-    private static long CONSTELLATION_ID = 1L;
+    @NonNull
+    private UserRequest getUserRequest() {
+        UserRequest userRequest = new UserRequest(
+                "userNickname"
+        );
+        return userRequest;
+    }
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final long CONSTELLATION_ID = 1L;
 
     @Test
     @WithMockUser(username = "test-user@example.com")
@@ -122,17 +120,15 @@ class ConstellationControllerTest {
 
         // when & then
         mockMvc.perform(
-                        multipart("/api/v1/constellations")
-                                .file(requestPart)
-                                .file(origin)
-                                .file(thumb)
-                                .file(cthumb)
-                                .file(contoursList)
-                                .file(ultimate)
-                                .with(csrf())
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                )
-                .andExpect(status().isOk());
+                multipart("/api/v1/constellations")
+                        .file(requestPart)
+                        .file(origin)
+                        .file(thumb)
+                        .file(cthumb)
+                        .file(contoursList)
+                        .file(ultimate)
+                        .with(csrf())
+        ).andExpect(status().isOk());
 
         verify(constellationService).create(
                 eq("test-user@example.com"),
@@ -158,20 +154,19 @@ class ConstellationControllerTest {
 
         // when & then
         mockMvc.perform(
-                        multipart("/api/v1/constellations/{constellationId}", constellationId)
-                                .file(requestPart)
-                                .file(origin)
-                                .file(thumb)
-                                .file(cthumb)
-                                .file(contoursList)
-                                .file(ultimate)
-                                .with(req -> {
-                                    req.setMethod("PUT");
-                                    return req;
-                                })
-                                .with(csrf())
-                )
-                .andExpect(status().isOk());
+                multipart("/api/v1/constellations/{constellationId}", constellationId)
+                        .file(requestPart)
+                        .file(origin)
+                        .file(thumb)
+                        .file(cthumb)
+                        .file(contoursList)
+                        .file(ultimate)
+                        .with(req -> {
+                            req.setMethod("PUT");
+                            return req;
+                        })
+                        .with(csrf())
+        ).andExpect(status().isOk());
 
         verify(constellationService).modify(
                 eq("test-user@example.com"),
@@ -192,10 +187,9 @@ class ConstellationControllerTest {
 
         // when & then
         mockMvc.perform(
-                        delete("/api/v1/constellations/{constellationId}", constellationId)
-                                .with(csrf())
-                )
-                .andExpect(status().isOk());
+                delete("/api/v1/constellations/{constellationId}", constellationId)
+                        .with(csrf())
+        ).andExpect(status().isOk());
 
         verify(constellationService).deleteConstellationWithContour("test-user@example.com", constellationId);
         verifyNoMoreInteractions(constellationService);
@@ -209,12 +203,185 @@ class ConstellationControllerTest {
 
         // when & then
         mockMvc.perform(
-                        get("/api/v1/constellations/{constellationId}/likes", constellationId)
-                                .with(csrf())
-                )
-                .andExpect(status().isOk());
+                get("/api/v1/constellations/{constellationId}/likes", constellationId)
+                        .with(csrf())
+        ).andExpect(status().isOk());
 
         verify(constellationService).checkLike(constellationId, "test-user@example.com");
+        verifyNoMoreInteractions(constellationService);
+    }
+
+    @Test
+    @WithMockUser(username = "test-user@example.com")
+    void 내_별자리_전체조회() throws Exception {
+        // given
+        // when&then
+        mockMvc.perform(
+                get("/api/v1/constellations")
+                        .with(csrf())
+        ).andExpect(status().isOk());
+
+        verify(constellationService).myConstellations("test-user@example.com");
+        verifyNoMoreInteractions(constellationService);
+    }
+
+    // todo: Security 권한 설정 추가예정
+    @Test
+    @WithMockUser(username = "test-user@example.com")
+    void 유저_별자리_전체조회() {
+        // given
+        // when&then
+    }
+
+    @Test
+    @WithMockUser(username = "test-user@example.com")
+    void 별자리_윤곽선_정보_반환() throws Exception {
+        // given
+        long constellationId = CONSTELLATION_ID;
+
+        // when&then
+        mockMvc.perform(
+                post("/api/v1/constellations/{constellationId}/request-contour", constellationId)
+                        .with(csrf())
+        ).andExpect(status().isOk());
+
+        verify(constellationService).requestModifyConstellation("test-user@example.com", constellationId);
+        verifyNoMoreInteractions(constellationService);
+    }
+
+    @Test
+    @WithMockUser(username = "test-user@example.com")
+    void 공유_별자리에_유저추가() throws Exception {
+        // given
+        long constellationId = CONSTELLATION_ID;
+        UserRequest userRequest = getUserRequest();
+        String json = objectMapper.writeValueAsString(userRequest);
+
+        // when&then
+        mockMvc.perform(
+                post("/api/v1/constellations/add-user/{constellationId}", constellationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .with(csrf())
+        ).andExpect(status().isOk());
+
+        verify(constellationService).addUser(
+                CONSTELLATION_ID,
+                "userNickname",
+                "test-user@example.com");
+        verifyNoMoreInteractions(constellationService);
+    }
+
+    @Test
+    @WithMockUser(username = "test-user@example.com")
+    void 공유별자리_유저_삭제() throws Exception {
+        // given
+        long constellationId = CONSTELLATION_ID;
+        UserRequest userRequest = getUserRequest();
+        String json = objectMapper.writeValueAsString(userRequest);
+
+        // when&then
+        mockMvc.perform(
+                delete("/api/v1/constellations/delete-user/{constellationId}", constellationId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        ).andExpect(status().isOk());
+
+        verify(constellationService).deleteUser(
+                constellationId,
+                userRequest.nickname(),
+                "test-user@example.com"
+        );
+        verifyNoMoreInteractions(constellationService);
+    }
+
+    @Test
+    @WithMockUser(username = "test-user@example.com")
+    void 공유별자리의_유저_조회() throws Exception {
+        // given
+        long constellationId = CONSTELLATION_ID;
+
+        // when&then
+        mockMvc.perform(
+                get("/api/v1/constellations/users/{constellationId}", constellationId)
+                        .with(csrf())
+        ).andExpect(status().isOk());
+
+        verify(constellationService).findConstellationUsers(constellationId);
+        verifyNoMoreInteractions(constellationService);
+    }
+
+    // todo: security 권한 추가
+    @Test
+    @WithMockUser(username = "test-user@example.com")
+    void roleModify() {
+        // given
+        long constellationId = CONSTELLATION_ID;
+
+        // when&then
+    }
+
+    @Test
+    @WithMockUser(username = "test-user@example.com")
+    void 별자리_좋아요_요청() throws Exception {
+        // given
+        long constellationId = CONSTELLATION_ID;
+
+        // when&then
+        mockMvc.perform(
+                post("/api/v1/constellations/{constellationId}/likes", constellationId)
+                        .with(csrf())
+        ).andExpect(status().isOk());
+
+        verify(constellationService).like(constellationId, "test-user@example.com");
+        verifyNoMoreInteractions(constellationService);
+    }
+
+    @Test
+    @WithMockUser(username = "test-user@example.com")
+    void 별자리_좋아요_중인지_확인() throws Exception {
+        // given
+        long constellationId = CONSTELLATION_ID;
+
+        // when&then
+        mockMvc.perform(
+                get("/api/v1/constellations/{constellationId}/likes", constellationId)
+                        .with(csrf())
+        ).andExpect(status().isOk());
+
+        verify(constellationService).checkLike(constellationId, "test-user@example.com");
+        verifyNoMoreInteractions(constellationService);
+    }
+
+    @Test
+    @WithMockUser(username = "test-user@example.com")
+    void 별자리_좋아요_개수_확인() throws Exception {
+        // given
+        long constellationId = CONSTELLATION_ID;
+
+        // when&then
+        mockMvc.perform(
+                get("/api/v1/constellations/{constellationId}/likeCount", constellationId)
+                        .with(csrf())
+        ).andExpect(status().isOk());
+
+        verify(constellationService).likeCount(constellationId);
+        verifyNoMoreInteractions(constellationService);
+    }
+
+    @Test
+    void 별자리_좋아요_목록_확인() throws Exception {
+        // given
+        long constellationId = CONSTELLATION_ID;
+
+        // when&then
+        mockMvc.perform(
+                get("/api/v1/constellations/{constellationId}/likelist", constellationId)
+                        .with(csrf())
+        ).andExpect(status().isOk());
+
+        verify(constellationService).likeList(constellationId);
         verifyNoMoreInteractions(constellationService);
     }
 }
