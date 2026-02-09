@@ -30,7 +30,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/constellations")
 @RequiredArgsConstructor
 public class ConstellationController {
     private final ConstellationService constellationService;
@@ -44,7 +44,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "생성 성공", content = @Content(schema = @Schema(implementation = ConstellationResponse.class)))
             }
     )
-    @PostMapping("/constellations")
+    @PostMapping
     public Response<Void> create(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestPart("request") ConstellationCreateRequest request,
@@ -75,7 +75,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "수정 성공", content = @Content(schema = @Schema(implementation = ConstellationResponse.class)))
             }
     )
-    @PutMapping("/constellations/{constellationId}")
+    @PutMapping("/{constellationId}")
     public Response<Void> modify(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long constellationId,
@@ -106,7 +106,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "삭제 성공", content = @Content(schema = @Schema(implementation = ConstellationResponse.class)))
             }
     )
-    @DeleteMapping("/constellations/{constellationId}")
+    @DeleteMapping("/{constellationId}")
     public Response<Void> deleteConstellationWithContour(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId) {
         constellationService.deleteConstellationWithContour(userDetails.getUsername(), constellationId);
         return Response.success();
@@ -119,7 +119,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ConstellationResponse.class)))
             }
     )
-    @GetMapping("/constellations")
+    @GetMapping
     public Response<List<ConstellationWithArticleResponse>> myConstellations(@AuthenticationPrincipal UserDetails userDetails) {
         return Response.success(constellationService.myConstellations(userDetails.getUsername()).stream().map(ConstellationWithArticleResponse::fromConstellationWithArticle).toList());
     }
@@ -128,7 +128,7 @@ public class ConstellationController {
             summary = "유저의 별자리 전체 조회",
             description = "유저의 별자리 전체 조회입니다."
     )
-    @GetMapping("/constellations/user/{nickname}")
+    @GetMapping("/user/{nickname}")
     public Response<List<ConstellationWithArticleResponse>> userConstellations(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String nickname) {
         return Response.success(
                 constellationService.userConstellations(nickname, userDetails.getUsername())
@@ -145,7 +145,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ConstellationResponse.class)))
             }
     )
-    @PostMapping("/constellations/{constellationId}/request-contour")
+    @PostMapping("/{constellationId}/request-contour")
     public Response<Contour> requestModifyConstellation(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId) {
         return Response.success(constellationService.requestModifyConstellation(userDetails.getUsername(), constellationId));
     }
@@ -158,7 +158,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "추가 성공", content = @Content(schema = @Schema(implementation = ConstellationResponse.class)))
             }
     )
-    @PostMapping("/add-user/constellations/{constellationId}")
+    @PostMapping("/add-user/{constellationId}")
     public Response<Void> addUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId, @RequestBody UserRequest userRequest) {
         String nickname = userRequest.nickname();
         constellationService.addUser(constellationId, nickname, userDetails.getUsername());
@@ -172,7 +172,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "삭제 성공", content = @Content(schema = @Schema(implementation = ConstellationResponse.class)))
             }
     )
-    @DeleteMapping("/delete-user/constellations/{constellationId}")
+    @DeleteMapping("/delete-user/{constellationId}")
     public Response<Void> deleteUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId, @RequestBody UserRequest userRequest) {
         String nickname = userRequest.nickname();
         constellationService.deleteUser(constellationId, nickname, userDetails.getUsername());
@@ -186,8 +186,8 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ConstellationResponse.class)))
             }
     )
-    @GetMapping("/users/constellations/{constellationId}")
-    public Response<List<ConstellationForUserResponse>> userCheck(@PathVariable Long constellationId, @AuthenticationPrincipal UserDetails userDetails, Pageable pageable) {
+    @GetMapping("/users/{constellationId}")
+    public Response<List<ConstellationForUserResponse>> userCheck(@PathVariable Long constellationId) {
         return Response.success(constellationService.findConstellationUsers(constellationId));
     }
 
@@ -198,7 +198,7 @@ public class ConstellationController {
                     @ApiResponse(responseCode = "200", description = "수정 성공", content = @Content(schema = @Schema(implementation = ConstellationResponse.class)))
             }
     )
-    @PutMapping("/role-modify/constellations/{constellationId}")
+    @PutMapping("/role-modify/{constellationId}")
     public Response<Void> roleModify(@PathVariable Long constellationId, @RequestBody UserRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         String nickname = request.nickname();
         constellationService.roleModify(constellationId, nickname, userDetails.getUsername());
@@ -209,7 +209,7 @@ public class ConstellationController {
             summary = "별자리 좋아요 요청",
             description = "별자리 좋아요를 요청합니다."
     )
-    @PostMapping("/constellations/{constellationId}/likes")
+    @PostMapping("/{constellationId}/likes")
     public Response<Void> like(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId) {
         constellationService.like(constellationId, userDetails.getUsername());
         return Response.success();
@@ -219,7 +219,7 @@ public class ConstellationController {
             summary = "별자리 좋아요 상태 확인",
             description = "별자리 좋아요 상태를 확인합니다."
     )
-    @GetMapping("/constellations/{constellationId}/likes")
+    @GetMapping("/{constellationId}/likes")
     public Response<Boolean> checkLike(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long constellationId) {
         return Response.success(constellationService.checkLike(constellationId, userDetails.getUsername()));
     }
@@ -228,7 +228,7 @@ public class ConstellationController {
             summary = "별자리 좋아요 갯수 확인",
             description = "별자리 좋아요의 개수를 확인합니다."
     )
-    @GetMapping("/constellations/{constellationId}/likeCount")
+    @GetMapping("/{constellationId}/likeCount")
     public Response<Integer> likeCount(@PathVariable Long constellationId) {
         return Response.success(constellationService.likeCount(constellationId));
     }
@@ -241,7 +241,7 @@ public class ConstellationController {
             }
 
     )
-    @GetMapping("/constellations/{constellationId}/likeList")
+    @GetMapping("/{constellationId}/likelist")
     public Response<List<LikeUserResponse>> likeList(@PathVariable Long constellationId) {
         return Response.success(constellationService.likeList(constellationId).stream().map(LikeUserResponse::fromUser).toList());
     }
