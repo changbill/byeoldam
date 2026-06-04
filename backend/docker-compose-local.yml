@@ -12,8 +12,9 @@ services:
       - ./database/data:/var/lib/mysql
     environment:
       - MARIADB_DATABASE=byeol_dam
-      - MARIADB_USER=${SPRING_DATASOURCE_USERNAME}
-      - MARIADB_ROOT_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - MARIADB_USER=${SPRING_DATASOURCE_USERNAME:-byeoldam}
+      - MARIADB_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-byeoldam}
+      - MARIADB_ROOT_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-byeoldam}
       - "TZ=Asia/Seoul"
     command:
       - --character-set-server=utf8mb4
@@ -42,7 +43,7 @@ services:
       - ./mongodb/config:/etc/mongodb/conf.d
     environment:
       - MONGO_INITDB_DATABASE=byeol_dam
-      - MONGO_INITDB_ROOT_USERNAME=${SPRING_DATASOURCE_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME=${SPRING_DATASOURCE_USERNAME:-byeoldam}
+      - MONGO_INITDB_ROOT_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-byeoldam}
     ports:
       - "27017:27017"

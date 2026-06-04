@@ -2,10 +2,11 @@ package com.ssafy.star.contour.application;
 
 import com.ssafy.star.contour.domain.ContourEntity;
 import com.ssafy.star.contour.repository.ContourRepository;
-import com.ssafy.star.contour.utils.SequenceGeneratorService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +16,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest
+@ActiveProfiles("test")
 class ContourServiceTest {
 
     @Autowired
     private ContourRepository contourRepository;
+
+    @BeforeEach
+    void setUp() {
+        contourRepository.deleteAll();
+    }
 
     @Test
     public void insert() {
@@ -35,7 +42,9 @@ class ContourServiceTest {
 
     @Test
     public void select() {
-        //Long id = 1L;
+        contourRepository.save(ContourEntity.of("originUrl1", "thumbUrl1", "cThumbUrl1", makeThreeDimensionList(), makeTwoDimensionList()));
+        contourRepository.save(ContourEntity.of("originUrl2", "thumbUrl2", "cThumbUrl2", makeThreeDimensionList(), makeTwoDimensionList()));
+
         List<ContourEntity> entity = contourRepository.findAll();
         System.out.println(entity);
         assertEquals(entity.size(), 2);

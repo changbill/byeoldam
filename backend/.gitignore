@@ -233,4 +233,7 @@ gradle-app.setting
 **/mongodb/data/
 ###
 .env
-# End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,windows,macos,visualstudiocode
+.codex/*
+PLAN.md
+RESEARCH.md
+SPEC.md
