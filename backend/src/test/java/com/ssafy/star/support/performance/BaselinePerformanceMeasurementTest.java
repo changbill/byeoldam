@@ -6,6 +6,7 @@ import com.ssafy.star.article.domain.ArticleEntity;
 import com.ssafy.star.constellation.application.ConstellationService;
 import com.ssafy.star.constellation.dao.ConstellationRepository;
 import com.ssafy.star.constellation.domain.ConstellationEntity;
+import com.ssafy.star.support.PerformanceProfileSupport;
 import com.ssafy.star.user.domain.UserEntity;
 import com.ssafy.star.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,9 +23,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles("test")
 @EnabledIfEnvironmentVariable(named = "PERFORMANCE_BASELINE", matches = "true")
-class BaselinePerformanceMeasurementTest {
+class BaselinePerformanceMeasurementTest extends PerformanceProfileSupport {
 
     private static final int WARM_UP = 2;
     private static final int ITERATIONS = 5;
@@ -133,12 +132,12 @@ class BaselinePerformanceMeasurementTest {
 
     private UserEntity requireUser(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("Run LARGE seed first. Missing user: " + email));
+                .orElseThrow(() -> new IllegalStateException(seedRequiredMessage("user: " + email)));
     }
 
     private UserEntity requireUserByNickname(String nickname) {
         return userRepository.findByNickname(nickname)
-                .orElseThrow(() -> new IllegalStateException("Run LARGE seed first. Missing user: " + nickname));
+                .orElseThrow(() -> new IllegalStateException(seedRequiredMessage("user: " + nickname)));
     }
 
     private ArticleEntity requireVisibleArticle() {
@@ -147,7 +146,7 @@ class BaselinePerformanceMeasurementTest {
                 .filter(article -> article.getDeletedAt() == null)
                 .filter(article -> "VISIBLE".equals(article.getDisclosure().name()))
                 .min(Comparator.comparing(ArticleEntity::getId))
-                .orElseThrow(() -> new IllegalStateException("Run LARGE seed first. Missing visible performance article."));
+                .orElseThrow(() -> new IllegalStateException(seedRequiredMessage("visible performance article")));
     }
 
     private ConstellationEntity requireConstellationWithVisibleArticle() {
@@ -164,13 +163,19 @@ class BaselinePerformanceMeasurementTest {
                 .getResultList()
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Run LARGE seed first. Missing constellation with visible performance article."));
+                .orElseThrow(() -> new IllegalStateException(seedRequiredMessage("constellation with visible performance article")));
     }
 
     private ConstellationEntity requireConstellationOwnedBy(UserEntity owner) {
         return constellationRepository.findAllByUserEntity(owner).stream()
                 .filter(constellation -> constellation.getName().startsWith("PERF-CONSTELLATION-"))
                 .min(Comparator.comparing(ConstellationEntity::getId))
-                .orElseThrow(() -> new IllegalStateException("Run LARGE seed first. Missing performance constellation owned by " + owner.getNickname()));
+                .orElseThrow(() -> new IllegalStateException(seedRequiredMessage("performance constellation owned by " + owner.getNickname())));
+    }
+
+    private String seedRequiredMessage(String missingTarget) {
+        return "Run LARGE seed once against the performance DB first. Missing " + missingTarget
+                + ". Command: $env:PERFORMANCE_SEED='true'; .\\gradlew.bat test --tests "
+                + "\"com.ssafy.star.support.performance.PerformanceDataSeedTest.recreateLargeDataset\"";
     }
 }

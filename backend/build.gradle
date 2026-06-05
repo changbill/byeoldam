@@ -53,6 +53,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter:2.0.5'
+    testImplementation 'org.testcontainers:testcontainers-mongodb:2.0.5'
+    testRuntimeOnly 'com.h2database:h2'
 
     //  AWS S3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
@@ -60,4 +64,9 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        systemProperty 'docker.client.strategy', 'org.testcontainers.dockerclient.EnvironmentAndSystemPropertyClientProviderStrategy'
+        systemProperty 'docker.host', 'npipe:////./pipe/dockerDesktopLinuxEngine'
+        systemProperty 'api.version', '1.44'
+    }
 }

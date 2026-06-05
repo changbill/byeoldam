@@ -14,6 +14,7 @@ import com.ssafy.star.global.oauth.domain.ProviderType;
 import com.ssafy.star.image.ImageType;
 import com.ssafy.star.image.dao.ImageRepository;
 import com.ssafy.star.image.domain.ImageEntity;
+import com.ssafy.star.support.TestContainerSupport;
 import com.ssafy.star.user.domain.ApprovalStatus;
 import com.ssafy.star.user.domain.FollowEntity;
 import com.ssafy.star.user.domain.UserEntity;
@@ -23,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,8 +32,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles("test")
-class ArticleServiceVerificationTest {
+class ArticleServiceVerificationTest extends TestContainerSupport {
 
     @Autowired
     ArticleService articleService;
