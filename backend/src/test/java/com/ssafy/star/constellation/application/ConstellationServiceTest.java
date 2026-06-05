@@ -7,13 +7,13 @@ import com.ssafy.star.constellation.domain.ConstellationUserEntity;
 import com.ssafy.star.contour.domain.ContourEntity;
 import com.ssafy.star.contour.repository.ContourRepository;
 import com.ssafy.star.global.oauth.domain.ProviderType;
+import com.ssafy.star.support.TestContainerSupport;
 import com.ssafy.star.user.domain.UserEntity;
 import com.ssafy.star.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -23,8 +23,7 @@ import static com.ssafy.star.constellation.ConstellationUserRole.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles("test")
-class ConstellationServiceTest {
+class ConstellationServiceTest extends TestContainerSupport {
 
     private final ConstellationService constellationService;
     private final UserRepository userRepository;

@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${PERFORMANCE_MARIADB_URL:jdbc:mariadb://localhost:3306/byeol_dam?allowPublicKeyRetrieval=true&useSSL=false}
+    username: ${PERFORMANCE_DATASOURCE_USERNAME:${SPRING_DATASOURCE_USERNAME:byeoldam}}
+    password: ${PERFORMANCE_DATASOURCE_PASSWORD:${SPRING_DATASOURCE_PASSWORD:byeoldam}}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  data:
+    redis:
+      url: ${PERFORMANCE_REDIS_URL:redis://localhost:6379}
+    mongodb:
+      uri: ${PERFORMANCE_MONGODB_URI:mongodb://byeoldam:byeoldam@localhost:27017/byeol_dam?authSource=admin}

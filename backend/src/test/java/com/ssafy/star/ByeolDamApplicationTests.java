@@ -1,12 +1,11 @@
 package com.ssafy.star;
 
+import com.ssafy.star.support.TestContainerSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("test")
-class ByeolDamApplicationTests {
+class ByeolDamApplicationTests extends TestContainerSupport {
 
     @Test
     void contextLoads() {

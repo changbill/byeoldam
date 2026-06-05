@@ -15,6 +15,7 @@ import com.ssafy.star.global.oauth.domain.ProviderType;
 import com.ssafy.star.image.ImageType;
 import com.ssafy.star.image.dao.ImageRepository;
 import com.ssafy.star.image.domain.ImageEntity;
+import com.ssafy.star.support.TestContainerSupport;
 import com.ssafy.star.user.domain.ApprovalStatus;
 import com.ssafy.star.user.domain.FollowEntity;
 import com.ssafy.star.user.domain.UserEntity;
@@ -23,7 +24,6 @@ import com.ssafy.star.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,8 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@ActiveProfiles("test")
-class ConstellationServiceVerificationTest {
+class ConstellationServiceVerificationTest extends TestContainerSupport {
 
     @Autowired
     ConstellationService constellationService;
