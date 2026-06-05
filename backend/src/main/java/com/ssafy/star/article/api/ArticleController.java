@@ -3,7 +3,8 @@ package com.ssafy.star.article.api;
 
 import com.ssafy.star.article.application.ArticleService;
 import com.ssafy.star.article.dto.request.*;
-import com.ssafy.star.article.dto.response.ArticleResponse;
+import com.ssafy.star.article.dto.response.ArticleDetailResponse;
+import com.ssafy.star.article.dto.response.ArticleSummaryResponse;
 import com.ssafy.star.article.dto.response.Response;
 import com.ssafy.star.common.exception.ByeolDamException;
 import com.ssafy.star.common.exception.ErrorCode;
@@ -14,13 +15,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -34,7 +32,7 @@ public class ArticleController {
             summary = "게시물 작성 및 미분류 별자리 배정",
             description = "미분류 별자리에 들어갈 게시물 작성입니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "생성 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "생성 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @PostMapping("/articles/no-constellation")
@@ -60,7 +58,7 @@ public class ArticleController {
             summary = "게시물 작성 및 별자리 배정",
             description = "게시물 작성과 별자리 배정이 동시에 일어납니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "생성 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "생성 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @PostMapping("/articles")
@@ -87,7 +85,7 @@ public class ArticleController {
             summary = "게시물 수정",
             description = "게시물 수정입니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "게시물 수정 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "게시물 수정 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @PutMapping("/articles/{articleId}")
@@ -101,7 +99,7 @@ public class ArticleController {
             summary = "게시물 삭제",
             description = "게시물 삭제입니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "삭제 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "삭제 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @DeleteMapping("/articles/{articleId}")
@@ -114,13 +112,13 @@ public class ArticleController {
             summary = "팔로우 피드",
             description = "팔로워들의 게시물을 최신순으로 정렬하여 페이지로 반환합니다",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleSummaryResponse.class)))
             }
     )
     @GetMapping("/articles/follow")
-    public Response<Page<ArticleResponse>> followFeed(Authentication authentication, Pageable pageable) {
+    public Response<Page<ArticleSummaryResponse>> followFeed(Authentication authentication, Pageable pageable) {
         String email = authentication.getName();
-        return Response.success(articleService.followFeed(email, pageable).map(ArticleResponse::fromArticle));
+        return Response.success(articleService.followFeed(email, pageable).map(ArticleSummaryResponse::fromArticleSummary));
     }
 
     @Operation(
@@ -129,29 +127,26 @@ public class ArticleController {
                     "접속자가 유저를 팔로우 중일 경우 전체 조회, " +
                     "그 외 discloseType이 VISIBLE인 게시물만 반환",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleSummaryResponse.class)))
             }
     )
     @GetMapping("/articles/user/{nickname}")
-    public Response<Page<ArticleResponse>> userArticlePage(@PathVariable String nickname, Authentication authentication,Pageable pageable) {
-        List<ArticleResponse> articleResponses = articleService.userArticleList(nickname, authentication.getName()).stream().map(ArticleResponse::fromArticle).toList();
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), articleResponses.size());
-        return Response.success(new PageImpl<>(articleResponses.subList(start, end), pageable, articleResponses.size()));
+    public Response<Page<ArticleSummaryResponse>> userArticlePage(@PathVariable String nickname, Authentication authentication,Pageable pageable) {
+        return Response.success(articleService.userArticlePage(nickname, authentication.getName(), pageable).map(ArticleSummaryResponse::fromArticleSummary));
     }
 
     @Operation(
             summary = "게시물 상세 조회",
             description = "게시물 상세 조회입니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @GetMapping("/articles/{articleId}")
-    public Response<ArticleResponse> read(@PathVariable Long articleId, Authentication authentication, Pageable pageable) {
+    public Response<ArticleDetailResponse> read(@PathVariable Long articleId, Authentication authentication, Pageable pageable) {
         String email = authentication.getName();
 
-        return Response.success(ArticleResponse.fromArticle(articleService.detail(articleId, email)));
+        return Response.success(ArticleDetailResponse.fromArticleDetail(articleService.detail(articleId, email)));
     }
 
     @Operation(
@@ -159,7 +154,7 @@ public class ArticleController {
             description = "별자리에 게시물을 한개 또는 여러개를 배정합니다. " +
                           "다른 별자리에 있던 게시물을 현 별자리로 옮길 수도 있습니다",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "배정 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "배정 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @PostMapping("/articles/constellation-select/{constellationId}")
@@ -172,48 +167,54 @@ public class ArticleController {
             summary = "별자리에 있는 게시물 전체 조회",
             description = "별자리에 있는 게시물 전체 조회입니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleSummaryResponse.class)))
             }
     )
     @GetMapping("/articles/constellation/{constellationId}")
-    public Response<List<ArticleResponse>> articlesInConstellation(@PathVariable Long constellationId, Authentication authentication) {
-        return Response.success(articleService.articlesInConstellation(constellationId, authentication.getName()).stream().map(ArticleResponse::fromArticle).toList());
+    public Response<Page<ArticleSummaryResponse>> articlesInConstellation(
+            @PathVariable Long constellationId,
+            Authentication authentication,
+            Pageable pageable
+    ) {
+        return Response.success(articleService.articlesInConstellation(constellationId, authentication.getName(), pageable)
+                .map(ArticleSummaryResponse::fromArticleSummary));
     }
 
     @Operation(
             summary = "미분류 게시물 전체 조회",
             description = "미분류 별자리에 있는 게시물 전체 조회입니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleSummaryResponse.class)))
             }
     )
     @GetMapping("/articles/constellation")
-    public Response<List<ArticleResponse>> articlesInNoConstellation(Authentication authentication) {
-        return Response.success(articleService.articlesInNoConstellation(authentication.getName()).stream().map(ArticleResponse::fromArticle).toList());
+    public Response<Page<ArticleSummaryResponse>> articlesInNoConstellation(Authentication authentication, Pageable pageable) {
+        return Response.success(articleService.articlesInNoConstellation(authentication.getName(), pageable)
+                .map(ArticleSummaryResponse::fromArticleSummary));
     }
 
     @Operation(
             summary = "휴지통 조회",
             description = "휴지통을 조회합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ArticleSummaryResponse.class)))
             }
     )
     @GetMapping("/articles/trashcan")
-    public Response<Page<ArticleResponse>> trashcan(Authentication authentication, Pageable pageable) {
-        return Response.success(articleService.trashcan(authentication.getName(), pageable).map(ArticleResponse::fromArticle));
+    public Response<Page<ArticleSummaryResponse>> trashcan(Authentication authentication, Pageable pageable) {
+        return Response.success(articleService.trashcan(authentication.getName(), pageable).map(ArticleSummaryResponse::fromArticleSummary));
     }
 
     @Operation(
             summary = "게시물 복원",
             description = "휴지통에 있던 게시물을 복원합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "복원 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "복원 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @PutMapping("/articles/trashcan/undo")
-    public Response<ArticleResponse> undoDeletion(@RequestBody ArticleDeletionUndo articleDeletionUndo, Authentication authentication) {
-        return Response.success(ArticleResponse.fromArticle(articleService.undoDeletion(articleDeletionUndo.articleId(), authentication.getName())));
+    public Response<ArticleDetailResponse> undoDeletion(@RequestBody ArticleDeletionUndo articleDeletionUndo, Authentication authentication) {
+        return Response.success(ArticleDetailResponse.fromArticleDetail(articleService.undoDeletion(articleDeletionUndo.articleId(), authentication.getName())));
     }
 
     @Operation(
@@ -243,18 +244,4 @@ public class ArticleController {
     public Response<Integer> likeCount(@PathVariable Long articleId) {
         return Response.success(articleService.likeCount(articleId));
     }
-
-//    @Operation(
-//            summary = "게시물을 좋아요한 사람의 목록 확인",
-//            description = "게시물을 좋아요한 사람의 목록을 확인합니다.",
-//            responses = {
-//                    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = LikeUserResponse.class)))
-//            }
-//
-//    )
-//    @GetMapping("/articles/{articleId}/likeList")
-//    public Response<List<LikeUserResponse>> likeList(@PathVariable Long articleId) {
-//        return Response.success(articleService.likeList(articleId).stream().map(LikeUserResponse::fromUser).toList());
-//    }
-
 }

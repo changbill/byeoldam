@@ -1,7 +1,7 @@
 package com.ssafy.star.search.api;
 
 import com.ssafy.star.article.dao.ArticleRepository;
-import com.ssafy.star.article.dto.response.ArticleResponse;
+import com.ssafy.star.article.dto.response.ArticleDetailResponse;
 import com.ssafy.star.article.dto.response.Response;
 import com.ssafy.star.common.exception.ByeolDamException;
 import com.ssafy.star.common.exception.ErrorCode;
@@ -51,13 +51,13 @@ public class SearchController {
             description = "제목 검색 기능입니다. " +
                     "게시물의 제목을 기준으로 게시물 리스트를 찾습니다. 최신순 정렬합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @GetMapping("/search/title")
-    public Response<List<ArticleResponse>> titleSearch(@RequestParam String keyword) {
+    public Response<List<ArticleDetailResponse>> titleSearch(@RequestParam String keyword) {
         log.info("request 정보 : {}", keyword);
-        return Response.success(articleSearchService.titleSearch(keyword).stream().map(ArticleResponse::fromArticle).toList());
+        return Response.success(articleSearchService.titleSearch(keyword).stream().map(ArticleDetailResponse::fromArticleDetail).toList());
     }
 
     @Operation(
@@ -65,13 +65,13 @@ public class SearchController {
             description = "제목 연관 검색 기능입니다. " +
                     "게시물의 제목을 기준으로 게시물을 5개 찾습니다. 최신순 정렬합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @GetMapping("/related-search/title")
-    public Response<List<ArticleResponse>> titleRelatedSearch(@RequestParam String keyword) {
+    public Response<List<ArticleDetailResponse>> titleRelatedSearch(@RequestParam String keyword) {
         log.info("request 정보 : {}", keyword);
-        return Response.success(articleSearchService.titleRelatedSearch(keyword).map(ArticleResponse::fromArticle).stream().toList());
+        return Response.success(articleSearchService.titleRelatedSearch(keyword).map(ArticleDetailResponse::fromArticleDetail).stream().toList());
     }
 
     @Operation(
@@ -79,13 +79,13 @@ public class SearchController {
             description = "해시태그 검색 기능입니다. " +
                     "게시물의 해시태그를 기준으로 게시물을 찾습니다. 최신순 정렬합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @GetMapping("/search/hashtag")
-    public Response<List<ArticleResponse>> hashtagSearch(@RequestParam String keyword) {
+    public Response<List<ArticleDetailResponse>> hashtagSearch(@RequestParam String keyword) {
         log.info("request 정보 : {}", keyword);
-        return Response.success(articleSearchService.hashtagSearch(keyword).stream().map(ArticleResponse::fromArticle).toList());
+        return Response.success(articleSearchService.hashtagSearch(keyword).stream().map(ArticleDetailResponse::fromArticleDetail).toList());
     }
 
     @Operation(
@@ -93,13 +93,13 @@ public class SearchController {
             description = "해시태그 연관 검색 기능입니다. " +
                     "게시물의 해시태그를 기준으로 게시물을 5개 찾습니다. 최신순 정렬합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @GetMapping("/related-search/hashtag")
-    public Response<List<ArticleResponse>> hashtagRelatedSearch(@RequestParam String keyword) {
+    public Response<List<ArticleDetailResponse>> hashtagRelatedSearch(@RequestParam String keyword) {
         log.info("request 정보 : {}", keyword);
-        return Response.success(articleSearchService.hashtagRelatedSearch(keyword).map(ArticleResponse::fromArticle).stream().toList());
+        return Response.success(articleSearchService.hashtagRelatedSearch(keyword).map(ArticleDetailResponse::fromArticleDetail).stream().toList());
     }
 
     @Operation(
@@ -133,7 +133,7 @@ public class SearchController {
                     contourResponse,
                     constellationEntity.getHits(),
                     constellationEntity.getAdminEntity().getNickname(),
-                    articleRepository.findAllByConstellationEntitySearch(constellationEntity, userEntity).size(),
+                    articleRepository.findReadableArticlesInConstellation(constellationEntity, userEntity).size(),
                     constellationEntity.getCreatedAt(),
                     constellationEntity.getModifiedAt()
             ));
@@ -173,7 +173,7 @@ public class SearchController {
                     contourResponse,
                     constellationEntity.getHits(),
                     constellationEntity.getAdminEntity().getNickname(),
-                    articleRepository.findAllByConstellationEntitySearch(constellationEntity, userEntity).size(),
+                    articleRepository.findReadableArticlesInConstellation(constellationEntity, userEntity).size(),
                     constellationEntity.getCreatedAt(),
                     constellationEntity.getModifiedAt()
             ));
@@ -187,7 +187,7 @@ public class SearchController {
             description = "유저 검색 기능입니다. " +
                     "닉네임을 기준으로 게시물을 찾습니다. 최신순 정렬합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @GetMapping("/search/user")
@@ -201,7 +201,7 @@ public class SearchController {
             description = "유저 연관 검색 기능입니다. " +
                     "닉네임을 기준으로 게시물을 5개 찾습니다. 최신순 정렬합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @GetMapping("/related-search/user")

@@ -1,7 +1,7 @@
 package com.ssafy.star.user.api;
 
 import com.ssafy.star.article.application.ArticleService;
-import com.ssafy.star.article.dto.response.ArticleResponse;
+import com.ssafy.star.article.dto.response.ArticleDetailResponse;
 import com.ssafy.star.common.exception.ByeolDamException;
 import com.ssafy.star.common.exception.ErrorCode;
 import com.ssafy.star.common.response.Response;
@@ -351,12 +351,12 @@ public class UserController {
             summary = "내가 좋아요한 게시글 목록 확인",
             description = "내가 좋아요한 게시글 목록을 확인합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "내가 좋아요한 게시글 정보 반환", content = @Content(schema = @Schema(implementation = ArticleResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "내가 좋아요한 게시글 정보 반환", content = @Content(schema = @Schema(implementation = ArticleDetailResponse.class)))
             }
     )
     @GetMapping("/me/like-articles")
-    public Response<Page<ArticleResponse>> likeArticleList(Authentication authentication, Pageable pageable) {
-        return Response.success(userService.likeArticleList(authentication.getName(), pageable).map(ArticleResponse::fromArticle));
+    public Response<Page<ArticleDetailResponse>> likeArticleList(Authentication authentication, Pageable pageable) {
+        return Response.success(userService.likeArticleList(authentication.getName(), pageable).map(ArticleDetailResponse::fromArticleDetail));
     }
     @GetMapping("/{nickname}/request-profile")
     public Response<String> getProfileImageUrl(@PathVariable(name = "nickname") String nickname) {

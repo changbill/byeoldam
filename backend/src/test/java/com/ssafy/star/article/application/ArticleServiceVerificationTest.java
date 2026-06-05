@@ -57,7 +57,7 @@ class ArticleServiceVerificationTest extends TestContainerSupport {
         saveArticle("visible", owner, null, DisclosureType.VISIBLE);
         saveArticle("invisible", owner, null, DisclosureType.INVISIBLE);
 
-        var result = articleService.userArticleList(owner.getNickname(), owner.getEmail());
+        var result = articleService.userArticlePage(owner.getNickname(), owner.getEmail());
 
         assertThat(result).extracting("title")
                 .contains("visible", "invisible");
@@ -70,7 +70,7 @@ class ArticleServiceVerificationTest extends TestContainerSupport {
         saveArticle("visible", owner, null, DisclosureType.VISIBLE);
         saveArticle("invisible", owner, null, DisclosureType.INVISIBLE);
 
-        var result = articleService.userArticleList(owner.getNickname(), viewer.getEmail());
+        var result = articleService.userArticlePage(owner.getNickname(), viewer.getEmail());
 
         assertThat(result).extracting("title")
                 .containsExactly("visible");
@@ -112,7 +112,7 @@ class ArticleServiceVerificationTest extends TestContainerSupport {
 
         articleService.delete(article.getId(), owner.getEmail());
 
-        assertThat(articleService.userArticleList(owner.getNickname(), owner.getEmail()))
+        assertThat(articleService.userArticlePage(owner.getNickname(), owner.getEmail()))
                 .extracting("title")
                 .doesNotContain("deleted");
         assertThat(articleService.trashcan(owner.getEmail(), PageRequest.of(0, 10)).getContent())

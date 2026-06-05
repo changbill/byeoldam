@@ -22,7 +22,6 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE `article` SET deleted_at = NOW() where id=?")
-//@Where(clause = "deleted_at is NULL")
 public class ArticleEntity {
 
     // TODO : Article 인덱싱 ownerEntity 기준으로
@@ -34,7 +33,6 @@ public class ArticleEntity {
     @Column(name = "title", nullable = false, length = 105)
     private String title;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "articleEntity", cascade = CascadeType.ALL)
     private Set<ArticleHashtagRelationEntity> articleHashtagRelationEntities = new HashSet<>();
 
@@ -48,18 +46,15 @@ public class ArticleEntity {
     @Column(name = "disclosure", nullable = false)
     private DisclosureType disclosure;
 
-    @ToString.Exclude
     @Setter
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "constellation_id")
     private ConstellationEntity constellationEntity;
 
-    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity ownerEntity;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "articleEntity", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CommentEntity> commentEntities;
 
@@ -126,7 +121,7 @@ public class ArticleEntity {
             ConstellationEntity constellationEntity,
             ImageEntity imageEntity
     ){
-        ArticleEntity entity = new ArticleEntity(
+        return new ArticleEntity(
                 title,
                 description,
                 disclosure,
@@ -134,7 +129,6 @@ public class ArticleEntity {
                 constellationEntity,
                 imageEntity
         );
-        return entity;
     }
 
 }
