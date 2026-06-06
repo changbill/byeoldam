@@ -67,7 +67,7 @@ class BaselinePerformanceMeasurementTest extends PerformanceProfileSupport {
                 "article.userArticleList(heavyOwner)",
                 WARM_UP,
                 ITERATIONS,
-                () -> assertThat(articleService.userArticlePage(heavyArticleOwner.getNickname(), BASELINE_EMAIL)).isNotEmpty()
+                () -> assertThat(articleService.userArticlePage(heavyArticleOwner.getNickname(), BASELINE_EMAIL, PageRequest.of(0, 20)).getContent()).isNotEmpty()
         ));
         measurements.add(timer.measure(
                 "article.detail(visibleArticle)",

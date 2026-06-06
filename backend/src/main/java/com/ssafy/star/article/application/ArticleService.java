@@ -22,7 +22,6 @@ import com.ssafy.star.image.application.ImageService;
 import com.ssafy.star.image.domain.ImageEntity;
 import com.ssafy.star.image.dto.Image;
 import com.ssafy.star.user.domain.ApprovalStatus;
-import com.ssafy.star.user.domain.FollowEntity;
 import com.ssafy.star.user.domain.UserEntity;
 import com.ssafy.star.user.dto.User;
 import com.ssafy.star.user.repository.FollowRepository;
@@ -30,7 +29,6 @@ import com.ssafy.star.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -161,28 +159,11 @@ public class ArticleService {
     // 팔로우한 사람들의 게시물들을 최신순으로 나열해서 보여준다
     @Transactional(readOnly = true)
     public Page<ArticleSummary> followFeed(String email, Pageable pageable) {
-        UserEntity userEntity = getUserEntityOrExceptionByEmail(email);
-        Set<UserEntity> userEntitySet = followRepository.findByFromUserAndStatus(userEntity, ApprovalStatus.ACCEPT).stream().map(FollowEntity::getToUser).collect(Collectors.toSet());
+        UserEntity viewerEntity = getUserEntityOrExceptionByEmail(email);
 
-        List<ArticleEntity> articleEntityList = new ArrayList<>();
-
-        for (UserEntity followerEntity : userEntitySet) {
-            List<ArticleEntity> followerArticleEntityList = articleRepository.findNotDeletedArticlesByOwner(followerEntity);
-
-            articleEntityList.addAll(followerArticleEntityList);
-        }
-
-        // 최신순 정렬
-        articleEntityList.sort((a1, a2) -> {
-            int createdAtComparison = a2.getCreatedAt().compareTo(a1.getCreatedAt());
-            if (createdAtComparison != 0) {
-                return createdAtComparison;
-            }
-            return a2.getId().compareTo(a1.getId());
-        });
-
-        // 페이징처리
-        return toPage(articleEntityList, pageable).map(ArticleSummary::fromEntity);
+        return articleRepository
+                .findFollowFeedLatestSort(viewerEntity, ApprovalStatus.ACCEPT, pageable)
+                .map(ArticleSummary::fromEntity);
     }
 
     /**
@@ -190,13 +171,17 @@ public class ArticleService {
      */
     @Transactional(readOnly = true)
     public Page<ArticleSummary> userArticlePage(String nickname, String email, Pageable pageable) {
-        List<ArticleSummary> articleSummaryList = findArticleSummariesByUserRelation(nickname, email);
-        return toPage(articleSummaryList, pageable);
-    }
+        UserEntity viewerEntity = getUserEntityOrExceptionByEmail(email);
+        UserEntity ownerEntity = getUserEntityOrExceptionByNickname(nickname);
+        boolean visibleOnly = !viewerEntity.equals(ownerEntity)
+                && followRepository.findByFromUserAndToUserAndStatus(
+                        viewerEntity,
+                        ownerEntity,
+                        ApprovalStatus.ACCEPT
+                ).isEmpty();
 
-    @Transactional(readOnly = true)
-    public List<ArticleSummary> userArticlePage(String nickname, String email) {
-        return findArticleSummariesByUserRelation(nickname, email);
+        return articleRepository.findArticlesByOwner(ownerEntity, visibleOnly, pageable)
+                .map(ArticleSummary::fromEntity);
     }
 
     /**
@@ -384,35 +369,6 @@ public class ArticleService {
         }
     }
 
-    private List<ArticleSummary> findArticleSummariesByUserRelation(String nickname, String email) {
-        UserEntity myEntity = getUserEntityOrExceptionByEmail(email);
-        UserEntity userEntity = getUserEntityOrExceptionByNickname(nickname);
-
-        if(!myEntity.equals(userEntity) && followRepository.findByFromUserAndToUser(myEntity, userEntity).isEmpty()) {
-            // disclosureType에 따라 조회여부 판단
-            return articleRepository.findVisibleArticlesByOwner(userEntity)
-                    .stream()
-                    .map(ArticleSummary::fromEntity)
-                    .toList();
-        }
-
-        // following 중이라면 전체 조회한다
-        return articleRepository.findNotDeletedArticlesByOwner(userEntity)
-                .stream()
-                .map(ArticleSummary::fromEntity)
-                .toList();
-    }
-
-    private <T> Page<T> toPage(List<T> list, Pageable pageable) {
-        int start = (int) pageable.getOffset();
-        if(start >= list.size()) {
-            return new PageImpl<>(List.of(), pageable, list.size());
-        }
-
-        int end = Math.min((start + pageable.getPageSize()), list.size());
-
-        return new PageImpl<>(list.subList(start, end), pageable, list.size());
-    }
     private void validateConstellationAdmin(ConstellationEntity constellationEntity, UserEntity userEntity) {
         if(constellationEntity.getAdminEntity() != userEntity) {
             throw new ByeolDamException(ErrorCode.INVALID_PERMISSION,

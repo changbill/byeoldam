@@ -3,6 +3,7 @@ package com.ssafy.star.article.dao;
 import com.ssafy.star.article.domain.ArticleEntity;
 import com.ssafy.star.common.types.DisclosureType;
 import com.ssafy.star.constellation.domain.ConstellationEntity;
+import com.ssafy.star.user.domain.ApprovalStatus;
 import com.ssafy.star.user.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -57,16 +58,18 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
-    public List<ArticleEntity> findVisibleArticlesByOwner(UserEntity ownerEntity) {
-        return articleJpaRepository.findVisibleArticlesByOwner(
-                ownerEntity,
-                DisclosureType.VISIBLE
-        );
+    public List<ArticleEntity> findNotDeletedArticlesByOwner(UserEntity ownerEntity) {
+        return articleJpaRepository.findNotDeletedArticlesByOwner(ownerEntity);
     }
 
     @Override
-    public List<ArticleEntity> findNotDeletedArticlesByOwner(UserEntity ownerEntity) {
-        return articleJpaRepository.findNotDeletedArticlesByOwner(ownerEntity);
+    public Page<ArticleEntity> findArticlesByOwner(UserEntity ownerEntity, boolean visibleOnly, Pageable pageable) {
+        return articleJpaRepository.findArticlesByOwner(
+                ownerEntity,
+                visibleOnly,
+                DisclosureType.VISIBLE,
+                pageable
+        );
     }
 
     @Override
@@ -118,5 +121,10 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     @Override
     public Integer countNotDeletedArticlesByOwner(UserEntity ownerEntity) {
         return articleJpaRepository.countByOwnerEntityAndDeletedAtIsNull(ownerEntity);
+    }
+
+    @Override
+    public Page<ArticleEntity> findFollowFeedLatestSort(UserEntity viewer, ApprovalStatus status, Pageable pageable) {
+        return articleJpaRepository.findFollowFeedLatestSort(viewer, status, pageable);
     }
 }

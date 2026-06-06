@@ -2,6 +2,7 @@ package com.ssafy.star.article.dao;
 
 import com.ssafy.star.article.domain.ArticleEntity;
 import com.ssafy.star.constellation.domain.ConstellationEntity;
+import com.ssafy.star.user.domain.ApprovalStatus;
 import com.ssafy.star.user.domain.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,16 +26,20 @@ public interface ArticleRepository {
 
     boolean isVisibleArticle(Long articleId);
 
-    List<ArticleEntity> findVisibleArticlesByOwner(UserEntity ownerEntity);
+    default List<ArticleEntity> findNotDeletedArticlesByOwner(UserEntity ownerEntity) {
+        return findArticlesByOwner(ownerEntity, false, Pageable.unpaged()).getContent();
+    }
 
-    List<ArticleEntity> findNotDeletedArticlesByOwner(UserEntity ownerEntity);
+    Page<ArticleEntity> findArticlesByOwner(UserEntity ownerEntity, boolean visibleOnly, Pageable pageable);
 
     Page<ArticleEntity> findDeletedArticlesByOwner(UserEntity ownerEntity, Pageable pageable);
 
-    List<ArticleEntity> findReadableArticlesInConstellation(
+    default List<ArticleEntity> findReadableArticlesInConstellation(
             ConstellationEntity constellationEntity,
             UserEntity userEntity
-    );
+    ) {
+        return findReadableArticlesInConstellation(constellationEntity, userEntity, Pageable.unpaged()).getContent();
+    }
 
     Page<ArticleEntity> findReadableArticlesInConstellation(
             ConstellationEntity constellationEntity,
@@ -44,9 +49,13 @@ public interface ArticleRepository {
 
     List<ArticleEntity> findArticlesInConstellation(ConstellationEntity constellationEntity);
 
-    List<ArticleEntity> findUnassignedArticlesByOwner(UserEntity ownerEntity);
+    default List<ArticleEntity> findUnassignedArticlesByOwner(UserEntity ownerEntity) {
+        return findUnassignedArticlesByOwner(ownerEntity, Pageable.unpaged()).getContent();
+    }
 
     Page<ArticleEntity> findUnassignedArticlesByOwner(UserEntity ownerEntity, Pageable pageable);
 
     Integer countNotDeletedArticlesByOwner(UserEntity ownerEntity);
+
+    Page<ArticleEntity> findFollowFeedLatestSort(UserEntity viewer, ApprovalStatus status, Pageable pageable);
 }

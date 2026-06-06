@@ -3,6 +3,7 @@ package com.ssafy.star.article.dao;
 import com.ssafy.star.article.domain.ArticleEntity;
 import com.ssafy.star.common.types.DisclosureType;
 import com.ssafy.star.constellation.domain.ConstellationEntity;
+import com.ssafy.star.user.domain.ApprovalStatus;
 import com.ssafy.star.user.domain.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,25 +29,46 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long>
             LEFT JOIN FETCH a.constellationEntity
             WHERE a.ownerEntity = :ownerEntity
               AND a.deletedAt IS NULL
-              AND a.disclosure = :disclosure
-            """)
-    List<ArticleEntity> findVisibleArticlesByOwner(
-            @Param("ownerEntity") UserEntity ownerEntity,
-            @Param("disclosure") DisclosureType disclosure
-    );
-
-    @Query("""
-            SELECT a
-            FROM ArticleEntity a
-            JOIN FETCH a.ownerEntity
-            JOIN FETCH a.imageEntity
-            LEFT JOIN FETCH a.constellationEntity
-            WHERE a.ownerEntity = :ownerEntity
-              AND a.deletedAt IS NULL
             """)
     List<ArticleEntity> findNotDeletedArticlesByOwner(@Param("ownerEntity") UserEntity ownerEntity);
 
+    @Query(
+            value = """
+                    SELECT a
+                    FROM ArticleEntity a
+                    JOIN FETCH a.ownerEntity
+                    JOIN FETCH a.imageEntity
+                    LEFT JOIN FETCH a.constellationEntity
+                    WHERE a.ownerEntity = :ownerEntity
+                      AND a.deletedAt IS NULL
+                      AND (:visibleOnly = false OR a.disclosure = :visibleDisclosure)
+                    ORDER BY a.createdAt DESC, a.id DESC
+                    """,
+            countQuery = """
+                    SELECT COUNT(a)
+                    FROM ArticleEntity a
+                    WHERE a.ownerEntity = :ownerEntity
+                      AND a.deletedAt IS NULL
+                      AND (:visibleOnly = false OR a.disclosure = :visibleDisclosure)
+                    """
+    )
+    Page<ArticleEntity> findArticlesByOwner(
+            @Param("ownerEntity") UserEntity ownerEntity,
+            @Param("visibleOnly") boolean visibleOnly,
+            @Param("visibleDisclosure") DisclosureType visibleDisclosure,
+            Pageable pageable
+    );
+
     @EntityGraph(attributePaths = {"ownerEntity", "imageEntity", "constellationEntity"})
+    @Query("""
+    SELECT a
+    FROM ArticleEntity a
+    JOIN FETCH a.ownerEntity
+    JOIN FETCH a.imageEntity
+    JOIN FETCH a.constellationEntity
+    WHERE a.ownerEntity = :ownerEntity
+        AND a.deletedAt IS NOT NULL 
+""")
     Page<ArticleEntity> findAllByOwnerEntityAndDeletedAtIsNotNull(UserEntity ownerEntity, Pageable pageable);
 
     @Query("""
@@ -128,4 +150,34 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long>
     );
 
     Integer countByOwnerEntityAndDeletedAtIsNull(UserEntity ownerEntity);
+
+    @Query(
+            value = """
+          SELECT a
+          FROM ArticleEntity a
+          JOIN FETCH a.ownerEntity
+          JOIN FETCH a.imageEntity
+          LEFT JOIN FETCH a.constellationEntity
+          WHERE a.deletedAt IS NULL
+            AND a.ownerEntity.id IN (
+                SELECT f.toUser.id
+                FROM FollowEntity f
+                WHERE f.fromUser = :viewer
+                  AND f.status = :status
+            )
+          ORDER BY a.createdAt DESC, a.id DESC
+      """,
+            countQuery = """
+          SELECT COUNT(a)
+          FROM ArticleEntity a
+          WHERE a.deletedAt IS NULL
+            AND a.ownerEntity.id IN (
+                SELECT f.toUser.id
+                FROM FollowEntity f
+                WHERE f.fromUser = :viewer
+                  AND f.status = :status
+            )
+      """
+    )
+    Page<ArticleEntity> findFollowFeedLatestSort(UserEntity viewer, ApprovalStatus status, Pageable pageable);
 }

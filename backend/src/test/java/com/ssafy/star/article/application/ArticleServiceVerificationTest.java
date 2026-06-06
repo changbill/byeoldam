@@ -20,6 +20,10 @@ import com.ssafy.star.user.domain.FollowEntity;
 import com.ssafy.star.user.domain.UserEntity;
 import com.ssafy.star.user.repository.FollowRepository;
 import com.ssafy.star.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,6 +54,10 @@ class ArticleServiceVerificationTest extends TestContainerSupport {
     ConstellationUserRepository constellationUserRepository;
     @Autowired
     ContourRepository contourRepository;
+    @Autowired
+    EntityManager entityManager;
+    @Autowired
+    EntityManagerFactory entityManagerFactory;
 
     @Test
     void userArticleList_본인은_비공개_게시물까지_조회한다() {
@@ -57,9 +65,9 @@ class ArticleServiceVerificationTest extends TestContainerSupport {
         saveArticle("visible", owner, null, DisclosureType.VISIBLE);
         saveArticle("invisible", owner, null, DisclosureType.INVISIBLE);
 
-        var result = articleService.userArticlePage(owner.getNickname(), owner.getEmail());
+        var result = articleService.userArticlePage(owner.getNickname(), owner.getEmail(), PageRequest.of(0, 10));
 
-        assertThat(result).extracting("title")
+        assertThat(result.getContent()).extracting("title")
                 .contains("visible", "invisible");
     }
 
@@ -70,9 +78,37 @@ class ArticleServiceVerificationTest extends TestContainerSupport {
         saveArticle("visible", owner, null, DisclosureType.VISIBLE);
         saveArticle("invisible", owner, null, DisclosureType.INVISIBLE);
 
-        var result = articleService.userArticlePage(owner.getNickname(), viewer.getEmail());
+        var result = articleService.userArticlePage(owner.getNickname(), viewer.getEmail(), PageRequest.of(0, 10));
 
-        assertThat(result).extracting("title")
+        assertThat(result.getContent()).extracting("title")
+                .containsExactly("visible");
+    }
+
+    @Test
+    void userArticlePage_승인된_팔로우_사용자는_비공개_게시물까지_조회한다() {
+        UserEntity owner = saveUser();
+        UserEntity viewer = saveUser();
+        followRepository.save(FollowEntity.of(viewer, owner, LocalDateTime.now(), ApprovalStatus.ACCEPT));
+        saveArticle("visible", owner, null, DisclosureType.VISIBLE);
+        saveArticle("invisible", owner, null, DisclosureType.INVISIBLE);
+
+        var result = articleService.userArticlePage(owner.getNickname(), viewer.getEmail(), PageRequest.of(0, 10));
+
+        assertThat(result.getContent()).extracting("title")
+                .contains("visible", "invisible");
+    }
+
+    @Test
+    void userArticlePage_요청중인_팔로우_사용자는_공개_게시물만_조회한다() {
+        UserEntity owner = saveUser();
+        UserEntity viewer = saveUser();
+        followRepository.save(FollowEntity.of(viewer, owner, LocalDateTime.now(), ApprovalStatus.REQUEST));
+        saveArticle("visible", owner, null, DisclosureType.VISIBLE);
+        saveArticle("invisible", owner, null, DisclosureType.INVISIBLE);
+
+        var result = articleService.userArticlePage(owner.getNickname(), viewer.getEmail(), PageRequest.of(0, 10));
+
+        assertThat(result.getContent()).extracting("title")
                 .containsExactly("visible");
     }
 
@@ -80,16 +116,42 @@ class ArticleServiceVerificationTest extends TestContainerSupport {
     void followFeed_팔로우_승인된_사용자의_게시물을_최신순으로_페이징한다() {
         UserEntity viewer = saveUser();
         UserEntity followed = saveUser();
+        UserEntity requested = saveUser();
         UserEntity notFollowed = saveUser();
         followRepository.save(FollowEntity.of(viewer, followed, LocalDateTime.now(), ApprovalStatus.ACCEPT));
+        followRepository.save(FollowEntity.of(viewer, requested, LocalDateTime.now(), ApprovalStatus.REQUEST));
         saveArticle("old", followed, null, DisclosureType.VISIBLE);
         saveArticle("new", followed, null, DisclosureType.VISIBLE);
+        saveArticle("excluded-request", requested, null, DisclosureType.VISIBLE);
         saveArticle("excluded", notFollowed, null, DisclosureType.VISIBLE);
 
         var result = articleService.followFeed(viewer.getEmail(), PageRequest.of(0, 10));
 
         assertThat(result.getContent()).extracting("title")
                 .containsExactly("new", "old");
+    }
+
+    @Test
+    void followFeed_팔로우_대상_id_추출은_toUser_추가_조회를_발생시키지_않는다() {
+        UserEntity viewer = saveUser();
+        UserEntity followed = saveUser();
+        followRepository.saveAndFlush(FollowEntity.of(viewer, followed, LocalDateTime.now(), ApprovalStatus.ACCEPT));
+        entityManager.clear();
+
+        Statistics statistics = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+        statistics.setStatisticsEnabled(true);
+        statistics.clear();
+
+        List<FollowEntity> follows = followRepository.findByFromUserAndStatus(viewer, ApprovalStatus.ACCEPT);
+        long queryCountAfterFindFollow = statistics.getPrepareStatementCount();
+
+        List<Long> followingUserIds = follows.stream()
+                .map(follow -> follow.getToUser().getId())
+                .toList();
+        long queryCountAfterGetIds = statistics.getPrepareStatementCount();
+
+        assertThat(followingUserIds).containsExactly(followed.getId());
+        assertThat(queryCountAfterGetIds).isEqualTo(queryCountAfterFindFollow);
     }
 
     @Test
@@ -112,7 +174,7 @@ class ArticleServiceVerificationTest extends TestContainerSupport {
 
         articleService.delete(article.getId(), owner.getEmail());
 
-        assertThat(articleService.userArticlePage(owner.getNickname(), owner.getEmail()))
+        assertThat(articleService.userArticlePage(owner.getNickname(), owner.getEmail(), PageRequest.of(0, 10)).getContent())
                 .extracting("title")
                 .doesNotContain("deleted");
         assertThat(articleService.trashcan(owner.getEmail(), PageRequest.of(0, 10)).getContent())
