@@ -1,4 +1,4 @@
-package com.ssafy.star.article.dao;
+package com.ssafy.star.article.dao.jpa;
 
 import com.ssafy.star.article.domain.ArticleEntity;
 import com.ssafy.star.common.types.DisclosureType;
@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long> {
@@ -20,17 +21,6 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long>
             Long articleId,
             DisclosureType disclosure
     );
-
-    @Query("""
-            SELECT a
-            FROM ArticleEntity a
-            JOIN FETCH a.ownerEntity
-            JOIN FETCH a.imageEntity
-            LEFT JOIN FETCH a.constellationEntity
-            WHERE a.ownerEntity = :ownerEntity
-              AND a.deletedAt IS NULL
-            """)
-    List<ArticleEntity> findNotDeletedArticlesByOwner(@Param("ownerEntity") UserEntity ownerEntity);
 
     @Query(
             value = """
@@ -61,31 +51,15 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long>
 
     @EntityGraph(attributePaths = {"ownerEntity", "imageEntity", "constellationEntity"})
     @Query("""
-    SELECT a
-    FROM ArticleEntity a
-    JOIN FETCH a.ownerEntity
-    JOIN FETCH a.imageEntity
-    JOIN FETCH a.constellationEntity
-    WHERE a.ownerEntity = :ownerEntity
-        AND a.deletedAt IS NOT NULL 
-""")
-    Page<ArticleEntity> findAllByOwnerEntityAndDeletedAtIsNotNull(UserEntity ownerEntity, Pageable pageable);
-
-    @Query("""
             SELECT a
             FROM ArticleEntity a
             JOIN FETCH a.ownerEntity
             JOIN FETCH a.imageEntity
-            JOIN FETCH a.constellationEntity
-            WHERE a.constellationEntity = :constellationEntity
-              AND a.deletedAt IS NULL
-              AND (a.disclosure = :disclosure OR a.ownerEntity = :ownerEntity)
+            LEFT JOIN FETCH a.constellationEntity
+            WHERE a.ownerEntity = :ownerEntity
+                AND a.deletedAt IS NOT NULL
             """)
-    List<ArticleEntity> findReadableArticlesInConstellation(
-            @Param("constellationEntity") ConstellationEntity constellationEntity,
-            @Param("disclosure") DisclosureType disclosure,
-            @Param("ownerEntity") UserEntity ownerEntity
-    );
+    Page<ArticleEntity> findAllByOwnerEntityAndDeletedAtIsNotNull(UserEntity ownerEntity, Pageable pageable);
 
     @Query(
             value = """
@@ -113,18 +87,22 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long>
             Pageable pageable
     );
 
-    List<ArticleEntity> findByConstellationEntity(ConstellationEntity constellationEntity);
-
     @Query("""
             SELECT a
             FROM ArticleEntity a
-            JOIN FETCH a.ownerEntity
             JOIN FETCH a.imageEntity
-            WHERE a.constellationEntity IS NULL
-                AND a.ownerEntity = :userEntity
-                AND a.deletedAt IS NULL
+            WHERE a.constellationEntity IN :constellationEntities
+              AND a.deletedAt IS NULL
+              AND (a.disclosure = :disclosure OR a.ownerEntity = :ownerEntity)
+            ORDER BY a.constellationEntity.id ASC, a.createdAt DESC, a.id DESC
             """)
-    List<ArticleEntity> findUnassignedArticlesByOwner(@Param("userEntity") UserEntity userEntity);
+    List<ArticleEntity> findReadableArticlesInConstellations(
+            @Param("constellationEntities") Collection<ConstellationEntity> constellationEntities,
+            @Param("disclosure") DisclosureType disclosure,
+            @Param("ownerEntity") UserEntity ownerEntity
+    );
+
+    List<ArticleEntity> findByConstellationEntity(ConstellationEntity constellationEntity);
 
     @Query(
             value = """
@@ -153,31 +131,31 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long>
 
     @Query(
             value = """
-          SELECT a
-          FROM ArticleEntity a
-          JOIN FETCH a.ownerEntity
-          JOIN FETCH a.imageEntity
-          LEFT JOIN FETCH a.constellationEntity
-          WHERE a.deletedAt IS NULL
-            AND a.ownerEntity.id IN (
-                SELECT f.toUser.id
-                FROM FollowEntity f
-                WHERE f.fromUser = :viewer
-                  AND f.status = :status
-            )
-          ORDER BY a.createdAt DESC, a.id DESC
-      """,
+                    SELECT a
+                    FROM ArticleEntity a
+                    JOIN FETCH a.ownerEntity
+                    JOIN FETCH a.imageEntity
+                    LEFT JOIN FETCH a.constellationEntity
+                    WHERE a.deletedAt IS NULL
+                      AND a.ownerEntity.id IN (
+                          SELECT f.toUser.id
+                          FROM FollowEntity f
+                          WHERE f.fromUser = :viewer
+                            AND f.status = :status
+                      )
+                    ORDER BY a.createdAt DESC, a.id DESC
+                    """,
             countQuery = """
-          SELECT COUNT(a)
-          FROM ArticleEntity a
-          WHERE a.deletedAt IS NULL
-            AND a.ownerEntity.id IN (
-                SELECT f.toUser.id
-                FROM FollowEntity f
-                WHERE f.fromUser = :viewer
-                  AND f.status = :status
-            )
-      """
+                    SELECT COUNT(a)
+                    FROM ArticleEntity a
+                    WHERE a.deletedAt IS NULL
+                      AND a.ownerEntity.id IN (
+                          SELECT f.toUser.id
+                          FROM FollowEntity f
+                          WHERE f.fromUser = :viewer
+                            AND f.status = :status
+                      )
+                    """
     )
     Page<ArticleEntity> findFollowFeedLatestSort(UserEntity viewer, ApprovalStatus status, Pageable pageable);
 }

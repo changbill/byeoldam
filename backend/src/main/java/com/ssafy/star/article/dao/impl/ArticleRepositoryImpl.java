@@ -1,5 +1,7 @@
-package com.ssafy.star.article.dao;
+package com.ssafy.star.article.dao.impl;
 
+import com.ssafy.star.article.dao.ArticleRepository;
+import com.ssafy.star.article.dao.jpa.ArticleJpaRepository;
 import com.ssafy.star.article.domain.ArticleEntity;
 import com.ssafy.star.common.types.DisclosureType;
 import com.ssafy.star.constellation.domain.ConstellationEntity;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,11 +61,6 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
-    public List<ArticleEntity> findNotDeletedArticlesByOwner(UserEntity ownerEntity) {
-        return articleJpaRepository.findNotDeletedArticlesByOwner(ownerEntity);
-    }
-
-    @Override
     public Page<ArticleEntity> findArticlesByOwner(UserEntity ownerEntity, boolean visibleOnly, Pageable pageable) {
         return articleJpaRepository.findArticlesByOwner(
                 ownerEntity,
@@ -75,18 +73,6 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     @Override
     public Page<ArticleEntity> findDeletedArticlesByOwner(UserEntity ownerEntity, Pageable pageable) {
         return articleJpaRepository.findAllByOwnerEntityAndDeletedAtIsNotNull(ownerEntity, pageable);
-    }
-
-    @Override
-    public List<ArticleEntity> findReadableArticlesInConstellation(
-            ConstellationEntity constellationEntity,
-            UserEntity userEntity
-    ) {
-        return articleJpaRepository.findReadableArticlesInConstellation(
-                constellationEntity,
-                DisclosureType.VISIBLE,
-                userEntity
-        );
     }
 
     @Override
@@ -104,13 +90,24 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
-    public List<ArticleEntity> findArticlesInConstellation(ConstellationEntity constellationEntity) {
-        return articleJpaRepository.findByConstellationEntity(constellationEntity);
+    public List<ArticleEntity> findReadableArticlesInConstellations(
+            Collection<ConstellationEntity> constellationEntities,
+            UserEntity userEntity
+    ) {
+        if (constellationEntities.isEmpty()) {
+            return List.of();
+        }
+
+        return articleJpaRepository.findReadableArticlesInConstellations(
+                constellationEntities,
+                DisclosureType.VISIBLE,
+                userEntity
+        );
     }
 
     @Override
-    public List<ArticleEntity> findUnassignedArticlesByOwner(UserEntity ownerEntity) {
-        return articleJpaRepository.findUnassignedArticlesByOwner(ownerEntity);
+    public List<ArticleEntity> findArticlesInConstellation(ConstellationEntity constellationEntity) {
+        return articleJpaRepository.findByConstellationEntity(constellationEntity);
     }
 
     @Override
