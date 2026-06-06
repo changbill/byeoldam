@@ -8,7 +8,6 @@ import com.ssafy.star.user.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -59,8 +58,8 @@ public class ConstellationLikeRepositoryImpl implements ConstellationLikeReposit
     }
 
     @Override
-    public List<ConstellationLikeEntity> findAllByConstellationEntity(ConstellationEntity constellationEntity, Sort sort) {
-        return constellationLikeJpaRepository.findAllByConstellationEntity(constellationEntity, sort);
+    public Page<ConstellationLikeEntity> findAllByConstellationEntity(ConstellationEntity constellationEntity, Pageable pageable) {
+        return constellationLikeJpaRepository.findAllByConstellationEntity(constellationEntity, pageable);
     }
 
     @Override

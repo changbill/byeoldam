@@ -417,7 +417,8 @@ public class UserService {
     public void delete(String email) {
         UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new ByeolDamException(ErrorCode.USER_NOT_FOUND, String.format("%s is not founded", email)));
 
-        articleRepository.findNotDeletedArticlesByOwner(userEntity).forEach(articleLikeRepository::deleteAllByArticleEntity);
+        articleRepository.findArticlesByOwner(userEntity, false, Pageable.unpaged())
+                .forEach(articleLikeRepository::deleteAllByArticleEntity);
         constellationUserRepository.findByUserEntityAndConstellationUserRole(userEntity, ConstellationUserRole.ADMIN)
                 .forEach(entity -> constellationLikeRepository.deleteAllByConstellationEntity(entity.getConstellationEntity()));
         articleLikeRepository.deleteAllByUserEntity(userEntity);

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -79,25 +80,25 @@ class BaselinePerformanceMeasurementTest extends PerformanceProfileSupport {
                 "article.articlesInConstellation",
                 WARM_UP,
                 ITERATIONS,
-                () -> assertThat(articleService.articlesInConstellation(constellationWithVisibleArticle.getId(), BASELINE_EMAIL)).isNotEmpty()
+                () -> assertThat(articleService.articlesInConstellation(constellationWithVisibleArticle.getId(), BASELINE_EMAIL, PageRequest.of(0, 20)).getContent()).isNotEmpty()
         ));
         measurements.add(timer.measure(
                 "article.articlesInNoConstellation(heavyOwner)",
                 WARM_UP,
                 ITERATIONS,
-                () -> assertThat(articleService.articlesInNoConstellation(heavyArticleOwner.getEmail())).isNotEmpty()
+                () -> assertThat(articleService.articlesInNoConstellation(heavyArticleOwner.getEmail(), PageRequest.of(0, 20)).getContent()).isNotEmpty()
         ));
         measurements.add(timer.measure(
                 "constellation.myConstellations(heavyOwner)",
                 WARM_UP,
                 ITERATIONS,
-                () -> assertThat(constellationService.myConstellations(heavyConstellationOwner.getEmail())).isNotEmpty()
+                () -> assertThat(constellationService.myConstellations(heavyConstellationOwner.getEmail(), PageRequest.of(0, 20)).getContent()).isNotEmpty()
         ));
         measurements.add(timer.measure(
                 "constellation.userConstellations(heavyOwner)",
                 WARM_UP,
                 ITERATIONS,
-                () -> assertThat(constellationService.userConstellations(heavyConstellationOwner.getNickname(), BASELINE_EMAIL)).isNotEmpty()
+                () -> assertThat(constellationService.userConstellations(heavyConstellationOwner.getNickname(), BASELINE_EMAIL, PageRequest.of(0, 20)).getContent()).isNotEmpty()
         ));
         measurements.add(timer.measure(
                 "constellation.requestModifyConstellation",
@@ -109,13 +110,13 @@ class BaselinePerformanceMeasurementTest extends PerformanceProfileSupport {
                 "constellation.findConstellationUsers",
                 WARM_UP,
                 ITERATIONS,
-                () -> assertThat(constellationService.findConstellationUsers(constellationWithVisibleArticle.getId())).isNotEmpty()
+                () -> assertThat(constellationService.findConstellationUsers(constellationWithVisibleArticle.getId(), PageRequest.of(0, 20)).getContent()).isNotEmpty()
         ));
         measurements.add(timer.measure(
                 "constellation.likeList",
                 WARM_UP,
                 ITERATIONS,
-                () -> assertThat(constellationService.likeList(constellationWithVisibleArticle.getId())).isNotEmpty()
+                () -> assertThat(constellationService.likeList(constellationWithVisibleArticle.getId(), PageRequest.of(0, 20)).getContent()).isNotEmpty()
         ));
 
         System.out.println();
@@ -167,7 +168,7 @@ class BaselinePerformanceMeasurementTest extends PerformanceProfileSupport {
     }
 
     private ConstellationEntity requireConstellationOwnedBy(UserEntity owner) {
-        return constellationRepository.findAllByUserEntity(owner).stream()
+        return constellationRepository.findAllByUserEntity(owner, Pageable.unpaged()).stream()
                 .filter(constellation -> constellation.getName().startsWith("PERF-CONSTELLATION-"))
                 .min(Comparator.comparing(ConstellationEntity::getId))
                 .orElseThrow(() -> new IllegalStateException(seedRequiredMessage("performance constellation owned by " + owner.getNickname())));

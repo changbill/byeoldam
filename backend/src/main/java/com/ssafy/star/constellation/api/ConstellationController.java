@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -120,8 +121,12 @@ public class ConstellationController {
             }
     )
     @GetMapping
-    public Response<List<ConstellationWithArticleResponse>> myConstellations(@AuthenticationPrincipal UserDetails userDetails) {
-        return Response.success(constellationService.myConstellations(userDetails.getUsername()).stream().map(ConstellationWithArticleResponse::fromConstellationWithArticle).toList());
+    public Response<Page<ConstellationWithArticleResponse>> myConstellations(
+            @AuthenticationPrincipal UserDetails userDetails,
+            Pageable pageable
+    ) {
+        return Response.success(constellationService.myConstellations(userDetails.getUsername(), pageable)
+                .map(ConstellationWithArticleResponse::fromConstellationWithArticle));
     }
 
     @Operation(
@@ -129,12 +134,14 @@ public class ConstellationController {
             description = "유저의 별자리 전체 조회입니다."
     )
     @GetMapping("/user/{nickname}")
-    public Response<List<ConstellationWithArticleResponse>> userConstellations(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String nickname) {
+    public Response<Page<ConstellationWithArticleResponse>> userConstellations(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable String nickname,
+            Pageable pageable
+    ) {
         return Response.success(
-                constellationService.userConstellations(nickname, userDetails.getUsername())
-                        .stream()
+                constellationService.userConstellations(nickname, userDetails.getUsername(), pageable)
                         .map(ConstellationWithArticleResponse::fromConstellationWithArticle)
-                        .toList()
         );
     }
 
@@ -187,8 +194,11 @@ public class ConstellationController {
             }
     )
     @GetMapping("/users/{constellationId}")
-    public Response<List<ConstellationForUserResponse>> userCheck(@PathVariable Long constellationId) {
-        return Response.success(constellationService.findConstellationUsers(constellationId));
+    public Response<Page<ConstellationForUserResponse>> userCheck(
+            @PathVariable Long constellationId,
+            Pageable pageable
+    ) {
+        return Response.success(constellationService.findConstellationUsers(constellationId, pageable));
     }
 
     @Operation(
@@ -242,7 +252,7 @@ public class ConstellationController {
 
     )
     @GetMapping("/{constellationId}/likelist")
-    public Response<List<LikeUserResponse>> likeList(@PathVariable Long constellationId) {
-        return Response.success(constellationService.likeList(constellationId).stream().map(LikeUserResponse::fromUser).toList());
+    public Response<Page<LikeUserResponse>> likeList(@PathVariable Long constellationId, Pageable pageable) {
+        return Response.success(constellationService.likeList(constellationId, pageable).map(LikeUserResponse::fromUser));
     }
 }

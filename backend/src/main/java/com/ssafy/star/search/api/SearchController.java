@@ -1,14 +1,9 @@
 package com.ssafy.star.search.api;
 
-import com.ssafy.star.article.dao.ArticleRepository;
 import com.ssafy.star.article.dto.response.ArticleDetailResponse;
 import com.ssafy.star.article.dto.response.Response;
 import com.ssafy.star.common.exception.ByeolDamException;
 import com.ssafy.star.common.exception.ErrorCode;
-import com.ssafy.star.constellation.domain.ConstellationEntity;
-import com.ssafy.star.contour.domain.ContourEntity;
-import com.ssafy.star.contour.dto.Contour;
-import com.ssafy.star.contour.dto.ContourResponse;
 import com.ssafy.star.search.application.ArticleSearchService;
 import com.ssafy.star.search.application.ConstellationSearchService;
 import com.ssafy.star.search.application.UserSearchService;
@@ -24,13 +19,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -42,7 +37,6 @@ public class SearchController {
     private final ArticleSearchService articleSearchService;
     private final ConstellationSearchService constellationSearchService;
     private final UserSearchService userSearchService;
-    private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
 
 
@@ -111,7 +105,11 @@ public class SearchController {
             }
     )
     @GetMapping("/search/constellation")
-    public Response<List<ConstellationSearchResponse>> constellationSearch(@RequestParam String keyword, Authentication authentication) {
+    public Response<Page<ConstellationSearchResponse>> constellationSearch(
+            @RequestParam String keyword,
+            Authentication authentication,
+            Pageable pageable
+    ) {
         log.info("request 정보 : {}", keyword);
 
         String email = authentication.getName();
@@ -119,27 +117,7 @@ public class SearchController {
                 new ByeolDamException(ErrorCode.USER_NOT_FOUND)
         );
 
-        // 별자리 검색 반환 타입은 ConstellationEntity
-        List<ConstellationEntity> constellationEntities = constellationSearchService.constellationSearch(keyword);
-        List<ConstellationSearchResponse> constellationSearchResponses = new ArrayList<>();
-
-        // 별자리 Entity를 별자리 SearchResponse로 변환하는 과정
-        for (ConstellationEntity constellationEntity : constellationEntities) {
-            ContourEntity contourEntity = constellationSearchService.findById(constellationEntity.getContourId());
-            ContourResponse contourResponse = ContourResponse.fromContour(Contour.fromEntity(contourEntity));
-            constellationSearchResponses.add(new ConstellationSearchResponse(
-                    constellationEntity.getId(),
-                    constellationEntity.getName(),
-                    contourResponse,
-                    constellationEntity.getHits(),
-                    constellationEntity.getAdminEntity().getNickname(),
-                    articleRepository.findReadableArticlesInConstellation(constellationEntity, userEntity).size(),
-                    constellationEntity.getCreatedAt(),
-                    constellationEntity.getModifiedAt()
-            ));
-        }
-
-        return Response.success(constellationSearchResponses);
+        return Response.success(constellationSearchService.constellationSearchResponses(keyword, userEntity, pageable));
     }
 
     @Operation(
@@ -151,7 +129,10 @@ public class SearchController {
             }
     )
     @GetMapping("/related-search/constellation")
-    public Response<List<ConstellationSearchResponse>> constellationRelatedSearch(@RequestParam String keyword, Authentication authentication) {
+    public Response<Page<ConstellationSearchResponse>> constellationRelatedSearch(
+            @RequestParam String keyword,
+            Authentication authentication
+    ) {
         log.info("request 정보 : {}", keyword);
 
         String email = authentication.getName();
@@ -159,27 +140,7 @@ public class SearchController {
                 new ByeolDamException(ErrorCode.USER_NOT_FOUND)
         );
 
-        // 별자리 검색 반환 타입은 ConstellationEntity
-        Page<ConstellationEntity> constellationEntities = constellationSearchService.constellationRelatedSearch(keyword);
-        List<ConstellationSearchResponse> constellationSearchResponses = new ArrayList<>();
-
-        // 별자리 Entity를 별자리 SearchResponse로 변환하는 과정
-        for (ConstellationEntity constellationEntity : constellationEntities) {
-            ContourEntity contourEntity = constellationSearchService.findById(constellationEntity.getContourId());
-            ContourResponse contourResponse = ContourResponse.fromContour(Contour.fromEntity(contourEntity));
-            constellationSearchResponses.add(new ConstellationSearchResponse(
-                    constellationEntity.getId(),
-                    constellationEntity.getName(),
-                    contourResponse,
-                    constellationEntity.getHits(),
-                    constellationEntity.getAdminEntity().getNickname(),
-                    articleRepository.findReadableArticlesInConstellation(constellationEntity, userEntity).size(),
-                    constellationEntity.getCreatedAt(),
-                    constellationEntity.getModifiedAt()
-            ));
-        }
-
-        return Response.success(constellationSearchResponses);
+        return Response.success(constellationSearchService.constellationRelatedSearchResponses(keyword, userEntity));
     }
 
     @Operation(

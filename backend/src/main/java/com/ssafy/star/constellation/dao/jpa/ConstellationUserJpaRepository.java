@@ -26,17 +26,6 @@ public interface ConstellationUserJpaRepository extends JpaRepository<Constellat
     List<ConstellationUserEntity> findByUserEntity(@Param("userEntity") UserEntity userEntity);
 
 
-    @Query("""
-        SELECT cu
-        FROM ConstellationUserEntity  cu
-        JOIN FETCH cu.userEntity u
-        LEFT JOIN FETCH u.imageEntity
-        WHERE cu.constellationEntity = :constellationEntity
-""")
-    List<ConstellationUserEntity> findByConstellationEntity(
-            @Param("constellationEntity") ConstellationEntity constellationEntity
-    );
-
     @Query(
             value = """
                     SELECT cu
@@ -67,6 +56,21 @@ public interface ConstellationUserJpaRepository extends JpaRepository<Constellat
             """)
     List<ConstellationUserEntity> findConstellationUserEntitiesByConstellationEntityIn(
             @Param("constellationEntities") Collection<ConstellationEntity> constellationEntities
+    );
+
+    @Query("""
+            SELECT cu
+            FROM ConstellationUserEntity cu
+            JOIN FETCH cu.constellationEntity
+            JOIN FETCH cu.userEntity u
+            LEFT JOIN FETCH u.imageEntity
+            WHERE cu.constellationEntity IN :constellationEntities
+              AND cu.constellationUserRole = :role
+            ORDER BY cu.constellationEntity.id ASC
+            """)
+    List<ConstellationUserEntity> findAdminUsersByConstellationEntityIn(
+            @Param("constellationEntities") Collection<ConstellationEntity> constellationEntities,
+            @Param("role") ConstellationUserRole role
     );
 
     @Query(

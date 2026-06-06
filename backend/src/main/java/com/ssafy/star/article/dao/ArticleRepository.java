@@ -7,7 +7,9 @@ import com.ssafy.star.user.domain.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ArticleRepository {
@@ -22,24 +24,15 @@ public interface ArticleRepository {
 
     Optional<ArticleEntity> findById(Long articleId);
 
+    Optional<ArticleEntity> findDetailById(Long articleId);
+
     List<ArticleEntity> findAll();
 
     boolean isVisibleArticle(Long articleId);
 
-    default List<ArticleEntity> findNotDeletedArticlesByOwner(UserEntity ownerEntity) {
-        return findArticlesByOwner(ownerEntity, false, Pageable.unpaged()).getContent();
-    }
-
     Page<ArticleEntity> findArticlesByOwner(UserEntity ownerEntity, boolean visibleOnly, Pageable pageable);
 
     Page<ArticleEntity> findDeletedArticlesByOwner(UserEntity ownerEntity, Pageable pageable);
-
-    default List<ArticleEntity> findReadableArticlesInConstellation(
-            ConstellationEntity constellationEntity,
-            UserEntity userEntity
-    ) {
-        return findReadableArticlesInConstellation(constellationEntity, userEntity, Pageable.unpaged()).getContent();
-    }
 
     Page<ArticleEntity> findReadableArticlesInConstellation(
             ConstellationEntity constellationEntity,
@@ -47,11 +40,17 @@ public interface ArticleRepository {
             Pageable pageable
     );
 
-    List<ArticleEntity> findArticlesInConstellation(ConstellationEntity constellationEntity);
+    List<ArticleEntity> findReadableArticlesInConstellations(
+            Collection<ConstellationEntity> constellationEntities,
+            UserEntity userEntity
+    );
 
-    default List<ArticleEntity> findUnassignedArticlesByOwner(UserEntity ownerEntity) {
-        return findUnassignedArticlesByOwner(ownerEntity, Pageable.unpaged()).getContent();
-    }
+    Map<Long, Long> countReadableArticlesByConstellations(
+            Collection<ConstellationEntity> constellationEntities,
+            UserEntity userEntity
+    );
+
+    Page<ArticleEntity> findArticlesInConstellation(ConstellationEntity constellationEntity, Pageable pageable);
 
     Page<ArticleEntity> findUnassignedArticlesByOwner(UserEntity ownerEntity, Pageable pageable);
 

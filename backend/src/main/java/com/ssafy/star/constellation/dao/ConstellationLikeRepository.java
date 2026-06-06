@@ -5,23 +5,30 @@ import com.ssafy.star.constellation.domain.ConstellationLikeEntity;
 import com.ssafy.star.user.domain.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface ConstellationLikeRepository extends JpaRepository<ConstellationLikeEntity, Long> {
-    Optional<ConstellationLikeEntity> findByUserEntityAndConstellationEntity(UserEntity userEntity, ConstellationEntity constellationEntity);
+public interface ConstellationLikeRepository {
 
-    @Query(value = "SELECT COUNT(*) FROM ConstellationLikeEntity entity WHERE entity.constellationEntity =:constellationEntity")
+    ConstellationLikeEntity save(ConstellationLikeEntity constellationLikeEntity);
+
+    List<ConstellationLikeEntity> saveAll(List<ConstellationLikeEntity> constellationLikeEntities);
+
+    void delete(ConstellationLikeEntity constellationLikeEntity);
+
+    Optional<ConstellationLikeEntity> findByUserEntityAndConstellationEntity(
+            UserEntity userEntity,
+            ConstellationEntity constellationEntity
+    );
+
     Integer countByConstellationEntity(ConstellationEntity constellationEntity);
+
     void deleteAllByConstellationEntity(ConstellationEntity constellationEntity);
+
     void deleteAllByUserEntity(UserEntity userEntity);
 
-    List<ConstellationLikeEntity> findAllByConstellationEntity(ConstellationEntity constellationEntity, Sort sort);
+    Page<ConstellationLikeEntity> findAllByConstellationEntity(ConstellationEntity constellationEntity, Pageable pageable);
+
     Page<ConstellationLikeEntity> findAllByUserEntityOrderByCreatedAtDesc(UserEntity userEntity, Pageable pageable);
 }

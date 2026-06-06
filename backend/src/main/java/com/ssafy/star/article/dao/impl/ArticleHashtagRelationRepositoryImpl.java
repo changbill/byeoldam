@@ -5,6 +5,8 @@ import com.ssafy.star.article.dao.jpa.ArticleHashtagRelationJpaRepository;
 import com.ssafy.star.article.domain.ArticleEntity;
 import com.ssafy.star.article.domain.ArticleHashtagRelationEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,7 +33,7 @@ public class ArticleHashtagRelationRepositoryImpl implements ArticleHashtagRelat
     }
 
     @Override
-    public List<ArticleHashtagRelationEntity> findAllByTagName(String tagName) {
-        return articleHashtagRelationJpaRepository.findAllByTagName(tagName);
+    public Page<ArticleEntity> findArticlesByTagName(String tagName, Pageable pageable) {
+        return articleHashtagRelationJpaRepository.findArticlesByTagName(tagName, pageable);
     }
 }

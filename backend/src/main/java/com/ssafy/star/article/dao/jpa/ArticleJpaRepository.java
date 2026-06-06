@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long> {
 
@@ -21,6 +22,20 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long>
             Long articleId,
             DisclosureType disclosure
     );
+
+    @EntityGraph(attributePaths = {
+            "ownerEntity",
+            "imageEntity",
+            "constellationEntity",
+            "articleHashtagRelationEntities",
+            "articleHashtagRelationEntities.articleHashtagEntity",
+            "commentEntities",
+            "commentEntities.userEntity",
+            "commentEntities.childrenComments",
+            "commentEntities.childrenComments.userEntity"
+    })
+    @Query("SELECT a FROM ArticleEntity a WHERE a.id = :articleId")
+    Optional<ArticleEntity> findDetailById(@Param("articleId") Long articleId);
 
     @Query(
             value = """
@@ -102,7 +117,21 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long>
             @Param("ownerEntity") UserEntity ownerEntity
     );
 
-    List<ArticleEntity> findByConstellationEntity(ConstellationEntity constellationEntity);
+    @Query("""
+            SELECT a.constellationEntity.id, COUNT(a)
+            FROM ArticleEntity a
+            WHERE a.constellationEntity IN :constellationEntities
+              AND a.deletedAt IS NULL
+              AND (a.disclosure = :disclosure OR a.ownerEntity = :ownerEntity)
+            GROUP BY a.constellationEntity.id
+            """)
+    List<Object[]> countReadableArticlesByConstellations(
+            @Param("constellationEntities") Collection<ConstellationEntity> constellationEntities,
+            @Param("disclosure") DisclosureType disclosure,
+            @Param("ownerEntity") UserEntity ownerEntity
+    );
+
+    Page<ArticleEntity> findByConstellationEntity(ConstellationEntity constellationEntity, Pageable pageable);
 
     @Query(
             value = """

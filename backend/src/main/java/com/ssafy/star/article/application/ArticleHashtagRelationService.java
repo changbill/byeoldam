@@ -9,7 +9,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -42,16 +41,7 @@ public class ArticleHashtagRelationService {
     }
 
     public Page<ArticleEntity> findAllByHashtag(int page, String tagName) {
-        List<Sort.Order> sortsList = new ArrayList<>();
-        sortsList.add(Sort.Order.desc("createdAt"));
-
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sortsList));
-
-        List<ArticleEntity> articleEntityList = articleHashtagRelationRepository.findAllByTagName(tagName)
-                .stream()
-                .map(ArticleHashtagRelationEntity::getArticleEntity)
-                .toList();
-
-        return new PageImpl<>(articleEntityList, pageable, articleEntityList.size());
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createdAt")));
+        return articleHashtagRelationRepository.findArticlesByTagName(tagName, pageable);
     }
 }

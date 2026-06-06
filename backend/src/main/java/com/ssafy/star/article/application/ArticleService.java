@@ -190,7 +190,7 @@ public class ArticleService {
     @Transactional(readOnly = true)
     public ArticleDetail detail(Long articleId, String email) {
         UserEntity userEntity = getUserEntityOrExceptionByEmail(email);
-        ArticleEntity articleEntity = getArticleEntityOrException(articleId);
+        ArticleEntity articleEntity = getArticleDetailEntityOrException(articleId);
 
         if(userEntity.getId() == articleEntity.getOwnerEntity().getId() || articleRepository.isVisibleArticle(articleId)) {
             articleEntity.addHits();
@@ -245,16 +245,6 @@ public class ArticleService {
                 .map(ArticleSummary::fromEntity);
     }
 
-    @Transactional
-    public List<ArticleSummary> articlesInConstellation(Long constellationId, String email) {
-        UserEntity userEntity = getUserEntityOrExceptionByEmail(email);
-        ConstellationEntity constellationEntity = getConstellationEntityOrException(constellationId);
-        return articleRepository.findReadableArticlesInConstellation(constellationEntity, userEntity)
-                .stream()
-                .map(ArticleSummary::fromEntity)
-                .toList();
-    }
-
     /**
      * 미분류 별자리의 전체 게시물 조회
      */
@@ -263,15 +253,6 @@ public class ArticleService {
         UserEntity userEntity = getUserEntityOrExceptionByEmail(email);
         return articleRepository.findUnassignedArticlesByOwner(userEntity, pageable)
                 .map(ArticleSummary::fromEntity);
-    }
-
-    @Transactional
-    public List<ArticleSummary> articlesInNoConstellation(String email) {
-        UserEntity userEntity = getUserEntityOrExceptionByEmail(email);
-        return articleRepository.findUnassignedArticlesByOwner(userEntity)
-                .stream()
-                .map(ArticleSummary::fromEntity)
-                .toList();
     }
 
     @Transactional
@@ -311,6 +292,11 @@ public class ArticleService {
     // 포스트가 존재하는지
     private ArticleEntity getArticleEntityOrException(Long articleId) {
         return articleRepository.findById(articleId).orElseThrow(() ->
+                new ByeolDamException(ErrorCode.ARTICLE_NOT_FOUND, String.format("article %d not founded", articleId)));
+    }
+
+    private ArticleEntity getArticleDetailEntityOrException(Long articleId) {
+        return articleRepository.findDetailById(articleId).orElseThrow(() ->
                 new ByeolDamException(ErrorCode.ARTICLE_NOT_FOUND, String.format("article %d not founded", articleId)));
     }
 

@@ -14,7 +14,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -45,6 +47,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     @Override
     public Optional<ArticleEntity> findById(Long articleId) {
         return articleJpaRepository.findById(articleId);
+    }
+
+    @Override
+    public Optional<ArticleEntity> findDetailById(Long articleId) {
+        return articleJpaRepository.findDetailById(articleId);
     }
 
     @Override
@@ -106,8 +113,29 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
-    public List<ArticleEntity> findArticlesInConstellation(ConstellationEntity constellationEntity) {
-        return articleJpaRepository.findByConstellationEntity(constellationEntity);
+    public Map<Long, Long> countReadableArticlesByConstellations(
+            Collection<ConstellationEntity> constellationEntities,
+            UserEntity userEntity
+    ) {
+        if (constellationEntities.isEmpty()) {
+            return Map.of();
+        }
+
+        return articleJpaRepository.countReadableArticlesByConstellations(
+                        constellationEntities,
+                        DisclosureType.VISIBLE,
+                        userEntity
+                )
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> (Long) row[1]
+                ));
+    }
+
+    @Override
+    public Page<ArticleEntity> findArticlesInConstellation(ConstellationEntity constellationEntity, Pageable pageable) {
+        return articleJpaRepository.findByConstellationEntity(constellationEntity, pageable);
     }
 
     @Override

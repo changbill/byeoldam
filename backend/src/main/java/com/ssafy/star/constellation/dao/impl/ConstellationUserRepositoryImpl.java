@@ -45,13 +45,6 @@ public class ConstellationUserRepositoryImpl implements ConstellationUserReposit
     }
 
     @Override
-    public List<ConstellationUserEntity> findByConstellationEntity(
-            ConstellationEntity constellationEntity
-    ) {
-        return constellationUserJpaRepository.findByConstellationEntity(constellationEntity);
-    }
-
-    @Override
     public Page<ConstellationUserEntity> findByConstellationEntity(
             ConstellationEntity constellationEntity,
             Pageable pageable
@@ -68,6 +61,20 @@ public class ConstellationUserRepositoryImpl implements ConstellationUserReposit
         }
 
         return constellationUserJpaRepository.findConstellationUserEntitiesByConstellationEntityIn(constellationEntities);
+    }
+
+    @Override
+    public List<ConstellationUserEntity> findAdminUsersByConstellationEntityIn(
+            Collection<ConstellationEntity> constellationEntities
+    ) {
+        if (constellationEntities.isEmpty()) {
+            return List.of();
+        }
+
+        return constellationUserJpaRepository.findAdminUsersByConstellationEntityIn(
+                constellationEntities,
+                ConstellationUserRole.ADMIN
+        );
     }
 
     @Override

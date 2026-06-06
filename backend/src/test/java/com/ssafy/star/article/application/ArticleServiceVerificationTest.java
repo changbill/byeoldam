@@ -161,9 +161,9 @@ class ArticleServiceVerificationTest extends TestContainerSupport {
         saveArticle("visible", owner, constellation, DisclosureType.VISIBLE);
         saveArticle("invisible", owner, constellation, DisclosureType.INVISIBLE);
 
-        var result = articleService.articlesInConstellation(constellation.getId(), owner.getEmail());
+        var result = articleService.articlesInConstellation(constellation.getId(), owner.getEmail(), PageRequest.of(0, 10));
 
-        assertThat(result).extracting("title")
+        assertThat(result.getContent()).extracting("title")
                 .contains("visible", "invisible");
     }
 
