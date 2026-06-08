@@ -6,7 +6,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "constellation_user")
+@Table(
+        name = "constellation_user",
+        indexes = {
+                @Index(name = "idx_constellation_user_user_constellation", columnList = "user_id, constellation_id"),
+                @Index(name = "idx_constellation_user_constellation_role", columnList = "constellation_id, constellation_user_role")
+        }
+)
 @ToString
 @Getter
 @NoArgsConstructor

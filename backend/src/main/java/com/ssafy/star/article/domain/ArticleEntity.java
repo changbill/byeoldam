@@ -22,7 +22,14 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "article")
+@Table(
+        name = "article",
+        indexes = {
+                @Index(name = "idx_article_owner_deleted_created", columnList = "user_id, deleted_at, created_at"),
+                @Index(name = "idx_article_constellation_deleted_disclosure", columnList = "constellation_id, deleted_at, disclosure"),
+                @Index(name = "idx_article_deleted_created", columnList = "deleted_at, created_at")
+        }
+)
 @Getter
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE `article` SET deleted_at = NOW() where id=?")

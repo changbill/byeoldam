@@ -8,7 +8,13 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "constellationLike")
+@Table(
+        name = "constellationLike",
+        indexes = {
+                @Index(name = "idx_constellation_like_constellation", columnList = "constellation_id"),
+                @Index(name = "idx_constellation_like_user_constellation", columnList = "user_id, constellation_id")
+        }
+)
 @Getter
 @Setter
 public class ConstellationLikeEntity {

@@ -9,7 +9,13 @@ import org.hibernate.annotations.SQLDelete;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "articleLike")
+@Table(
+        name = "articleLike",
+        indexes = {
+                @Index(name = "idx_article_like_article_deleted", columnList = "article_id, deleted_at"),
+                @Index(name = "idx_article_like_user_article_deleted", columnList = "user_id, article_id, deleted_at")
+        }
+)
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE `article_like` SET deleted_at = NOW() where id=?")
