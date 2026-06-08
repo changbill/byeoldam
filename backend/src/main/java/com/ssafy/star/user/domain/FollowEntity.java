@@ -10,7 +10,13 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @ToString
-@Table(name = "follow")
+@Table(
+        name = "follow",
+        indexes = {
+                @Index(name = "idx_follow_from_status_to", columnList = "from_user_id, status, to_user_id"),
+                @Index(name = "idx_follow_from_to_status", columnList = "from_user_id, to_user_id, status")
+        }
+)
 public class FollowEntity {
 
     @Id

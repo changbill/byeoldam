@@ -13,6 +13,7 @@ import com.ssafy.star.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.nio.charset.StandardCharsets;
@@ -63,11 +64,11 @@ class ConstellationServiceTest extends TestContainerSupport {
         constellationUserRepository.saveAndFlush(ConstellationUserEntity.of(constellation, me, ADMIN));
 
         // when
-        var result = constellationService.myConstellations(email);
+        var result = constellationService.myConstellations(email, PageRequest.of(0, 10));
 
         // then
-        assertThat(result).isNotEmpty();
-        assertThat(result.get(0).name()).isEqualTo("ORION");
+        assertThat(result.getContent()).isNotEmpty();
+        assertThat(result.getContent().get(0).name()).isEqualTo("ORION");
     }
 
     @Test
@@ -96,14 +97,14 @@ class ConstellationServiceTest extends TestContainerSupport {
         );
 
         // then
-        var result = constellationService.myConstellations(email);
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).name()).isEqualTo("ORION");
-        ConstellationEntity saved = constellationRepository.findById(result.get(0).id()).orElseThrow();
+        var result = constellationService.myConstellations(email, PageRequest.of(0, 10));
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).name()).isEqualTo("ORION");
+        ConstellationEntity saved = constellationRepository.findById(result.getContent().get(0).id()).orElseThrow();
         assertThat(saved.getContourId()).isNotNull();
 
         assertThat(contourRepository.findById(saved.getContourId())).isPresent();
-        assertThat(constellationUserRepository.findConstellationUserEntitiesByConstellationEntity(saved)).hasSize(1);
+        assertThat(constellationUserRepository.findByConstellationEntity(saved, PageRequest.of(0, 10)).getContent()).hasSize(1);
     }
 
     // ----------------- helpers -----------------

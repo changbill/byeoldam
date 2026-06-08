@@ -7,7 +7,7 @@ import com.ssafy.star.article.domain.ArticleEntity;
 import com.ssafy.star.article.domain.ArticleHashtagEntity;
 import com.ssafy.star.article.domain.ArticleHashtagRelationEntity;
 import com.ssafy.star.article.domain.ArticleLikeEntity;
-import com.ssafy.star.article.dto.Article;
+import com.ssafy.star.article.dto.ArticleDetail;
 import com.ssafy.star.comment.dto.CommentDto;
 import com.ssafy.star.common.config.properties.AppProperties;
 import com.ssafy.star.common.exception.ByeolDamException;
@@ -417,7 +417,8 @@ public class UserService {
     public void delete(String email) {
         UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new ByeolDamException(ErrorCode.USER_NOT_FOUND, String.format("%s is not founded", email)));
 
-        articleRepository.findAllByOwnerEntity(userEntity).forEach(articleLikeRepository::deleteAllByArticleEntity);
+        articleRepository.findArticlesByOwner(userEntity, false, Pageable.unpaged())
+                .forEach(articleLikeRepository::deleteAllByArticleEntity);
         constellationUserRepository.findByUserEntityAndConstellationUserRole(userEntity, ConstellationUserRole.ADMIN)
                 .forEach(entity -> constellationLikeRepository.deleteAllByConstellationEntity(entity.getConstellationEntity()));
         articleLikeRepository.deleteAllByUserEntity(userEntity);
@@ -482,11 +483,11 @@ public class UserService {
 
     //좋아요한 게시물 목록 확인
     @Transactional
-    public Page<Article> likeArticleList(String email, Pageable pageable) {
+    public Page<ArticleDetail> likeArticleList(String email, Pageable pageable) {
         UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new ByeolDamException(ErrorCode.USER_NOT_FOUND, String.format("%s is not founded", email)));
         return articleLikeRepository.findAllByUserEntityOrderByCreatedAtDesc(userEntity, pageable)
                 .map(ArticleLikeEntity::getArticleEntity)
-                .map(articleEntity -> getArticle(articleEntity));
+                .map(articleEntity -> getArticleDetail(articleEntity));
     }
 
     // 닉네임으로 프로필 조회하기
@@ -498,7 +499,7 @@ public class UserService {
         return user.getImageEntity().getUrl();
     }
 
-    public Article getArticle(ArticleEntity entity) {
+    public ArticleDetail getArticleDetail(ArticleEntity entity) {
         Set<String> hashtags = new HashSet<>();
         try{
             hashtags = entity.getArticleHashtagRelationEntities()
@@ -527,7 +528,7 @@ public class UserService {
             constellation = null;
         }
 
-        return new Article(
+        return new ArticleDetail(
                 entity.getId(),
                 entity.getTitle(),
                 entity.getHits(),

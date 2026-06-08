@@ -24,6 +24,7 @@ import com.ssafy.star.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,13 +59,29 @@ class ConstellationServiceVerificationTest extends TestContainerSupport {
         ConstellationEntity constellation = saveConstellation(owner, "ORION");
         saveArticle("star", owner, constellation, DisclosureType.VISIBLE);
 
-        var result = constellationService.myConstellations(owner.getEmail());
+        var result = constellationService.myConstellations(owner.getEmail(), PageRequest.of(0, 10));
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).name()).isEqualTo("ORION");
-        assertThat(result.get(0).contour().originUrl()).startsWith("test://contour/origin");
-        assertThat(result.get(0).hoverArticles()).hasSize(1);
-        assertThat(result.get(0).hoverArticles().get(0).articleThumbnail()).startsWith("test://image/star-thumb");
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).name()).isEqualTo("ORION");
+        assertThat(result.getContent().get(0).contour().originUrl()).startsWith("test://contour/origin");
+        assertThat(result.getContent().get(0).hoverArticles()).hasSize(1);
+        assertThat(result.getContent().get(0).hoverArticles().get(0).articleThumbnail()).startsWith("test://image/star-thumb");
+    }
+
+    @Test
+    void myConstellations_페이지_조회도_윤곽선과_hover_게시물을_함께_조회한다() {
+        UserEntity owner = saveUser(DisclosureType.VISIBLE);
+        ConstellationEntity constellation = saveConstellation(owner, "ORION-PAGE");
+        saveArticle("star-page", owner, constellation, DisclosureType.VISIBLE);
+
+        var result = constellationService.myConstellations(owner.getEmail(), PageRequest.of(0, 10));
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).name()).isEqualTo("ORION-PAGE");
+        assertThat(result.getContent().get(0).contour().originUrl()).startsWith("test://contour/origin");
+        assertThat(result.getContent().get(0).constellationUsers()).hasSize(1);
+        assertThat(result.getContent().get(0).hoverArticles()).hasSize(1);
+        assertThat(result.getContent().get(0).hoverArticles().get(0).articleThumbnail()).startsWith("test://image/star-page-thumb");
     }
 
     @Test
@@ -73,7 +90,7 @@ class ConstellationServiceVerificationTest extends TestContainerSupport {
         UserEntity viewer = saveUser(DisclosureType.VISIBLE);
         saveConstellation(owner, "PRIVATE");
 
-        assertThatThrownBy(() -> constellationService.userConstellations(owner.getNickname(), viewer.getEmail()))
+        assertThatThrownBy(() -> constellationService.userConstellations(owner.getNickname(), viewer.getEmail(), PageRequest.of(0, 10)))
                 .isInstanceOf(ByeolDamException.class);
     }
 
@@ -84,10 +101,40 @@ class ConstellationServiceVerificationTest extends TestContainerSupport {
         followRepository.save(FollowEntity.of(viewer, owner, LocalDateTime.now(), ApprovalStatus.ACCEPT));
         saveConstellation(owner, "FOLLOWED");
 
-        var result = constellationService.userConstellations(owner.getNickname(), viewer.getEmail());
+        var result = constellationService.userConstellations(owner.getNickname(), viewer.getEmail(), PageRequest.of(0, 10));
 
-        assertThat(result).extracting("name")
+        assertThat(result.getContent()).extracting("name")
                 .contains("FOLLOWED");
+    }
+
+    @Test
+    void userConstellations_페이지_조회도_팔로우_승인되면_조회한다() {
+        UserEntity owner = saveUser(DisclosureType.INVISIBLE);
+        UserEntity viewer = saveUser(DisclosureType.VISIBLE);
+        followRepository.save(FollowEntity.of(viewer, owner, LocalDateTime.now(), ApprovalStatus.ACCEPT));
+        saveConstellation(owner, "FOLLOWED-PAGE");
+
+        var result = constellationService.userConstellations(owner.getNickname(), viewer.getEmail(), PageRequest.of(0, 10));
+
+        assertThat(result.getContent()).extracting("name")
+                .contains("FOLLOWED-PAGE");
+    }
+
+    @Test
+    void like_checkLike_likeCount는_id_기반_쿼리로_토글_상태_count를_유지한다() {
+        UserEntity owner = saveUser(DisclosureType.VISIBLE);
+        UserEntity viewer = saveUser(DisclosureType.VISIBLE);
+        ConstellationEntity constellation = saveConstellation(owner, "LIKED");
+
+        constellationService.like(constellation.getId(), viewer.getEmail());
+
+        assertThat(constellationService.checkLike(constellation.getId(), viewer.getEmail())).isTrue();
+        assertThat(constellationService.likeCount(constellation.getId())).isEqualTo(1);
+
+        constellationService.like(constellation.getId(), viewer.getEmail());
+
+        assertThat(constellationService.checkLike(constellation.getId(), viewer.getEmail())).isFalse();
+        assertThat(constellationService.likeCount(constellation.getId())).isZero();
     }
 
     private UserEntity saveUser(DisclosureType disclosureType) {

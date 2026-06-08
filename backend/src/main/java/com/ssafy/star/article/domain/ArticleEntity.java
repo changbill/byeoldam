@@ -1,10 +1,13 @@
 package com.ssafy.star.article.domain;
 
+import com.ssafy.star.article.dto.ArticleDetail;
 import com.ssafy.star.comment.domain.CommentEntity;
 import com.ssafy.star.common.types.DisclosureType;
 import com.ssafy.star.constellation.domain.ConstellationEntity;
 import com.ssafy.star.image.domain.ImageEntity;
+import com.ssafy.star.image.dto.Image;
 import com.ssafy.star.user.domain.UserEntity;
+import com.ssafy.star.user.dto.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,16 +16,23 @@ import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "article")
+@Table(
+        name = "article",
+        indexes = {
+                @Index(name = "idx_article_owner_deleted_created", columnList = "user_id, deleted_at, created_at"),
+                @Index(name = "idx_article_constellation_deleted_disclosure", columnList = "constellation_id, deleted_at, disclosure"),
+                @Index(name = "idx_article_deleted_created", columnList = "deleted_at, created_at")
+        }
+)
 @Getter
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE `article` SET deleted_at = NOW() where id=?")
-//@Where(clause = "deleted_at is NULL")
 public class ArticleEntity {
 
     // TODO : Article 인덱싱 ownerEntity 기준으로
@@ -34,7 +44,6 @@ public class ArticleEntity {
     @Column(name = "title", nullable = false, length = 105)
     private String title;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "articleEntity", cascade = CascadeType.ALL)
     private Set<ArticleHashtagRelationEntity> articleHashtagRelationEntities = new HashSet<>();
 
@@ -48,20 +57,17 @@ public class ArticleEntity {
     @Column(name = "disclosure", nullable = false)
     private DisclosureType disclosure;
 
-    @ToString.Exclude
     @Setter
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "constellation_id")
     private ConstellationEntity constellationEntity;
 
-    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity ownerEntity;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "articleEntity", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<CommentEntity> commentEntities;
+    private List<CommentEntity> commentEntities = new ArrayList<>();
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -126,7 +132,7 @@ public class ArticleEntity {
             ConstellationEntity constellationEntity,
             ImageEntity imageEntity
     ){
-        ArticleEntity entity = new ArticleEntity(
+        return new ArticleEntity(
                 title,
                 description,
                 disclosure,
@@ -134,7 +140,5 @@ public class ArticleEntity {
                 constellationEntity,
                 imageEntity
         );
-        return entity;
     }
-
 }

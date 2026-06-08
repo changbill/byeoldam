@@ -3,7 +3,7 @@ package com.ssafy.star.search.application;
 import com.ssafy.star.article.domain.ArticleEntity;
 import com.ssafy.star.article.domain.ArticleHashtagEntity;
 import com.ssafy.star.article.domain.ArticleHashtagRelationEntity;
-import com.ssafy.star.article.dto.Article;
+import com.ssafy.star.article.dto.ArticleDetail;
 import com.ssafy.star.comment.dto.CommentDto;
 import com.ssafy.star.constellation.dto.Constellation;
 import com.ssafy.star.image.dto.Image;
@@ -38,28 +38,28 @@ public class ArticleSearchService {
     Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
 
     @Transactional
-    public List<Article> titleSearch(String keyword) {
-        return articleSearchRepository.findByTitleContainingAndDisclosureAndDeletedAtIsNull(keyword, VISIBLE, sort).stream().map(articleEntity -> getArticle(articleEntity)).collect(Collectors.toList());
+    public List<ArticleDetail> titleSearch(String keyword) {
+        return articleSearchRepository.findByTitleContainingAndDisclosureAndDeletedAtIsNull(keyword, VISIBLE, sort).stream().map(articleEntity -> getArticleDetail(articleEntity)).collect(Collectors.toList());
     }
 
     @Transactional
-    public Page<Article> titleRelatedSearch(String keyword) {
+    public Page<ArticleDetail> titleRelatedSearch(String keyword) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        return articleSearchRepository.findAllByTitleContainingAndDisclosureAndDeletedAtIsNull(keyword, VISIBLE, pageable).map(articleEntity -> getArticle(articleEntity));
+        return articleSearchRepository.findAllByTitleContainingAndDisclosureAndDeletedAtIsNull(keyword, VISIBLE, pageable).map(articleEntity -> getArticleDetail(articleEntity));
     }
 
     @Transactional
-    public List<Article> hashtagSearch(String keyword) {
-        return articleSearchRepository.findByArticleHashtagRelationEntities_ArticleHashtagEntity_TagNameAndDisclosureAndDeletedAtIsNull(keyword, VISIBLE, sort).stream().map(articleEntity -> getArticle(articleEntity)).collect(Collectors.toList());
+    public List<ArticleDetail> hashtagSearch(String keyword) {
+        return articleSearchRepository.findByArticleHashtagRelationEntities_ArticleHashtagEntity_TagNameAndDisclosureAndDeletedAtIsNull(keyword, VISIBLE, sort).stream().map(articleEntity -> getArticleDetail(articleEntity)).collect(Collectors.toList());
     }
 
     @Transactional
-    public Page<Article> hashtagRelatedSearch(String keyword) {
+    public Page<ArticleDetail> hashtagRelatedSearch(String keyword) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        return articleSearchRepository.findAllByArticleHashtagRelationEntities_ArticleHashtagEntity_TagNameAndDisclosureAndDeletedAtIsNull(keyword, VISIBLE, pageable).map(articleEntity -> getArticle(articleEntity));
+        return articleSearchRepository.findAllByArticleHashtagRelationEntities_ArticleHashtagEntity_TagNameAndDisclosureAndDeletedAtIsNull(keyword, VISIBLE, pageable).map(articleEntity -> getArticleDetail(articleEntity));
     }
 
-    public Article getArticle(ArticleEntity entity) {
+    public ArticleDetail getArticleDetail(ArticleEntity entity) {
         Set<String> hashtags = new HashSet<>();
         try{
             hashtags = entity.getArticleHashtagRelationEntities()
@@ -88,7 +88,7 @@ public class ArticleSearchService {
             constellation = null;
         }
 
-        return new Article(
+        return new ArticleDetail(
                 entity.getId(),
                 entity.getTitle(),
                 entity.getHits(),

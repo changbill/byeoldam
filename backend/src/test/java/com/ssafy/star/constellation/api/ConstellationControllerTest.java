@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.mock.web.MockMultipartFile;
@@ -19,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -41,7 +44,7 @@ class ConstellationControllerTest {
 
     @NonNull
     private MockMultipartFile getRequestPart() {
-        MockMultipartFile requestPart = new MockMultipartFile(
+        return new MockMultipartFile(
                 "request",
                 "request.json",
                 MediaType.APPLICATION_JSON_VALUE,
@@ -49,30 +52,26 @@ class ConstellationControllerTest {
                         {"name":"ORION"}
                         """.getBytes(StandardCharsets.UTF_8)
         );
-        return requestPart;
     }
 
     @NonNull
     private MockMultipartFile getThumb() {
-        MockMultipartFile thumb = new MockMultipartFile("thumb", "thumb.png", MediaType.IMAGE_PNG_VALUE, "x".getBytes());
-        return thumb;
+        return new MockMultipartFile("thumb", "thumb.png", MediaType.IMAGE_PNG_VALUE, "x".getBytes());
     }
 
     @NonNull
     private MockMultipartFile getCthumb() {
-        MockMultipartFile cthumb = new MockMultipartFile("cthumb", "cthumb.png", MediaType.IMAGE_PNG_VALUE, "x".getBytes());
-        return cthumb;
+        return new MockMultipartFile("cthumb", "cthumb.png", MediaType.IMAGE_PNG_VALUE, "x".getBytes());
     }
 
     @NonNull
     private MockMultipartFile getOrigin() {
-        MockMultipartFile origin = new MockMultipartFile("origin", "origin.png", MediaType.IMAGE_PNG_VALUE, "x".getBytes());
-        return origin;
+        return new MockMultipartFile("origin", "origin.png", MediaType.IMAGE_PNG_VALUE, "x".getBytes());
     }
 
     @NonNull
     private MockMultipartFile getContoursList() {
-        MockMultipartFile contoursList = new MockMultipartFile(
+        return new MockMultipartFile(
                 "contoursList",
                 "contoursList.json",
                 MediaType.APPLICATION_JSON_VALUE,
@@ -80,12 +79,11 @@ class ConstellationControllerTest {
                         [[[1,2],[3,4]],[[5,6],[7,8]]]
                         """.getBytes(StandardCharsets.UTF_8)
         );
-        return contoursList;
     }
 
     @NonNull
     private MockMultipartFile getUltimate() {
-        MockMultipartFile ultimate = new MockMultipartFile(
+        return new MockMultipartFile(
                 "ultimate",
                 "ultimate.json",
                 MediaType.APPLICATION_JSON_VALUE,
@@ -93,15 +91,13 @@ class ConstellationControllerTest {
                         [[10,20],[30,40]]
                         """.getBytes(StandardCharsets.UTF_8)
         );
-        return ultimate;
     }
 
     @NonNull
     private UserRequest getUserRequest() {
-        UserRequest userRequest = new UserRequest(
+        return new UserRequest(
                 "userNickname"
         );
-        return userRequest;
     }
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -145,6 +141,7 @@ class ConstellationControllerTest {
     void 별자리_수정() throws Exception {
         // given
         long constellationId = CONSTELLATION_ID;
+        when(constellationService.likeList(eq(constellationId), any(Pageable.class))).thenReturn(Page.empty());
         MockMultipartFile requestPart = getRequestPart();
         MockMultipartFile origin = getOrigin();
         MockMultipartFile thumb = getThumb();
@@ -215,13 +212,16 @@ class ConstellationControllerTest {
     @WithMockUser(username = "test-user@example.com")
     void 내_별자리_전체조회() throws Exception {
         // given
+        when(constellationService.myConstellations(eq("test-user@example.com"), any(Pageable.class)))
+                .thenReturn(Page.empty());
+
         // when&then
         mockMvc.perform(
                 get("/api/v1/constellations")
                         .with(csrf())
         ).andExpect(status().isOk());
 
-        verify(constellationService).myConstellations("test-user@example.com");
+        verify(constellationService).myConstellations(eq("test-user@example.com"), any(Pageable.class));
         verifyNoMoreInteractions(constellationService);
     }
 
@@ -308,7 +308,7 @@ class ConstellationControllerTest {
                         .with(csrf())
         ).andExpect(status().isOk());
 
-        verify(constellationService).findConstellationUsers(constellationId);
+        verify(constellationService).findConstellationUsers(eq(constellationId), any(Pageable.class));
         verifyNoMoreInteractions(constellationService);
     }
 
@@ -374,6 +374,7 @@ class ConstellationControllerTest {
     void 별자리_좋아요_목록_확인() throws Exception {
         // given
         long constellationId = CONSTELLATION_ID;
+        when(constellationService.likeList(eq(constellationId), any(Pageable.class))).thenReturn(Page.empty());
 
         // when&then
         mockMvc.perform(
@@ -381,7 +382,7 @@ class ConstellationControllerTest {
                         .with(csrf())
         ).andExpect(status().isOk());
 
-        verify(constellationService).likeList(constellationId);
+        verify(constellationService).likeList(eq(constellationId), any(Pageable.class));
         verifyNoMoreInteractions(constellationService);
     }
 }
