@@ -168,6 +168,19 @@ class ArticleServiceVerificationTest extends TestContainerSupport {
     }
 
     @Test
+    void detail_조회수는_별도_update로_증가하고_응답에도_반영된다() {
+        UserEntity owner = saveUser();
+        ArticleEntity article = saveArticle("visible", owner, null, DisclosureType.VISIBLE);
+
+        var detail = articleService.detail(article.getId(), owner.getEmail());
+        entityManager.clear();
+        ArticleEntity reloaded = articleRepository.findById(article.getId()).orElseThrow();
+
+        assertThat(detail.hits()).isEqualTo(1);
+        assertThat(reloaded.getHits()).isEqualTo(1);
+    }
+
+    @Test
     void delete_삭제된_게시물은_일반목록에서_빠지고_휴지통에서_조회된다() {
         UserEntity owner = saveUser();
         ArticleEntity article = saveArticle("deleted", owner, null, DisclosureType.VISIBLE);

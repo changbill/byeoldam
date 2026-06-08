@@ -26,6 +26,8 @@ public interface ArticleRepository {
 
     Optional<ArticleEntity> findDetailById(Long articleId);
 
+    void incrementHits(Long articleId);
+
     List<ArticleEntity> findAll();
 
     boolean isVisibleArticle(Long articleId);

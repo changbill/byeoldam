@@ -55,6 +55,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
+    public void incrementHits(Long articleId) {
+        articleJpaRepository.incrementHits(articleId);
+    }
+
+    @Override
     public List<ArticleEntity> findAll() {
         return articleJpaRepository.findAll();
     }

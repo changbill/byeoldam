@@ -1,10 +1,13 @@
 package com.ssafy.star.article.domain;
 
+import com.ssafy.star.article.dto.ArticleDetail;
 import com.ssafy.star.comment.domain.CommentEntity;
 import com.ssafy.star.common.types.DisclosureType;
 import com.ssafy.star.constellation.domain.ConstellationEntity;
 import com.ssafy.star.image.domain.ImageEntity;
+import com.ssafy.star.image.dto.Image;
 import com.ssafy.star.user.domain.UserEntity;
+import com.ssafy.star.user.dto.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +16,7 @@ import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,7 +60,7 @@ public class ArticleEntity {
     private UserEntity ownerEntity;
 
     @OneToMany(mappedBy = "articleEntity", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<CommentEntity> commentEntities;
+    private List<CommentEntity> commentEntities = new ArrayList<>();
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -130,5 +134,4 @@ public class ArticleEntity {
                 imageEntity
         );
     }
-
 }

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -36,6 +37,15 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, Long>
     })
     @Query("SELECT a FROM ArticleEntity a WHERE a.id = :articleId")
     Optional<ArticleEntity> findDetailById(@Param("articleId") Long articleId);
+
+    @Modifying
+    @Query("""
+            UPDATE ArticleEntity a
+            SET a.hits = a.hits + 1
+            WHERE a.id = :articleId
+              AND a.deletedAt IS NULL
+            """)
+    void incrementHits(@Param("articleId") Long articleId);
 
     @Query(
             value = """

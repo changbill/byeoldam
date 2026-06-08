@@ -4,19 +4,16 @@ import com.ssafy.star.article.dao.ArticleHashtagRelationRepository;
 import com.ssafy.star.article.dao.ArticleLikeRepository;
 import com.ssafy.star.article.dao.ArticleRepository;
 import com.ssafy.star.article.domain.ArticleEntity;
-import com.ssafy.star.article.domain.ArticleHashtagEntity;
 import com.ssafy.star.article.domain.ArticleHashtagRelationEntity;
 import com.ssafy.star.article.domain.ArticleLikeEntity;
 import com.ssafy.star.article.dto.ArticleDetail;
 import com.ssafy.star.article.dto.ArticleSummary;
-import com.ssafy.star.comment.dto.CommentDto;
 import com.ssafy.star.common.exception.ByeolDamException;
 import com.ssafy.star.common.exception.ErrorCode;
 import com.ssafy.star.common.infra.S3.S3uploader;
 import com.ssafy.star.common.types.DisclosureType;
 import com.ssafy.star.constellation.dao.ConstellationRepository;
 import com.ssafy.star.constellation.domain.ConstellationEntity;
-import com.ssafy.star.constellation.dto.Constellation;
 import com.ssafy.star.image.ImageType;
 import com.ssafy.star.image.application.ImageService;
 import com.ssafy.star.image.domain.ImageEntity;
@@ -36,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -153,7 +149,7 @@ public class ArticleService {
         articleLikeRepository.findAllByArticleEntity(articleEntity).forEach(ArticleLikeEntity::undoDeletion);
         articleHashtagRelationRepository.findAllByArticleEntity(articleEntity).forEach(ArticleHashtagRelationEntity::undoDeletion);
 
-        return getArticleDetail(articleEntity);
+        return ArticleDetail.fromEntity(articleEntity);
     }
 
     // 팔로우한 사람들의 게시물들을 최신순으로 나열해서 보여준다
@@ -187,18 +183,18 @@ public class ArticleService {
     /**
      * 게시물 상세 조회
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public ArticleDetail detail(Long articleId, String email) {
         UserEntity userEntity = getUserEntityOrExceptionByEmail(email);
         ArticleEntity articleEntity = getArticleDetailEntityOrException(articleId);
 
-        if(userEntity.getId() == articleEntity.getOwnerEntity().getId() || articleRepository.isVisibleArticle(articleId)) {
+        if(Objects.equals(userEntity.getId(), articleEntity.getOwnerEntity().getId()) || articleRepository.isVisibleArticle(articleId)) {
+            validateArticleNotDeleted(articleEntity, "article %d has deleted");
+            articleRepository.incrementHits(articleId);
             articleEntity.addHits();
 
-            return getArticleDetail(articleRepository.saveAndFlush(articleEntity));
+            return ArticleDetail.fromEntity(articleEntity);
         } else {
-            validateArticleNotDeleted(articleEntity, "article %d has deleted");
-
             throw new ByeolDamException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission with article %d", userEntity.getNickname(), articleId));
         }
     }
@@ -214,7 +210,7 @@ public class ArticleService {
              constellationEntity = getConstellationEntityOrException(constellationId); // 배정하려는 별자리 Entity
 
             validateConstellationAdmin(constellationEntity, userEntity);
-        } else {}
+        }
 
         // 반복문을 통해 Set에 있는 article 전부 별자리에 배정
         for(Long articleId : articleIdSet) {
@@ -266,6 +262,7 @@ public class ArticleService {
                 () -> articleLikeRepository.save(ArticleLikeEntity.of(userEntity, articleEntity))
         );
     }
+
     @Transactional
     public Boolean checkLike(Long articleId, String email) {
         ArticleEntity articleEntity = getArticleEntityOrException(articleId);
@@ -314,7 +311,6 @@ public class ArticleService {
     }
 
     // 별자리가 존재하는지
-
     private ConstellationEntity getConstellationEntityOrException(Long constellationId) {
         return constellationRepository.findById(constellationId).orElseThrow(() ->
                 new ByeolDamException(ErrorCode.CONSTELLATION_NOT_FOUND, String.format("constellation %d not founded", constellationId)));
@@ -370,6 +366,7 @@ public class ArticleService {
                     String.format(messageFormat, articleEntity.getId()));
         }
     }
+
     private void validateArticleDeleted(ArticleEntity articleEntity) {
         if(articleEntity.getDeletedAt() == null) {
             throw new ByeolDamException(ErrorCode.INVALID_REQUEST,
@@ -391,52 +388,4 @@ public class ArticleService {
 
         return articleEntity;
     }
-
-    private ArticleDetail getArticleDetail(ArticleEntity entity) {
-        Set<String> hashtags = new HashSet<>();
-        try{
-            hashtags = entity.getArticleHashtagRelationEntities()
-                    .stream()
-                    .map(ArticleHashtagRelationEntity::getArticleHashtagEntity)
-                    .map(ArticleHashtagEntity::getTagName)
-                    .collect(Collectors.toSet());
-        } catch(NullPointerException e) {
-            hashtags = null;
-        }
-
-        List<CommentDto> comments = null;
-        try {
-            comments = entity.getCommentEntities()
-                    .stream()
-                    .map(CommentDto::from)
-                    .collect(Collectors.toList());
-        } catch (NullPointerException e) {
-            comments = null;
-        }
-
-        Constellation constellation = null;
-        try{
-            constellation = Constellation.fromEntity(entity.getConstellationEntity());
-        } catch(NullPointerException e) {
-            constellation = null;
-        }
-
-        return new ArticleDetail(
-                entity.getId(),
-                entity.getTitle(),
-                entity.getHits(),
-                entity.getDescription(),
-                entity.getDisclosure(),
-                hashtags,
-                constellation,
-                User.fromEntity(entity.getOwnerEntity()),
-                comments,
-                entity.getCreatedAt(),
-                entity.getModifiedAt(),
-                entity.getDeletedAt(),
-                Image.fromEntity(entity.getImageEntity())
-        );
-    }
-
-
 }
