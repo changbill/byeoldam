@@ -22,7 +22,13 @@ public interface ConstellationLikeRepository {
             ConstellationEntity constellationEntity
     );
 
+    boolean existsByUserIdAndConstellationId(Long userId, Long constellationId);
+
+    int deleteByUserIdAndConstellationId(Long userId, Long constellationId);
+
     Integer countByConstellationEntity(ConstellationEntity constellationEntity);
+
+    Integer countByConstellationId(Long constellationId);
 
     void deleteAllByConstellationEntity(ConstellationEntity constellationEntity);
 

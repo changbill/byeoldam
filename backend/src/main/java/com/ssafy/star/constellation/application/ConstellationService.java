@@ -29,6 +29,7 @@ import com.ssafy.star.user.domain.UserEntity;
 import com.ssafy.star.user.dto.User;
 import com.ssafy.star.user.repository.FollowRepository;
 import com.ssafy.star.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -62,6 +63,7 @@ public class ConstellationService {
     private final ImageService imageService;
     private final ImageRepository imageRepository;
     private final ConstellationLikeRepository constellationLikeRepository;
+    private final EntityManager entityManager;
 
     /**
      * 나의 우주 보기 - 별자리 전체 조회
@@ -533,36 +535,36 @@ public class ConstellationService {
     @Transactional
     public void like(Long constellationId, String email) {
         UserEntity userEntity = getUserEntityByEmailOrException(email);                                                            // 현재 사용자 user entity
-        ConstellationEntity constellationEntity = getConstellationEntityOrException(constellationId);
+        validateConstellationExists(constellationId);
 
         // 좋아요 상태인지 확인
-        constellationLikeRepository.findByUserEntityAndConstellationEntity(userEntity, constellationEntity).ifPresentOrElse(
-                constellationLikeRepository::delete,
-                () -> constellationLikeRepository.save(ConstellationLikeEntity.of(userEntity, constellationEntity))
-        );
+        if (constellationLikeRepository.deleteByUserIdAndConstellationId(userEntity.getId(), constellationId) == 0) {
+            ConstellationEntity constellationReference = entityManager.getReference(ConstellationEntity.class, constellationId);
+            constellationLikeRepository.save(ConstellationLikeEntity.of(userEntity, constellationReference));
+        }
     }
 
     //별자리 좋아요 상태 확인
-    @Transactional
+    @Transactional(readOnly = true)
     public Boolean checkLike(Long constellationId, String email) {
         UserEntity userEntity = getUserEntityByEmailOrException(email);                                                            // 현재 사용자 user entity
-        ConstellationEntity constellationEntity = getConstellationEntityOrException(constellationId);
+        validateConstellationExists(constellationId);
 
         //좋아요 상태인지 확인
-        return constellationLikeRepository.findByUserEntityAndConstellationEntity(userEntity, constellationEntity).isPresent();
+        return constellationLikeRepository.existsByUserIdAndConstellationId(userEntity.getId(), constellationId);
     }
 
     //별자리 좋아요 갯수 확인
-    @Transactional
+    @Transactional(readOnly = true)
     public Integer likeCount(Long constellationId) {
-        ConstellationEntity constellationEntity = getConstellationEntityOrException(constellationId);
+        validateConstellationExists(constellationId);
 
         //좋아요 갯수 확인
-        return constellationLikeRepository.countByConstellationEntity(constellationEntity);
+        return constellationLikeRepository.countByConstellationId(constellationId);
     }
 
     //별자리 좋아요한 사람들의 목록 확인
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<User> likeList(Long constellationId, Pageable pageable) {
         ConstellationEntity constellationEntity = getConstellationEntityOrException(constellationId);
         return constellationLikeRepository.findAllByConstellationEntity(constellationEntity, pageable)
@@ -570,8 +572,15 @@ public class ConstellationService {
                 .map(User::fromEntity);
     }
 
+    @Transactional(readOnly = true)
     public int countConstellations(String email){
         UserEntity userEntity = getUserEntityByEmailOrException(email);
         return constellationUserRepository.countConstellationByUser(userEntity);
+    }
+
+    private void validateConstellationExists(Long constellationId) {
+        if (!constellationRepository.existsById(constellationId)) {
+            throw new ByeolDamException(ErrorCode.CONSTELLATION_NOT_FOUND, String.format("constellation %d has not founded", constellationId));
+        }
     }
 }

@@ -43,8 +43,23 @@ public class ConstellationLikeRepositoryImpl implements ConstellationLikeReposit
     }
 
     @Override
+    public boolean existsByUserIdAndConstellationId(Long userId, Long constellationId) {
+        return constellationLikeJpaRepository.existsByUserIdAndConstellationId(userId, constellationId);
+    }
+
+    @Override
+    public int deleteByUserIdAndConstellationId(Long userId, Long constellationId) {
+        return constellationLikeJpaRepository.deleteByUserIdAndConstellationId(userId, constellationId);
+    }
+
+    @Override
     public Integer countByConstellationEntity(ConstellationEntity constellationEntity) {
         return constellationLikeJpaRepository.countByConstellationEntity(constellationEntity);
+    }
+
+    @Override
+    public Integer countByConstellationId(Long constellationId) {
+        return constellationLikeJpaRepository.countByConstellationId(constellationId);
     }
 
     @Override

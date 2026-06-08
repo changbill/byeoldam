@@ -17,5 +17,7 @@ public interface ConstellationRepository {
 
     Optional<ConstellationEntity> findById(Long id);
 
+    boolean existsById(Long id);
+
     Page<ConstellationEntity> findAllByUserEntity(UserEntity userEntity, Pageable pageable);
 }

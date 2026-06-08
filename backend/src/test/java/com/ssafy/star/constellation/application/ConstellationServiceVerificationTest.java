@@ -120,6 +120,23 @@ class ConstellationServiceVerificationTest extends TestContainerSupport {
                 .contains("FOLLOWED-PAGE");
     }
 
+    @Test
+    void like_checkLike_likeCount는_id_기반_쿼리로_토글_상태_count를_유지한다() {
+        UserEntity owner = saveUser(DisclosureType.VISIBLE);
+        UserEntity viewer = saveUser(DisclosureType.VISIBLE);
+        ConstellationEntity constellation = saveConstellation(owner, "LIKED");
+
+        constellationService.like(constellation.getId(), viewer.getEmail());
+
+        assertThat(constellationService.checkLike(constellation.getId(), viewer.getEmail())).isTrue();
+        assertThat(constellationService.likeCount(constellation.getId())).isEqualTo(1);
+
+        constellationService.like(constellation.getId(), viewer.getEmail());
+
+        assertThat(constellationService.checkLike(constellation.getId(), viewer.getEmail())).isFalse();
+        assertThat(constellationService.likeCount(constellation.getId())).isZero();
+    }
+
     private UserEntity saveUser(DisclosureType disclosureType) {
         String suffix = UUID.randomUUID().toString().replace("-", "");
         UserEntity user = UserEntity.of(

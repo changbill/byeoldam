@@ -38,6 +38,11 @@ public class ConstellationRepositoryImpl implements ConstellationRepository {
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return constellationJpaRepository.existsById(id);
+    }
+
+    @Override
     public Page<ConstellationEntity> findAllByUserEntity(UserEntity userEntity, Pageable pageable) {
         return constellationJpaRepository.findAllByUserEntity(userEntity, pageable);
     }
