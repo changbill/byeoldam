@@ -40,8 +40,23 @@ public class ArticleLikeRepositoryImpl implements ArticleLikeRepository {
     }
 
     @Override
+    public boolean existsByUserIdAndArticleId(Long userId, Long articleId) {
+        return articleLikeJpaRepository.existsByUserIdAndArticleId(userId, articleId);
+    }
+
+    @Override
+    public int deleteByUserIdAndArticleId(Long userId, Long articleId) {
+        return articleLikeJpaRepository.deleteByUserIdAndArticleId(userId, articleId);
+    }
+
+    @Override
     public Integer countByArticleEntity(ArticleEntity articleEntity) {
         return articleLikeJpaRepository.countByArticleEntity(articleEntity);
+    }
+
+    @Override
+    public Integer countByArticleId(Long articleId) {
+        return articleLikeJpaRepository.countByArticleId(articleId);
     }
 
     @Override

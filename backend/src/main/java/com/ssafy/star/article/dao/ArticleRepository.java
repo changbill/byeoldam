@@ -24,6 +24,8 @@ public interface ArticleRepository {
 
     Optional<ArticleEntity> findById(Long articleId);
 
+    boolean existsById(Long articleId);
+
     Optional<ArticleEntity> findDetailById(Long articleId);
 
     void incrementHits(Long articleId);

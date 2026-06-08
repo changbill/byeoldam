@@ -181,6 +181,23 @@ class ArticleServiceVerificationTest extends TestContainerSupport {
     }
 
     @Test
+    void like_checkLike_likeCount는_id_기반_쿼리로_토글_상태_count를_유지한다() {
+        UserEntity owner = saveUser();
+        UserEntity viewer = saveUser();
+        ArticleEntity article = saveArticle("liked", owner, null, DisclosureType.VISIBLE);
+
+        articleService.like(article.getId(), viewer.getEmail());
+
+        assertThat(articleService.checkLike(article.getId(), viewer.getEmail())).isTrue();
+        assertThat(articleService.likeCount(article.getId())).isEqualTo(1);
+
+        articleService.like(article.getId(), viewer.getEmail());
+
+        assertThat(articleService.checkLike(article.getId(), viewer.getEmail())).isFalse();
+        assertThat(articleService.likeCount(article.getId())).isZero();
+    }
+
+    @Test
     void delete_삭제된_게시물은_일반목록에서_빠지고_휴지통에서_조회된다() {
         UserEntity owner = saveUser();
         ArticleEntity article = saveArticle("deleted", owner, null, DisclosureType.VISIBLE);

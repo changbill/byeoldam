@@ -23,6 +23,7 @@ import com.ssafy.star.user.domain.UserEntity;
 import com.ssafy.star.user.dto.User;
 import com.ssafy.star.user.repository.FollowRepository;
 import com.ssafy.star.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -48,6 +49,7 @@ public class ArticleService {
     private final ImageService imageService;
     private final ArticleHashtagRelationService articleHashtagRelationService;
     private final ArticleLikeRepository articleLikeRepository;
+    private final EntityManager entityManager;
 
     /**
      * 게시물 등록과 별자리 배정
@@ -125,7 +127,7 @@ public class ArticleService {
     /**
      * 휴지통 조회
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<ArticleSummary> trashcan(String email, Pageable pageable) {
         UserEntity userEntity = getUserEntityOrExceptionByEmail(email);
         return articleRepository.findDeletedArticlesByOwner(userEntity, pageable).map(ArticleSummary::fromEntity);
@@ -232,7 +234,7 @@ public class ArticleService {
     /**
      * 별자리의 전체 게시물 조회
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<ArticleSummary> articlesInConstellation(Long constellationId, String email, Pageable pageable) {
         // email로 userEntity 구하고 별자리 공개여부와 해당 게시물 공유여부를 확인해 Error 반환
         UserEntity userEntity = getUserEntityOrExceptionByEmail(email);
@@ -244,7 +246,7 @@ public class ArticleService {
     /**
      * 미분류 별자리의 전체 게시물 조회
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<ArticleSummary> articlesInNoConstellation(String email, Pageable pageable) {
         UserEntity userEntity = getUserEntityOrExceptionByEmail(email);
         return articleRepository.findUnassignedArticlesByOwner(userEntity, pageable)
@@ -253,31 +255,31 @@ public class ArticleService {
 
     @Transactional
     public void like(Long articleId, String email) {
-        ArticleEntity articleEntity = getArticleEntityOrException(articleId);
+        validateArticleExists(articleId);
         UserEntity userEntity = getUserEntityOrExceptionByEmail(email);
 
         // 좋아요 상태인지 확인
-        articleLikeRepository.findByUserEntityAndArticleEntity(userEntity, articleEntity).ifPresentOrElse(
-                articleLikeRepository::delete,
-                () -> articleLikeRepository.save(ArticleLikeEntity.of(userEntity, articleEntity))
-        );
+        if (articleLikeRepository.deleteByUserIdAndArticleId(userEntity.getId(), articleId) == 0) {
+            ArticleEntity articleReference = entityManager.getReference(ArticleEntity.class, articleId);
+            articleLikeRepository.save(ArticleLikeEntity.of(userEntity, articleReference));
+        }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Boolean checkLike(Long articleId, String email) {
-        ArticleEntity articleEntity = getArticleEntityOrException(articleId);
+        validateArticleExists(articleId);
         UserEntity userEntity = getUserEntityOrExceptionByEmail(email);
 
         //좋아요 상태인지 확인
-        return articleLikeRepository.findByUserEntityAndArticleEntity(userEntity, articleEntity).isPresent();
+        return articleLikeRepository.existsByUserIdAndArticleId(userEntity.getId(), articleId);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Integer likeCount(Long articleId) {
-        ArticleEntity articleEntity = getArticleEntityOrException(articleId);
+        validateArticleExists(articleId);
 
         //좋아요 갯수 확인
-        return articleLikeRepository.countByArticleEntity(articleEntity);
+        return articleLikeRepository.countByArticleId(articleId);
     }
 
     @Transactional(readOnly = true)
@@ -290,6 +292,12 @@ public class ArticleService {
     private ArticleEntity getArticleEntityOrException(Long articleId) {
         return articleRepository.findById(articleId).orElseThrow(() ->
                 new ByeolDamException(ErrorCode.ARTICLE_NOT_FOUND, String.format("article %d not founded", articleId)));
+    }
+
+    private void validateArticleExists(Long articleId) {
+        if (!articleRepository.existsById(articleId)) {
+            throw new ByeolDamException(ErrorCode.ARTICLE_NOT_FOUND, String.format("article %d not founded", articleId));
+        }
     }
 
     private ArticleEntity getArticleDetailEntityOrException(Long articleId) {

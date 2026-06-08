@@ -18,8 +18,35 @@ public interface ArticleLikeJpaRepository extends JpaRepository<ArticleLikeEntit
     @Query("SELECT entity FROM ArticleLikeEntity entity WHERE entity.articleEntity = :articleEntity AND entity.userEntity = :userEntity AND entity.deletedAt IS NULL")
     Optional<ArticleLikeEntity> findByUserEntityAndArticleEntity(UserEntity userEntity, ArticleEntity articleEntity);
 
+    @Query("""
+            SELECT COUNT(entity) > 0
+            FROM ArticleLikeEntity entity
+            WHERE entity.userEntity.id = :userId
+              AND entity.articleEntity.id = :articleId
+              AND entity.deletedAt IS NULL
+            """)
+    boolean existsByUserIdAndArticleId(@Param("userId") Long userId, @Param("articleId") Long articleId);
+
+    @Modifying
+    @Query("""
+            UPDATE ArticleLikeEntity entity
+            SET entity.deletedAt = CURRENT_TIMESTAMP
+            WHERE entity.userEntity.id = :userId
+              AND entity.articleEntity.id = :articleId
+              AND entity.deletedAt IS NULL
+            """)
+    int deleteByUserIdAndArticleId(@Param("userId") Long userId, @Param("articleId") Long articleId);
+
     @Query(value = "SELECT COUNT(*) FROM ArticleLikeEntity entity WHERE entity.articleEntity =:articleEntity AND entity.deletedAt IS NULL")
     Integer countByArticleEntity(ArticleEntity articleEntity);
+
+    @Query("""
+            SELECT COUNT(entity)
+            FROM ArticleLikeEntity entity
+            WHERE entity.articleEntity.id = :articleId
+              AND entity.deletedAt IS NULL
+            """)
+    Integer countByArticleId(@Param("articleId") Long articleId);
 
     @Modifying
     @Query("DELETE FROM ArticleLikeEntity e WHERE e.articleEntity = :articleEntity AND e.deletedAt IS NULL")

@@ -19,7 +19,13 @@ public interface ArticleLikeRepository {
 
     Optional<ArticleLikeEntity> findByUserEntityAndArticleEntity(UserEntity userEntity, ArticleEntity articleEntity);
 
+    boolean existsByUserIdAndArticleId(Long userId, Long articleId);
+
+    int deleteByUserIdAndArticleId(Long userId, Long articleId);
+
     Integer countByArticleEntity(ArticleEntity articleEntity);
+
+    Integer countByArticleId(Long articleId);
 
     void deleteAllByArticleEntity(ArticleEntity articleEntity);
 

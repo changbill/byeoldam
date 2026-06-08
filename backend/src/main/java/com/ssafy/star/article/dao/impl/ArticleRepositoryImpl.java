@@ -50,6 +50,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
+    public boolean existsById(Long articleId) {
+        return articleJpaRepository.existsById(articleId);
+    }
+
+    @Override
     public Optional<ArticleEntity> findDetailById(Long articleId) {
         return articleJpaRepository.findDetailById(articleId);
     }
